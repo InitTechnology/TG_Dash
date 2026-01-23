@@ -1,0 +1,427 @@
+@font-face {
+  font-family: fontWS;
+  src: url("/public/assets/fonts/Work_Sans/WorkSans-VariableFont_wght.ttf");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: fontLS;
+  src: url("/public/assets/fonts/League_Spartan/LeagueSpartan-VariableFont_wght.ttf");
+  font-display: swap;
+}
+
+html {
+  font-family: fontWS;
+  scroll-behavior: smooth;
+  background-color: #f8f9fa;
+}
+
+.fontLS {
+  font-family: fontLS;
+}
+
+.fontWS {
+  font-family: fontWS;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  outline: transparent;
+}
+
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+  background-color: #1d2826;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-position: center;
+  outline: none;
+  border: 1px solid #1d2826;
+}
+
+.Btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition-duration: 0.3s;
+  transform: scale(0.9);
+}
+
+.svgIcon {
+  fill: #1d2826;
+}
+
+.icon2 {
+  width: 18px;
+  height: 5px;
+  border-bottom: 2px solid #1d2826;
+  border-left: 2px solid #1d2826;
+  border-right: 2px solid #1d2826;
+}
+
+.tooltip {
+  position: absolute;
+  left: -98px;
+  opacity: 0;
+  background-color: #1d2826;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition-duration: 0.2s;
+  pointer-events: none;
+  letter-spacing: 0.5px;
+}
+
+.tooltip::before {
+  position: absolute;
+  content: "";
+  width: 10px;
+  height: 10px;
+  background-color: #1d2826;
+  background-size: 1000%;
+  background-position: center;
+  transform: rotate(45deg);
+  right: -5%;
+  transition-duration: 0.3s;
+}
+
+.Btn:hover .tooltip {
+  opacity: 1;
+  transition-duration: 0.3s;
+}
+
+.Btn:hover {
+  background-color: #1d2826;
+  transition-duration: 0.3s;
+}
+
+.Btn:hover .icon2 {
+  border-bottom: 2px solid rgb(235, 235, 235);
+  border-left: 2px solid rgb(235, 235, 235);
+  border-right: 2px solid rgb(235, 235, 235);
+}
+
+.Btn:hover .svgIcon {
+  fill: rgb(255, 255, 255);
+  animation: slide-in-top 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes slide-in-top {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+/* Filter toggle */
+.toggle1 {
+  position: relative;
+  box-sizing: border-box;
+  transform: rotate(90deg);
+}
+.toggle1 input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+.toggle1 label {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+}
+.toggle1 label:before {
+  content: "";
+  width: 5px;
+  height: 15px;
+  background: linear-gradient(#bbb, #bbb) no-repeat center;
+  background-size: 2px 64px;
+  display: inline-block;
+  transition: 0.2s ease-in;
+}
+.toggle1 label:after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #bbb;
+  border-radius: 50%;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  box-sizing: border-box;
+  transition: 0.2s ease-in;
+}
+.toggle1 input[type="checkbox"]:checked + label:before {
+  background-image: linear-gradient(#77c2bb, #77c2bb);
+}
+.toggle1 input[type="checkbox"]:checked + label:after {
+  top: 10px;
+  border-color: #009688;
+}
+
+.toggle2 {
+  position: relative;
+  box-sizing: border-box;
+  transform: rotate(-90deg);
+}
+.toggle2 input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+.toggle2 label {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+}
+.toggle2 label:before {
+  content: "";
+  width: 5px;
+  height: 15px;
+  background: linear-gradient(#bbb, #bbb) no-repeat center;
+  background-size: 2px 64px;
+  display: inline-block;
+  transition: 0.2s ease-in;
+}
+.toggle2 label:after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #bbb;
+  border-radius: 50%;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  box-sizing: border-box;
+  transition: 0.2s ease-in;
+}
+.toggle2 input[type="checkbox"]:checked + label:before {
+  background-image: linear-gradient(#77c2bb, #77c2bb);
+}
+.toggle2 input[type="checkbox"]:checked + label:after {
+  top: 10px;
+  border-color: #009688;
+}
+
+.toggle3 {
+  position: relative;
+  box-sizing: border-box;
+  transform: rotate(90deg);
+}
+.toggle3 input[type="checkbox"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
+}
+.toggle3 label {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+}
+.toggle3 label:before {
+  content: "";
+  width: 5px;
+  height: 15px;
+  background: linear-gradient(#bbb, #bbb) no-repeat center;
+  background-size: 2px 64px;
+  display: inline-block;
+  transition: 0.2s ease-in;
+}
+.toggle3 label:after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #bbb;
+  border-radius: 50%;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  box-sizing: border-box;
+  transition: 0.2s ease-in;
+}
+.toggle3 input[type="checkbox"]:checked + label:before {
+  background-image: linear-gradient(#77c2bb, #77c2bb);
+}
+.toggle3 input[type="checkbox"]:checked + label:after {
+  top: 10px;
+  border-color: #009688;
+}
+
+/* AddPropertiesElementor css starts */
+
+/* Button */
+
+.zorba_btn {
+  line-height: 1;
+  text-decoration: none;
+  display: inline-flex;
+  border: none;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--clr);
+  color: #fff;
+  border-radius: 1px;
+  font-weight: 400;
+  padding: 0.5rem 1.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 0.3s;
+}
+
+.zorba_btn__icon-wrapper {
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  position: relative;
+  color: var(--clr);
+  background-color: #fff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.zorba_btn:hover {
+  background-color: #000;
+}
+
+.zorba_btn:hover .zorba_btn__icon-wrapper {
+  color: #000;
+}
+
+.zorba_btn__icon-svg--copy {
+  position: absolute;
+  transform: translate(-150%, 150%);
+}
+
+.zorba_btn:hover .zorba_btn__icon-svg:first-child {
+  transition: transform 0.3s ease-in-out;
+  transform: translate(150%, -150%);
+}
+
+.zorba_btn:hover .zorba_btn__icon-svg--copy {
+  transition: transform 0.3s ease-in-out 0.01s;
+  transform: translate(0);
+}
+
+/* Get in touch btn */
+
+.button_getInTouch_btn {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: black;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  display: grid;
+  place-content: center;
+  transition:
+    background 300ms,
+    transform 200ms;
+  font-weight: 300;
+  font-size: 10px;
+}
+
+.button__text_getInTouch_btn {
+  position: absolute;
+  inset: 0;
+  animation: text-rotation_getInTouch_btn 12s linear infinite;
+
+  > span {
+    position: absolute;
+    transform: rotate(calc(12deg * var(--index)));
+    inset: 1px;
+  }
+}
+
+.button__circle_getInTouch_btn {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  background: black;
+  color: lightgray;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button__icon--copy_getInTouch_btn {
+  position: absolute;
+  transform: translate(-250%, 250%);
+}
+
+.button_getInTouch_btn:hover {
+  background: transparent;
+  transform: scale(1.1);
+}
+
+.button_getInTouch_btn:hover .button__icon_getInTouch_btn {
+  color: white;
+}
+
+.button_getInTouch_btn:hover .button__icon_getInTouch_btn:first-child {
+  transition: transform 0.3s ease-in-out;
+  transform: translate(250%, -250%);
+}
+
+.button_getInTouch_btn:hover .button__icon--copy_getInTouch_btn {
+  transition: transform 0.3s ease-in-out 0.1s;
+  transform: translate(0);
+}
+
+@keyframes text-rotation_getInTouch_btn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* AddPropertiesElementor css ends */
