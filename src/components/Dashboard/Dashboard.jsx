@@ -13,154 +13,233 @@ const Dashboard = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [showPopup_filter, setShowPopup_filter] = useState(false);
+  const [todayBookings, setTodayBookings] = useState(0);
+  const [recentConsultations, setRecentConsultations] = useState([]);
+
+  // const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardData, setDashboardData] = useState({
+    totalConsultations: 0,
+    upcomingConsultations: 0,
+    pastConsultations: 0,
+    studentsComingFrom: [],
+    studentsGoingTo: [],
+    preferredStudyLevels: [],
+    monthlyConsultations: [],
+  });
+  const currentMonth = new Date().getMonth() + 1;
+  const [, setMonthlyCount] = useState(0);
+
+  useEffect(() => {
+    const currentMonth = new Date().getMonth() + 1;
+    const monthData = dashboardData.monthlyConsultations?.find(
+      (m) => m.month === currentMonth,
+    );
+    setMonthlyCount(monthData?.totalConsultations || 0);
+  }, [dashboardData]);
+
+  const [loading, setLoading] = useState(true);
 
   const filterRef = useRef(null);
 
+  // useEffect(() => {
+  //   const fetchDashboardData = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         "https://transglobeedu.com/web-backend/getbriefs",
+  //       );
+  //       const json = await res.json();
+
+  //       if (json.success) {
+  //         console.log("API:", json.data);
+
+  //         setDashboardData(json.data);
+  //       }
+  //     } catch (error) {
+  //       console.error("Dashboard API error:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchDashboardData();
+  // }, []);
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const res = await fetch(
+          "https://transglobeedu.com/web-backend/getbriefs",
+          {
+            cache: "no-store",
+          },
+        );
+
+        const text = await res.text();
+        console.log("RAW RESPONSE FROM API:", text);
+
+        const json = JSON.parse(text);
+
+        if (json.success) {
+          console.log("PARSED JSON:", json.data);
+          setDashboardData(json.data);
+          setRecentConsultations(json.data.recentConsultations || []);
+          setTodayBookings(json.data.todayBookings || 0);
+        }
+      } catch (error) {
+        console.error("Dashboard API error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   /* ---------------- DUMMY DATA ---------------- */
 
-  const analyticsData = {
-    totalConsultations: 1240,
-    upcomingConsultations: 86,
-    pastConsultations: 1154,
-  };
+  // const analyticsData = {
+  //   totalConsultations: 1240,
+  //   upcomingConsultations: 86,
+  //   pastConsultations: 1154,
+  // };
 
-  const consultations = [
-    {
-      id: 1,
-      firstName: "Aarav",
-      lastName: "Shah",
-      studyLevel: "Undergraduate",
-      destination: "Canada",
-      consultationDate: "2025-01-12",
-      status: "DONE",
-    },
-    {
-      id: 2,
-      firstName: "Sara",
-      lastName: "Khan",
-      studyLevel: "Postgraduate",
-      destination: "UK",
-      consultationDate: "2025-01-10",
-      status: "PENDING",
-    },
-    {
-      id: 3,
-      firstName: "Rohit",
-      lastName: "Mehta",
-      studyLevel: "School",
-      destination: "Australia",
-      consultationDate: "2025-01-08",
-      status: "DONE",
-    },
-    {
-      id: 4,
-      firstName: "Neha",
-      lastName: "Patel",
-      studyLevel: "Postgraduate",
-      destination: "USA",
-      consultationDate: "2025-01-06",
-      status: "CANCELLED",
-    },
-    {
-      id: 5,
-      firstName: "Kabir",
-      lastName: "Verma",
-      studyLevel: "Undergraduate",
-      destination: "Germany",
-      consultationDate: "2025-01-15",
-      status: "DONE",
-    },
-    {
-      id: 6,
-      firstName: "Ananya",
-      lastName: "Iyer",
-      studyLevel: "Postgraduate",
-      destination: "Ireland",
-      consultationDate: "2025-01-14",
-      status: "PENDING",
-    },
-    {
-      id: 7,
-      firstName: "Aditya",
-      lastName: "Singh",
-      studyLevel: "School",
-      destination: "New Zealand",
-      consultationDate: "2025-01-13",
-      status: "DONE",
-    },
-    {
-      id: 8,
-      firstName: "Pooja",
-      lastName: "Malhotra",
-      studyLevel: "Undergraduate",
-      destination: "Singapore",
-      consultationDate: "2025-01-11",
-      status: "DONE",
-    },
-    {
-      id: 9,
-      firstName: "Rahul",
-      lastName: "Nair",
-      studyLevel: "Postgraduate",
-      destination: "Dubai",
-      consultationDate: "2025-01-09",
-      status: "CANCELLED",
-    },
-    {
-      id: 10,
-      firstName: "Simran",
-      lastName: "Kaur",
-      studyLevel: "Undergraduate",
-      destination: "Europe",
-      consultationDate: "2025-01-07",
-      status: "PENDING",
-    },
-    {
-      id: 11,
-      firstName: "Mohit",
-      lastName: "Aggarwal",
-      studyLevel: "Postgraduate",
-      destination: "Canada",
-      consultationDate: "2025-01-05",
-      status: "DONE",
-    },
-    {
-      id: 12,
-      firstName: "Isha",
-      lastName: "Bansal",
-      studyLevel: "School",
-      destination: "UK",
-      consultationDate: "2025-01-04",
-      status: "DONE",
-    },
-  ];
+  // const consultations = [
+  //   {
+  //     id: 1,
+  //     firstName: "Aarav",
+  //     lastName: "Shah",
+  //     studyLevel: "Undergraduate",
+  //     destination: "Canada",
+  //     consultationDate: "2025-01-12",
+  //     status: "DONE",
+  //   },
+  //   {
+  //     id: 2,
+  //     firstName: "Sara",
+  //     lastName: "Khan",
+  //     studyLevel: "Postgraduate",
+  //     destination: "UK",
+  //     consultationDate: "2025-01-10",
+  //     status: "PENDING",
+  //   },
+  //   {
+  //     id: 3,
+  //     firstName: "Rohit",
+  //     lastName: "Mehta",
+  //     studyLevel: "School",
+  //     destination: "Australia",
+  //     consultationDate: "2025-01-08",
+  //     status: "DONE",
+  //   },
+  //   {
+  //     id: 4,
+  //     firstName: "Neha",
+  //     lastName: "Patel",
+  //     studyLevel: "Postgraduate",
+  //     destination: "USA",
+  //     consultationDate: "2025-01-06",
+  //     status: "CANCELLED",
+  //   },
+  //   {
+  //     id: 5,
+  //     firstName: "Kabir",
+  //     lastName: "Verma",
+  //     studyLevel: "Undergraduate",
+  //     destination: "Germany",
+  //     consultationDate: "2025-01-15",
+  //     status: "DONE",
+  //   },
+  //   {
+  //     id: 6,
+  //     firstName: "Ananya",
+  //     lastName: "Iyer",
+  //     studyLevel: "Postgraduate",
+  //     destination: "Ireland",
+  //     consultationDate: "2025-01-14",
+  //     status: "PENDING",
+  //   },
+  //   {
+  //     id: 7,
+  //     firstName: "Aditya",
+  //     lastName: "Singh",
+  //     studyLevel: "School",
+  //     destination: "New Zealand",
+  //     consultationDate: "2025-01-13",
+  //     status: "DONE",
+  //   },
+  //   {
+  //     id: 8,
+  //     firstName: "Pooja",
+  //     lastName: "Malhotra",
+  //     studyLevel: "Undergraduate",
+  //     destination: "Singapore",
+  //     consultationDate: "2025-01-11",
+  //     status: "DONE",
+  //   },
+  //   {
+  //     id: 9,
+  //     firstName: "Rahul",
+  //     lastName: "Nair",
+  //     studyLevel: "Postgraduate",
+  //     destination: "Dubai",
+  //     consultationDate: "2025-01-09",
+  //     status: "CANCELLED",
+  //   },
+  //   {
+  //     id: 10,
+  //     firstName: "Simran",
+  //     lastName: "Kaur",
+  //     studyLevel: "Undergraduate",
+  //     destination: "Europe",
+  //     consultationDate: "2025-01-07",
+  //     status: "PENDING",
+  //   },
+  //   {
+  //     id: 11,
+  //     firstName: "Mohit",
+  //     lastName: "Aggarwal",
+  //     studyLevel: "Postgraduate",
+  //     destination: "Canada",
+  //     consultationDate: "2025-01-05",
+  //     status: "DONE",
+  //   },
+  //   {
+  //     id: 12,
+  //     firstName: "Isha",
+  //     lastName: "Bansal",
+  //     studyLevel: "School",
+  //     destination: "UK",
+  //     consultationDate: "2025-01-04",
+  //     status: "DONE",
+  //   },
+  // ];
 
-  const recentConsultations = consultations.slice(0, 10);
+  // const recentConsultations = consultations.slice(0, 10);
 
   const statusColors = {
     DONE: "bg-green-100 text-green-500",
     PENDING: "bg-yellow-100 text-yellow-500",
+    pending: "bg-yellow-100 text-yellow-500",
     CANCELLED: "bg-red-100 text-red-400",
   };
 
-  const studyDestinations = [
-    { destination: "Australia", totalStudents: 120 },
-    { destination: "Canada", totalStudents: 95 },
-    { destination: "USA", totalStudents: 150 },
-    { destination: "UK", totalStudents: 80 },
-    { destination: "New Zealand", totalStudents: 60 },
-    { destination: "Germany", totalStudents: 50 },
-    { destination: "Singapore", totalStudents: 40 },
-    { destination: "Dubai", totalStudents: 30 },
-    { destination: "Europe", totalStudents: 70 },
-    { destination: "Ireland", totalStudents: 25 },
-  ];
+  // const studyDestinations = [
+  //   { destination: "Australia", totalStudents: 120 },
+  //   { destination: "Canada", totalStudents: 95 },
+  //   { destination: "USA", totalStudents: 150 },
+  //   { destination: "UK", totalStudents: 80 },
+  //   { destination: "New Zealand", totalStudents: 60 },
+  //   { destination: "Germany", totalStudents: 50 },
+  //   { destination: "Singapore", totalStudents: 40 },
+  //   { destination: "Dubai", totalStudents: 30 },
+  //   { destination: "Europe", totalStudents: 70 },
+  //   { destination: "Ireland", totalStudents: 25 },
+  // ];
 
-  const topStudyLevels = [
-    { level: "School", totalStudents: 120 },
-    { level: "Undergraduate", totalStudents: 200 },
-    { level: "Postgraduate", totalStudents: 80 },
-  ];
+  // const topStudyLevels = [
+  //   { level: "School", totalStudents: 120 },
+  //   { level: "Undergraduate", totalStudents: 200 },
+  //   { level: "Postgraduate", totalStudents: 80 },
+  // ];
 
   /* ---------------- EFFECTS ---------------- */
 
@@ -186,6 +265,9 @@ const Dashboard = () => {
   }, []);
 
   /* ---------------- JSX ---------------- */
+  if (loading) {
+    return <div className="p-10">Loading dashboard...</div>;
+  }
 
   return (
     <div className="flex bg-[#F8F9FA]">
@@ -317,7 +399,7 @@ const Dashboard = () => {
                 <div>
                   <p>Total Consultations</p>
                   <p className="text-lg font-medium">
-                    {analyticsData.totalConsultations}
+                    {dashboardData.totalConsultations}
                   </p>
                 </div>
                 <HiOutlineUsers className="bg-[#2B2A4C] text-white text-3xl p-1.5 rounded-md" />
@@ -326,9 +408,12 @@ const Dashboard = () => {
               {/* Upcoming Consultations */}
               <div className="flex items-center justify-between bg-[#E7E7F8] p-4 rounded-lg">
                 <div>
-                  <p>Upcoming Consultations</p>
+                  <p>Monthly Consultations</p>
                   <p className="text-lg font-medium">
-                    {analyticsData.upcomingConsultations}
+                    {" "}
+                    {dashboardData.monthlyConsultations?.find(
+                      (m) => m.month === currentMonth,
+                    )?.totalConsultations || 0}
                   </p>
                 </div>
                 <BsCalendarEvent className="bg-[#2B2A4C] text-white text-3xl p-2 rounded-md" />
@@ -337,18 +422,20 @@ const Dashboard = () => {
               {/* Past Consultations */}
               <div className="flex items-center justify-between bg-[#E7E7F8] p-4 rounded-lg">
                 <div>
-                  <p>Past Consultations</p>
+                  <p>Past Consultations (2 Week)</p>
                   <p className="text-lg font-medium">
-                    {analyticsData.pastConsultations}
+                    {dashboardData.pastConsultations}
                   </p>
                 </div>
                 <MdHistory className="bg-[#2B2A4C] text-white text-3xl p-1.5 rounded-md" />
               </div>
             </div>
-
             {/* Charts */}
-            <MyCharts />
 
+            <MyCharts
+              studentsComingFrom={dashboardData?.studentsComingFrom || []}
+              monthlyData={dashboardData?.monthlyConsultations}
+            />
             {/* Recent Consultations Table */}
             <div className="bg-white shadow-md rounded-lg mt-5 overflow-hidden">
               <div className="flex flex-wrap justify-between gap-3 p-4">
@@ -356,7 +443,8 @@ const Dashboard = () => {
                   <p className="font-semibold">Recent Consultations</p>
                   <p className="text-xs text-gray-500 mt-1 flex items-center">
                     <IoIosCheckmarkCircle className="text-green-500 mr-1" />
-                    20 done this month
+                    {todayBookings} booking{todayBookings !== 1 ? "s" : ""} came
+                    today
                   </p>
                 </div>
 
@@ -387,38 +475,43 @@ const Dashboard = () => {
                       </th>
                     </tr>
                   </thead>
-
                   <tbody>
-                    {recentConsultations.map((c) => (
-                      <tr
-                        key={c.id}
-                        className="border-b dd:bg-white even:bg-gray-100"
-                      >
-                        <td className="px-4 py-3">
-                          {c.firstName} {c.lastName}
-                        </td>
+                    {recentConsultations.map((c) => {
+                      const isToday =
+                        new Date(c.createdAt).toDateString() ===
+                        new Date().toDateString();
 
-                        <td className="px-4 py-3">
-                          {c.destination} – {c.studyLevel}
-                        </td>
+                      return (
+                        <tr
+                          key={c.id}
+                          className={`border-b even:bg-gray-100 ${
+                            isToday ? "bg-green-50" : ""
+                          }`}
+                        >
+                          <td className="px-4 py-3">
+                            {c.firstName} {c.lastName}
+                          </td>
 
-                        <td className="px-4 py-3">
-                          {new Date(c.consultationDate).toLocaleDateString(
-                            "en-GB",
-                          )}
-                        </td>
+                          <td className="px-4 py-3">
+                            {c.destination} – {c.studyLevel}
+                          </td>
 
-                        <td className="px-4 py-3">
-                          <span
-                            className={`px-2 py-1 rounded text-xs font-medium ${
-                              statusColors[c.status]
-                            }`}
-                          >
-                            {c.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                          <td className="px-4 py-3">
+                            {new Date(c.createdAt).toLocaleDateString("en-GB")}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${
+                                statusColors[c.status]
+                              }`}
+                            >
+                              {c.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -426,13 +519,13 @@ const Dashboard = () => {
           </div>
 
           {/* ---------------- RIGHT COLUMN ---------------- */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block ">
             <div className="bg-white shadow-md p-5 rounded-lg">
               {/* Study Destinations */}
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
                 Popular Study Destinations
               </h2>
-
+              {/* 
               {(() => {
                 const total = studyDestinations.reduce(
                   (sum, item) => sum + item.totalStudents,
@@ -472,13 +565,30 @@ const Dashboard = () => {
                     </div>
                   );
                 });
-              })()}
+              })()} */}
+              {dashboardData.studentsGoingTo.map((item, index) => (
+                <div key={index} className="mb-4">
+                  <div className="flex justify-between text-sm font-medium mb-1">
+                    <span>{item.destination.replace("Study in ", "")}</span>
+                    <span>{Math.round(item.percentage)}%</span>
+                  </div>
+
+                  <div className="w-full h-2 bg-gray-200 rounded">
+                    <div
+                      className={`h-2 ${
+                        index % 2 === 0 ? "bg-indigo-300" : "bg-[#040463]"
+                      } rounded`}
+                      style={{ width: `${item.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
               <h2 className="text-lg font-semibold text-gray-800 mt-8 mb-4">
                 Top Preferred Study Levels
               </h2>
 
               <div className="grid grid-cols-1 gap-4">
-                {topStudyLevels.map((study, index) => (
+                {dashboardData.preferredStudyLevels.map((item, index) => (
                   <div
                     key={index}
                     className={`border-2 rounded-xl p-4 ${
@@ -486,12 +596,13 @@ const Dashboard = () => {
                         "border-red-800",
                         "border-indigo-200",
                         "border-[#040463]",
+                        "border-green-600",
                       ][index % 4]
                     }`}
                   >
-                    <p className="text-lg font-medium">{study.level}</p>
+                    <p className="text-lg font-medium">{item.studyLevel}</p>
                     <p className="text-sm text-gray-600">
-                      {study.totalStudents} students
+                      {item.count} students
                     </p>
                   </div>
                 ))}

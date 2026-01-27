@@ -44,7 +44,7 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
     {
       icon: <FaBook />,
       text: "Consultations",
-      to: "/",
+      to: "/ConsultationBookings",
       // to: "/ConsultationBookings",
     },
     // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },

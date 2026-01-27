@@ -20,30 +20,8 @@ ChartJS.register(
   ArcElement,
 );
 
-const ConsultationCharts = () => {
-  const analytics = {
-    consultationsByCity: [
-      { city: "Mumbai", totalConsultations: 120 },
-      { city: "Delhi", totalConsultations: 95 },
-      { city: "Bangalore", totalConsultations: 80 },
-      { city: "Pune", totalConsultations: 60 },
-      { city: "Chennai", totalConsultations: 40 },
-    ],
-    monthlyConsultations: [
-      { month: 1, totalConsultations: 30 },
-      { month: 2, totalConsultations: 45 },
-      { month: 3, totalConsultations: 60 },
-      { month: 4, totalConsultations: 50 },
-      { month: 5, totalConsultations: 70 },
-      { month: 6, totalConsultations: 80 },
-      { month: 7, totalConsultations: 95 },
-      { month: 8, totalConsultations: 100 },
-      { month: 9, totalConsultations: 85 },
-      { month: 10, totalConsultations: 90 },
-      { month: 11, totalConsultations: 60 },
-      { month: 12, totalConsultations: 40 },
-    ],
-  };
+const ConsultationCharts = ({ studentsComingFrom = [], monthlyData = [] }) => {
+  console.log("📊 Chart Props:", { studentsComingFrom, monthlyData }); // Debug log
 
   const colors = [
     "#3A3963",
@@ -55,10 +33,10 @@ const ConsultationCharts = () => {
   ];
 
   const donutData = {
-    labels: analytics.consultationsByCity.map((c) => c.city),
+    labels: studentsComingFrom.map((c) => c.location),
     datasets: [
       {
-        data: analytics.consultationsByCity.map((c) => c.totalConsultations),
+        data: studentsComingFrom.map((c) => c.count),
         backgroundColor: colors,
       },
     ],
@@ -91,52 +69,305 @@ const ConsultationCharts = () => {
     "Dec",
   ];
 
+  const monthlyChartData = monthLabels.map((_, i) => {
+    const found = monthlyData.find((m) => m.month === i + 1);
+    return found?.totalConsultations || 0;
+  });
+
   const barData = {
     labels: monthLabels,
     datasets: [
       {
         label: "Month Wise Consultations",
-        data: monthLabels.map((_, i) => {
-          const data = analytics.monthlyConsultations.find(
-            (m) => m.month === i + 1,
-          );
-          return data ? data.totalConsultations : 0;
-        }),
-        backgroundColor: colors,
-        borderRadius: 5,
+        data: monthlyChartData,
+        backgroundColor: "#3A3963",
+        borderRadius: 6,
+        maxBarThickness: 40,
       },
     ],
   };
 
   const barOptions = {
     responsive: true,
-    plugins: { legend: { position: "top" } },
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top" },
+    },
     scales: {
-      x: { grid: { display: false } },
-      y: { grid: { display: false } },
+      x: {
+        grid: { display: false },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 5,
+        },
+      },
     },
   };
 
+  // Check if we have valid monthly data
+  const hasMonthlyData = Array.isArray(monthlyData) && monthlyData.length > 0;
+  const hasCityData =
+    Array.isArray(studentsComingFrom) && studentsComingFrom.length > 0;
+
   return (
-    <div className="flex flex-col md:flex-row sm:flex-wrap justify-between mt-5 gap-5">
-      {/* Donut Chart */}
-      <div className="flex-1 p-1 h-70 rounded-lg bg-white hover:shadow-md flex justify-center items-center transition-all duration-300">
-        <div className="w-72 h-72">
-          <Doughnut data={donutData} options={donutOptions} />
-        </div>
+    <div className="flex flex-col md:flex-row justify-between mt-5 gap-5">
+      {/* Doughnut Chart */}
+      <div className="flex-1 p-4 rounded-lg bg-white shadow-md flex justify-center items-center min-h-[300px]">
+        {hasCityData ? (
+          <div className="w-72 h-72">
+            <Doughnut data={donutData} options={donutOptions} />
+          </div>
+        ) : (
+          <p className="text-gray-400">No city data available</p>
+        )}
       </div>
 
       {/* Bar Chart */}
-      <div className="flex-1 p-1 min-h-64 rounded-lg bg-white hover:shadow-md flex justify-center items-center transition-all duration-300">
-        <div className="w-full h-80">
-          <Bar data={barData} options={barOptions} />
-        </div>
+      <div className="flex-1 p-4 rounded-lg bg-white shadow-md flex justify-center items-center min-h-[300px]">
+        {hasMonthlyData ? (
+          <div className="w-full h-80">
+            <Bar data={barData} options={barOptions} />
+          </div>
+        ) : (
+          <div className="text-center">
+            <p className="text-gray-400">Monthly data not available</p>
+            <p className="text-xs text-gray-300 mt-2">Waiting for data...</p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default ConsultationCharts;
+
+// import { Bar, Doughnut } from "react-chartjs-2";
+// import {
+//   Chart as ChartJS,
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   Title,
+//   Tooltip,
+//   Legend,
+//   ArcElement,
+// } from "chart.js";
+
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   Title,
+//   Tooltip,
+//   Legend,
+//   ArcElement,
+// );
+
+// const ConsultationCharts = ({ studentsComingFrom = [], monthlyData = [] }) => {
+//   // const analytics = {
+//   //   consultationsByCity: [
+//   //     { city: "Mumbai", totalConsultations: 120 },
+//   //     { city: "Delhi", totalConsultations: 95 },
+//   //     { city: "Bangalore", totalConsultations: 80 },
+//   //     { city: "Pune", totalConsultations: 60 },
+//   //     { city: "Chennai", totalConsultations: 40 },
+//   //   ],
+//   //   monthlyConsultations: [
+//   //     { month: 1, totalConsultations: 30 },
+//   //     { month: 2, totalConsultations: 45 },
+//   //     { month: 3, totalConsultations: 60 },
+//   //     { month: 4, totalConsultations: 50 },
+//   //     { month: 5, totalConsultations: 70 },
+//   //     { month: 6, totalConsultations: 80 },
+//   //     { month: 7, totalConsultations: 95 },
+//   //     { month: 8, totalConsultations: 100 },
+//   //     { month: 9, totalConsultations: 85 },
+//   //     { month: 10, totalConsultations: 90 },
+//   //     { month: 11, totalConsultations: 60 },
+//   //     { month: 12, totalConsultations: 40 },
+//   //   ],
+//   // };
+
+//   const colors = [
+//     "#3A3963",
+//     "#4A497A",
+//     "#5C5B92",
+//     "#6F6EAA",
+//     "#8A89C2",
+//     "#A6A5D9",
+//   ];
+
+//   // const donutData = {
+//   //   labels: analytics.consultationsByCity.map((c) => c.city),
+//   //   datasets: [
+//   //     {
+//   //       data: analytics.consultationsByCity.map((c) => c.totalConsultations),
+//   //       backgroundColor: colors,
+//   //     },
+//   //   ],
+//   // };
+
+//   // const donutOptions = {
+//   //   responsive: true,
+//   //   plugins: {
+//   //     legend: { position: "right" },
+//   //     tooltip: {
+//   //       callbacks: {
+//   //         label: (item) => `${item.raw} consultations`,
+//   //       },
+//   //     },
+//   //   },
+//   // };
+//   const donutData = {
+//     labels: studentsComingFrom.map((c) => c.location),
+//     datasets: [
+//       {
+//         data: studentsComingFrom.map((c) => c.count),
+//         backgroundColor: colors,
+//       },
+//     ],
+//   };
+
+//   const donutOptions = {
+//     responsive: true,
+//     plugins: {
+//       legend: { position: "right" },
+//       tooltip: {
+//         callbacks: {
+//           label: (item) => `${item.raw} consultations`,
+//         },
+//       },
+//     },
+//   };
+//   const monthLabels = [
+//     "Jan",
+//     "Feb",
+//     "Mar",
+//     "Apr",
+//     "May",
+//     "Jun",
+//     "Jul",
+//     "Aug",
+//     "Sep",
+//     "Oct",
+//     "Nov",
+//     "Dec",
+//   ];
+
+//   // const barData = {
+//   //   labels: monthLabels,
+//   //   datasets: [
+//   //     {
+//   //       label: "Month Wise Consultations",
+//   //       data: monthLabels.map((_, i) => {
+//   //         const data = analytics.monthlyConsultations.find(
+//   //           (m) => m.month === i + 1,
+//   //         );
+//   //         return data ? data.totalConsultations : 0;
+//   //       }),
+//   //       backgroundColor: colors,
+//   //       borderRadius: 5,
+//   //     },
+//   //   ],
+//   // };
+//   const barData = {
+//     labels: monthLabels,
+//     datasets: [
+//       {
+//         label: "Month Wise Consultations",
+//         data: monthLabels.map((_, i) => {
+//           const found = monthlyData.find((m) => m.month === i + 1);
+//           return found?.totalConsultations || 0;
+//         }),
+//         backgroundColor: "#3A3963",
+//         borderRadius: 6,
+//         maxBarThickness: 40,
+//       },
+//     ],
+//   };
+
+//   const barOptions = {
+//     responsive: true,
+//     maintainAspectRatio: false,
+//     plugins: {
+//       legend: { position: "top" },
+//     },
+//     scales: {
+//       x: {
+//         grid: { display: false },
+//       },
+//       y: {
+//         beginAtZero: true,
+//         suggestedMax: 30, // 🔥 key fix
+//         ticks: {
+//           stepSize: 5,
+//         },
+//       },
+//     },
+//   };
+
+//   // const barOptions = {
+//   //   responsive: true,
+//   //   plugins: { legend: { position: "top" } },
+//   //   scales: {
+//   //     x: { grid: { display: false } },
+//   //     y: { grid: { display: false } },
+//   //   },
+//   // };
+//   const hasMonthlyData = monthlyData.some((m) => m.totalConsultations > 0);
+
+//   return (
+//     <div className="flex flex-col md:flex-row justify-between mt-5 gap-5">
+//       {/* Doughnut Chart */}
+//       <div className="flex-1 p-1 h-70 rounded-lg bg-white hover:shadow-md flex justify-center items-center">
+//         {studentsComingFrom.length > 0 ? (
+//           <div className="w-72 h-72">
+//             <Doughnut data={donutData} options={donutOptions} />
+//           </div>
+//         ) : (
+//           <p className="text-gray-400">No city data available</p>
+//         )}
+//       </div>
+
+//       {/* Bar Chart */}
+//       <div className="flex-1 p-1 min-h-64 rounded-lg bg-white hover:shadow-md flex justify-center items-center">
+//         {hasMonthlyData ? (
+//           <div className="w-full h-80">
+//             <Bar data={barData} options={barOptions} />
+//           </div>
+//         ) : (
+//           <p className="text-gray-400">Monthly data not available</p>
+//         )}
+//         {/* {monthlyData.length > 0 ? (
+//           <div className="w-full h-80">
+//             <Bar data={barData} options={barOptions} />
+//           </div>
+//         ) : (
+//           <p className="text-gray-400">Monthly data not available</p>
+//         )} */}
+//       </div>
+//     </div>
+//     // <div className="flex flex-col md:flex-row sm:flex-wrap justify-between mt-5 gap-5">
+//     //   {/* Donut Chart */}
+//     //   <div className="flex-1 p-1 h-70 rounded-lg bg-white hover:shadow-md flex justify-center items-center transition-all duration-300">
+//     //     <div className="w-72 h-72">
+//     //       <Doughnut data={donutData} options={donutOptions} />
+//     //     </div>
+//     //   </div>
+
+//     //   {/* Bar Chart */}
+//     //   <div className="flex-1 p-1 min-h-64 rounded-lg bg-white hover:shadow-md flex justify-center items-center transition-all duration-300">
+//     //     <div className="w-full h-80">
+//     //       <Bar data={barData} options={barOptions} />
+//     //     </div>
+//     //   </div>
+//     // </div>
+//   );
+// };
+
+// export default ConsultationCharts;
 
 // import { useState, useEffect } from "react";
 // import axios from "axios";
