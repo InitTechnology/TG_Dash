@@ -141,15 +141,16 @@ const ConsultationBookings = () => {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
-        "https://dash.zorbastays.com/web-backend/bookings",
-      );
-      const data = await res.json();
-      setBookings(data);
+
+      const res = await axios.get("https://transglobeedu.com/web-backend/all");
+
+      if (res.data.success) {
+        setBookings(res.data.data); // 👈 THIS IS IMPORTANT
+      }
     } catch (err) {
-      console.error("Error fetching bookings:", err);
+      console.error("Error fetching consultations:", err);
     } finally {
-      setLoading(false); // hide loader after fetch
+      setLoading(false);
     }
   };
 
@@ -918,7 +919,7 @@ const ConsultationBookings = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 items-center gap-5 text-gray-700 font-semibold mt-5">
           <div className="flex items-center justify-between gap-5 bg-[#E7E7F8] py-2 px-4 rounded-lg">
             <div>
-              <p>Total Revenue</p>
+              <p>Total Consultations</p>
               <p className="mt-2 text-lg text-black">
                 ₹{formatNumber(analytics.totalRevenue)}
                 <sup className="text-purple-900">+55%</sup>
@@ -932,7 +933,7 @@ const ConsultationBookings = () => {
 
           <div className="flex items-center justify-between gap-5 bg-[#E7E7F8] py-2 px-4 rounded-lg">
             <div>
-              <p>Pending Payments</p>
+              <p>Monthly Consultations</p>
               <p className="mt-2 text-lg text-black">
                 ₹{formatNumber(analytics.pendingPayments)}
                 <sup className="text-purple-900">+5%</sup>
@@ -946,7 +947,7 @@ const ConsultationBookings = () => {
 
           <div className="flex items-center justify-between gap-5 bg-[#E7E7F8] py-2 px-4 rounded-lg">
             <div>
-              <p>Revenue by Property</p>
+              <p>Past Consultations (2 Week)</p>
               <p className="mt-2 text-lg text-black">
                 ₹{formatNumber(analytics.profit)}
                 <sup className="text-purple-900">+8%</sup>
@@ -1864,13 +1865,14 @@ const ConsultationBookings = () => {
                             }
                           />
                         </th>
-                        <th className="p-4 w-1/12">Booking ID</th>
-                        <th className="p-4 w-1/10">Customer Name</th>
-                        <th className="p-4 w-1/10">Property Code</th>
-                        <th className="p-4 w-1/10">Package / Destination</th>
+                        <th className="p-4 w-1/12"> ID</th>
+                        <th className="p-4 w-1/10">Student Name</th>
+                        <th className="p-4 w-1/10">Nearest Office</th>
+                        <th className="p-4 w-1/10">Study Destination</th>
                         <th className="p-4 w-1/10">Booking Date</th>
-                        <th className="p-4 w-1/10">Check-In Date</th>
-                        <th className="p-4 w-1/10">Check-Out Date</th>
+                        <th className="p-4 w-1/10">Mode</th>
+                        <th className="p-4 w-1/10">Fund-By</th>
+                        <th className="p-4 w-1/10">Study Level</th>
                         <th className="p-4 w-1/10">Status</th>
                         <th className="p-4 w-1/10">Actions</th>
                       </tr>
@@ -1897,7 +1899,7 @@ const ConsultationBookings = () => {
                           </td>
                           {/* Booking ID */}
                           <td className="px-4 py-3 font-semibold text-gray-700">
-                            {b.bookingId || "-"}
+                            {b.id || "-"}
                           </td>
                           {/* Customer Name */}
                           <td className="px-4 py-3">
@@ -1911,8 +1913,11 @@ const ConsultationBookings = () => {
 
                           {/* Property Code */}
                           <td className="px-4 py-3">
-                            <Tooltip title={`${b.property}`} placement="left">
-                              {b.property}
+                            <Tooltip
+                              title={`${b.nearestOffice}`}
+                              placement="left"
+                            >
+                              {b.nearestOffice || "-"}
                             </Tooltip>
                           </td>
 
@@ -1926,26 +1931,25 @@ const ConsultationBookings = () => {
                               }
                               placement="left"
                             >
-                              {b.package
-                                ? `${b.package}-${b.destination}`
-                                : b.destination || "-"}
+                              {b.destination || "-"}
                             </Tooltip>
                           </td>
 
                           {/* Booking Date */}
                           <td className="px-4 py-3">
-                            <Tooltip title={b.bookingTime} placement="left">
+                            {/* <Tooltip title={b.bookingTime} placement="left">
                               {b.bookingTime
                                 ? new Date(b.bookingTime).toLocaleDateString(
                                     "en-GB",
                                   )
                                 : "-"}
-                            </Tooltip>
+                            </Tooltip> */}
+                            {new Date(b.createdAt).toLocaleDateString("en-GB")}
                           </td>
 
                           {/* Check-In */}
                           <td className="px-4 py-3">
-                            <Tooltip
+                            {/* <Tooltip
                               title={
                                 b.checkin
                                   ? new Date(b.checkin).toLocaleDateString(
@@ -1960,12 +1964,14 @@ const ConsultationBookings = () => {
                                     "en-GB",
                                   )
                                 : "-"}
-                            </Tooltip>
+                            </Tooltip> */}
+
+                            {b.modeOfCon || "-"}
                           </td>
 
                           {/* Check-Out */}
                           <td className="px-4 py-3">
-                            <Tooltip
+                            {/* <Tooltip
                               title={
                                 b.checkout
                                   ? new Date(b.checkout).toLocaleDateString(
@@ -1980,7 +1986,12 @@ const ConsultationBookings = () => {
                                     "en-GB",
                                   )
                                 : "-"}
-                            </Tooltip>
+                            </Tooltip> */}
+                            {b.fundingBy || "-"}
+                          </td>
+                          {/* Status */}
+                          <td className="px-4 py-3 text-center">
+                            {b.studyLevel || "-"}
                           </td>
                           {/* Status */}
                           <td className="px-4 py-3 text-center">
@@ -1992,7 +2003,7 @@ const ConsultationBookings = () => {
                                   ] || ""
                                 }`}
                               >
-                                {b.bookingStatus || "PENDING"}
+                                {b.status}
                               </button>
                             </div>
                           </td>

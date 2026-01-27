@@ -124,7 +124,7 @@ const Login = () => {
     <div
       className="h-screen w-screen bg-cover bg-center flex items-center justify-center"
       style={{
-        backgroundImage: `url('../assets/TG_admin_bg.jpg')`, // TG_admin_bg.jpg
+        backgroundImage: `url('../assets/TG_bg_admin.jpeg')`, // TG_admin_bg.jpg
       }}
     >
       <div
@@ -174,7 +174,7 @@ const Login = () => {
               }}
             >
               <div>
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Email
                 </label>
                 <input
@@ -188,7 +188,7 @@ const Login = () => {
               </div>
 
               <div className="relative mt-3">
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Password
                 </label>
                 <input
@@ -222,14 +222,14 @@ const Login = () => {
                 </button>
               </div>
 
-              <p className="text-center text-gray-300 text-sm mt-4">
+              <p className="text-center text-gray-500 text-sm mt-4">
                 Don’t have an account?{" "}
                 <button
                   onClick={() => {
                     // resetFields();
                     setIsRegister(true);
                   }}
-                  className="text-purple-200 hover:underline"
+                  className="text-indigo-400 hover:underline"
                 >
                   Register
                 </button>
@@ -244,7 +244,7 @@ const Login = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Name */}
               <div>
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Full Name
                 </label>
                 <input
@@ -258,7 +258,7 @@ const Login = () => {
 
               {/* Username */}
               <div>
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Username
                 </label>
                 <input
@@ -275,7 +275,7 @@ const Login = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {/* Email */}
               <div>
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Email
                 </label>
                 <input
@@ -289,7 +289,7 @@ const Login = () => {
 
               {/* Phone */}
               <div>
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Phone
                 </label>
                 <input
@@ -304,7 +304,7 @@ const Login = () => {
 
             {/* Role (full width) */}
             <div className="mt-4">
-              <label className="block text-gray-200 text-sm mb-1">Role</label>
+              <label className="block text-gray-400 text-sm mb-1">Role</label>
               <select
                 // value={role}
                 // onChange={(e) => setRole(e.target.value)}
@@ -321,7 +321,7 @@ const Login = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {/* Password */}
               <div className="relative">
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Password
                 </label>
                 <input
@@ -341,7 +341,7 @@ const Login = () => {
 
               {/* Confirm Password */}
               <div className="relative">
-                <label className="block text-gray-200 text-sm mb-1">
+                <label className="block text-gray-400 text-sm mb-1">
                   Confirm Password
                 </label>
                 <input
@@ -368,14 +368,14 @@ const Login = () => {
               </button> */}
             </div>
 
-            <p className="text-center text-gray-300 text-sm mt-4">
+            <p className="text-center text-gray-500 text-sm mt-4">
               Already have an account?{" "}
               <button
                 onClick={() => {
                   // resetFields();
                   setIsRegister(false);
                 }}
-                className="text-purple-200 hover:underline"
+                className="text-indigo-400 hover:underline"
               >
                 Login
               </button>
