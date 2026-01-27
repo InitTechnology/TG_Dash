@@ -216,10 +216,11 @@ const Dashboard = () => {
   // const recentConsultations = consultations.slice(0, 10);
 
   const statusColors = {
-    DONE: "bg-green-100 text-green-500",
-    PENDING: "bg-yellow-100 text-yellow-500",
     pending: "bg-yellow-100 text-yellow-500",
-    CANCELLED: "bg-red-100 text-red-400",
+    declined: "bg-orange-100 text-orange-400",
+    converted: "bg-sky-100 text-sky-500",
+    cancelled: "bg-red-100 text-red-400",
+    approved: "bg-green-100 text-green-500",
   };
 
   // const studyDestinations = [
@@ -266,7 +267,11 @@ const Dashboard = () => {
 
   /* ---------------- JSX ---------------- */
   if (loading) {
-    return <div className="p-10">Loading dashboard...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen p-10">
+        Loading dashboard...
+      </div>
+    );
   }
 
   return (
@@ -450,8 +455,7 @@ const Dashboard = () => {
 
                 <div>
                   <a
-                    // href="/ConsultationBookings"
-                    href="/"
+                    href="/ConsultationBookings"
                     className="text-sm text-gray-500 hover:text-black hover:underline"
                   >
                     View more
@@ -484,8 +488,8 @@ const Dashboard = () => {
                       return (
                         <tr
                           key={c.id}
-                          className={`border-b even:bg-gray-100 ${
-                            isToday ? "bg-green-50" : ""
+                          className={`border-b ${
+                            isToday ? "bg-green-50" : "even:bg-gray-100"
                           }`}
                         >
                           <td className="px-4 py-3">
@@ -502,7 +506,7 @@ const Dashboard = () => {
 
                           <td className="px-4 py-3">
                             <span
-                              className={`px-2 py-1 rounded text-xs font-medium ${
+                              className={`px-2 py-1 rounded text-xs font-medium capitalize ${
                                 statusColors[c.status]
                               }`}
                             >

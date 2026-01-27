@@ -7,15 +7,16 @@ import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
-import { FiUploadCloud } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parseISO } from "date-fns";
-import { GiNetworkBars } from "react-icons/gi";
-import { BsFillLuggageFill } from "react-icons/bs";
-import { FaMoneyBillTrendUp } from "react-icons/fa6";
+import { MdOutlinePendingActions } from "react-icons/md";
+import { GiCheckMark } from "react-icons/gi";
+import { ImCross } from "react-icons/im";
+import { FaRegHandshake } from "react-icons/fa";
+import { TiCancelOutline } from "react-icons/ti";
 import axios from "axios";
 
 const ConsultationBookings = () => {
@@ -50,22 +51,22 @@ const ConsultationBookings = () => {
     balPay: "",
   });
   const [idProofFile, setIdProofFile] = useState(null);
-  const [executives, setExecutives] = useState([]);
-  useEffect(() => {
-    const fetchExecutives = async () => {
-      try {
-        const res = await fetch(
-          "https://dash.zorbastays.com/web-backend/users",
-        );
-        const data = await res.json();
-        setExecutives(data);
-      } catch (err) {
-        console.error("Error fetching executives:", err);
-      }
-    };
+  // const [executives, setExecutives] = useState([]);
+  // useEffect(() => {
+  //   const fetchExecutives = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         "https://dash.zorbastays.com/web-backend/users",
+  //       );
+  //       const data = await res.json();
+  //       setExecutives(data);
+  //     } catch (err) {
+  //       console.error("Error fetching executives:", err);
+  //     }
+  //   };
 
-    fetchExecutives();
-  }, []);
+  //   fetchExecutives();
+  // }, []);
 
   // const handleChange = (e) => {
   //   setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -125,17 +126,17 @@ const ConsultationBookings = () => {
 
   // Extract cities
   const cities = selectedState?.cities || [];
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setIdProofFile(file); // save selected file
-    }
-  };
-  const fileInputRef = useRef(null);
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setIdProofFile(file); // save selected file
+  //   }
+  // };
+  // const fileInputRef = useRef(null);
 
-  const handleBoxClick = () => {
-    fileInputRef.current.click();
-  };
+  // const handleBoxClick = () => {
+  //   fileInputRef.current.click();
+  // };
 
   // put this near the top of your component (after useState for bookings)
   const fetchBookings = async () => {
@@ -275,14 +276,11 @@ const ConsultationBookings = () => {
   // };
 
   const statusColors = {
-    CANCELLED: "bg-amber-800/20 text-amber-800",
-    CONFIRMED: "bg-green-500/20 text-green-500",
-    BOOKED: "bg-purple-500/20 text-purple-500",
-    FAILED: "bg-red-500/20 text-red-500",
-    PENDING: "bg-yellow-200/40 text-yellow-300",
-    PAID: "bg-transparent text-green-500",
-    UNPAID: "bg-transparent text-red-400",
-    PROCESSING: "bg-pink-200/40 text-pink-300",
+    pending: "bg-yellow-100 text-yellow-500",
+    declined: "bg-orange-100 text-orange-400",
+    converted: "bg-sky-100 text-sky-500",
+    cancelled: "bg-red-100 text-red-400",
+    approved: "bg-green-100 text-green-500",
   };
 
   const rowsPerPage_booking = 20;
@@ -519,32 +517,33 @@ const ConsultationBookings = () => {
 
     setDateFilter({ from, to });
   };
-  const [analytics, setAnalytics] = useState({
-    totalRevenue: 0,
-    pendingPayments: 0,
-    profit: 0,
-  });
 
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const res = await axios.get(
-          "https://dash.zorbastays.com/web-backend/getBookingAnalytics",
-        );
-        if (res.data.success) {
-          setAnalytics(res.data.analytics);
-        }
-      } catch (err) {
-        console.error(" Error fetching analytics:", err);
-      }
-    };
+  // const [analytics, setAnalytics] = useState({
+  //   totalRevenue: 0,
+  //   pendingPayments: 0,
+  //   profit: 0,
+  // });
 
-    fetchAnalytics();
-  }, []);
+  // useEffect(() => {
+  //   const fetchAnalytics = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         "https://dash.zorbastays.com/web-backend/getBookingAnalytics",
+  //       );
+  //       if (res.data.success) {
+  //         setAnalytics(res.data.analytics);
+  //       }
+  //     } catch (err) {
+  //       console.error(" Error fetching analytics:", err);
+  //     }
+  //   };
+
+  //   fetchAnalytics();
+  // }, []);
 
   // format numbers with commas
-  const formatNumber = (num) =>
-    new Intl.NumberFormat("en-IN").format(Number(num));
+  // const formatNumber = (num) =>
+  //   new Intl.NumberFormat("en-IN").format(Number(num));
   const [bookedByDate, setBookedByDate] = useState({});
 
   useEffect(() => {
@@ -916,46 +915,71 @@ const ConsultationBookings = () => {
         </div>
 
         {/* Boxes */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 items-center gap-5 text-gray-700 font-semibold mt-5">
-          <div className="flex items-center justify-between gap-5 bg-[#E7E7F8] py-2 px-4 rounded-lg">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-center gap-5 text-gray-700 font-semibold mt-5">
+          <div className="flex items-center justify-between gap-5 bg-yellow-100 py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Total Consultations</p>
+              <p>Pending</p>
               <p className="mt-2 text-lg text-black">
-                ₹{formatNumber(analytics.totalRevenue)}
-                <sup className="text-purple-900">+55%</sup>
+                {/* ₹{formatNumber(analytics.totalRevenue)} */}
+                9876
+                {/* <sup className="text-purple-900">+55%</sup> */}
               </p>
             </div>
 
             <div>
-              <GiNetworkBars className="bg-[#2B2A4C] text-3xl text-white p-1.5 rounded-md" />
+              <MdOutlinePendingActions className="bg-yellow-400 text-3xl text-white p-1.5 rounded-md" />
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 bg-[#E7E7F8] py-2 px-4 rounded-lg">
+          <div className="flex items-center justify-between gap-5 bg-green-100 py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Monthly Consultations</p>
+              <p>Approved</p>
               <p className="mt-2 text-lg text-black">
-                ₹{formatNumber(analytics.pendingPayments)}
-                <sup className="text-purple-900">+5%</sup>
+                54
+                {/* ₹{formatNumber(analytics.pendingPayments)}
+                <sup className="text-purple-900">+5%</sup> */}
               </p>
             </div>
 
             <div>
-              <BsFillLuggageFill className="bg-[#2B2A4C] text-3xl text-white p-1.5 rounded-md" />
+              <GiCheckMark className="bg-green-500 text-3xl text-white p-1.5 rounded-md" />
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 bg-[#E7E7F8] py-2 px-4 rounded-lg">
+          <div className="flex items-center justify-between gap-5 bg-sky-100 py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Past Consultations (2 Week)</p>
+              <p>Converted</p>
               <p className="mt-2 text-lg text-black">
-                ₹{formatNumber(analytics.profit)}
-                <sup className="text-purple-900">+8%</sup>
+                32
+                {/* ₹{formatNumber(analytics.profit)}
+                <sup className="text-purple-900">+8%</sup> */}
               </p>
             </div>
 
             <div>
-              <FaMoneyBillTrendUp className="bg-[#2B2A4C] text-3xl text-white p-1.5 rounded-md" />
+              <FaRegHandshake className="bg-sky-500 text-3xl text-white p-1.5 rounded-md" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-5 bg-orange-100 py-2 px-4 rounded-lg h-full">
+            <div>
+              <p>Declined</p>
+              <p className="mt-2 text-lg text-black">21</p>
+            </div>
+
+            <div>
+              <TiCancelOutline className="bg-orange-500 text-3xl text-white p-1 rounded-md" />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-5 bg-red-100 py-2 px-4 rounded-lg h-full">
+            <div>
+              <p>Cancelled</p>
+              <p className="mt-2 text-lg text-black">10</p>
+            </div>
+
+            <div>
+              <ImCross className="bg-red-500 text-3xl text-white p-2 rounded-md" />
             </div>
           </div>
         </div>
@@ -1181,7 +1205,8 @@ const ConsultationBookings = () => {
                       className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md text-black"
                     />
                   </div>
-                  <div className="flex flex-col w-full">
+
+                  {/* <div className="flex flex-col w-full">
                     <label
                       htmlFor="checkin"
                       className="text-gray-400 text-xs font-semibold relative z-20 top-2 ml-2 px-1 bg-white w-fit"
@@ -1227,9 +1252,9 @@ const ConsultationBookings = () => {
                       placeholderText="dd-mm-yyyy"
                       disabled={isViewOnly}
                     />
-                  </div>
+                  </div> */}
 
-                  <div className="flex flex-col w-full">
+                  {/* <div className="flex flex-col w-full">
                     <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
                       Trip Executive
                     </label>
@@ -1248,7 +1273,7 @@ const ConsultationBookings = () => {
                         </option>
                       ))}
                     </select>
-                  </div>
+                  </div> */}
 
                   <div className="flex flex-col w-full">
                     <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
@@ -1257,20 +1282,17 @@ const ConsultationBookings = () => {
 
                     <select
                       name="bookingStatus"
-                      value={formData.bookingStatus || ""} // controlled value
+                      value={formData.status || ""} // controlled value
                       onChange={handleChange}
                       disabled={isViewOnly}
                       className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     >
                       <option value="">Select booking status</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Booked">Booked</option>
-                      <option value="Cancelled">Cancelled</option>
-                      <option value="Processing">Processing</option>
+                      <option value="pending">Pending</option>
                     </select>
                   </div>
 
-                  <div className="flex flex-col w-full">
+                  {/* <div className="flex flex-col w-full">
                     <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
                       Payment Status
                     </label>
@@ -1287,7 +1309,7 @@ const ConsultationBookings = () => {
                       <option value="Pending">Pending</option>
                       <option value="Cancelled">Cancelled</option>
                     </select>
-                  </div>
+                  </div> */}
 
                   {/* <div
                     className="flex flex-col w-full relative"
@@ -1721,7 +1743,7 @@ const ConsultationBookings = () => {
                     )}
                   </div>
 
-                  <div className="flex flex-col w-full sm:col-span-2">
+                  {/* <div className="flex flex-col w-full sm:col-span-2">
                     <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
                       GST Number
                     </label>
@@ -1734,9 +1756,9 @@ const ConsultationBookings = () => {
                       disabled={isViewOnly}
                       className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     />
-                  </div>
+                  </div> */}
 
-                  <div className="flex flex-col w-full sm:col-span-2">
+                  {/* <div className="flex flex-col w-full sm:col-span-2">
                     <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
                       ID Proof
                     </label>
@@ -1810,7 +1832,7 @@ const ConsultationBookings = () => {
                         onChange={handleFileChange}
                       />
                     )}
-                  </div>
+                  </div> */}
 
                   <div className="grid grid-cols-2 gap-3">
                     <button
@@ -1822,7 +1844,7 @@ const ConsultationBookings = () => {
 
                     <button
                       onClick={handleSaveBooking}
-                      className="px-6 z-30 py-2 bg-green-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-green-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+                      className="px-6 z-30 py-2 bg-indigo-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-900 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
                     >
                       Save
                     </button>
@@ -1852,7 +1874,7 @@ const ConsultationBookings = () => {
               <>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                    <thead className="text-xs text-gray-400 uppercase bg-green-50 border-b">
+                    <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
                       <tr>
                         <th className="p-4">
                           <input
@@ -1865,7 +1887,7 @@ const ConsultationBookings = () => {
                             }
                           />
                         </th>
-                        <th className="p-4 w-1/12"> ID</th>
+                        <th className="p-4"> ID</th>
                         <th className="p-4 w-1/10">Student Name</th>
                         <th className="p-4 w-1/10">Nearest Office</th>
                         <th className="p-4 w-1/10">Study Destination</th>
@@ -1995,17 +2017,16 @@ const ConsultationBookings = () => {
                           </td>
                           {/* Status */}
                           <td className="px-4 py-3 text-center">
-                            <div className="flex justify-between items-center">
-                              <button
-                                className={`w-20 px-1 py-1 rounded-lg text-xs scale-90 cursor-default ${
-                                  statusColors[
-                                    b.bookingStatus?.toUpperCase()
-                                  ] || ""
-                                }`}
-                              >
-                                {b.status}
-                              </button>
-                            </div>
+                            {/* <div className="flex justify-between items-center"> */}
+                            <button
+                              className={`w-20 px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default capitalize ${
+                                // statusColors[b.bookingStatus?.()] || ""
+                                statusColors[b.status] || ""
+                              }`}
+                            >
+                              {b.status}
+                            </button>
+                            {/* </div> */}
                           </td>
                           {/* Actions */}
                           <td>
@@ -2055,7 +2076,7 @@ const ConsultationBookings = () => {
                             <MdDelete size={15} />
                           </button>
                         </div> */}
-                            <div className="flex">
+                            <div className="flex justify-center">
                               {/* Everyone can view */}
                               <button
                                 className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
@@ -2160,9 +2181,9 @@ const ConsultationBookings = () => {
                         <li key={index}>
                           <button
                             onClick={() => handlePageChange_booking(page)}
-                            className={`flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 hover:bg-gray-100 hover:text-gray-700 ${
+                            className={`flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 hover:bg-purple-100 hover:text-gray-700 ${
                               currentPage_booking === page
-                                ? "text-green-500 underline underline-offset-2"
+                                ? "text-purple-400 underline underline-offset-2"
                                 : ""
                             }`}
                           >
