@@ -12,6 +12,7 @@ import {
   // FaTasks,
 } from "react-icons/fa";
 import { RiLogoutCircleRLine } from "react-icons/ri";
+import { HiMiniBuildingLibrary } from "react-icons/hi2";
 import { Link, useLocation } from "react-router-dom";
 
 const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
@@ -44,8 +45,12 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
     {
       icon: <FaBook />,
       text: "Consultations",
-      to: "/ConsultationBookings",
-      // to: "/ConsultationBookings",
+      to: "/StudentConsultations",
+    },
+    {
+      icon: <HiMiniBuildingLibrary />,
+      text: "Universities",
+      to: "/Universities",
     },
     // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },
     // { icon: <FaUsers />, text: "Guests\u00A0Records", to: "/GuestRecords" },
@@ -105,65 +110,42 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
           </p>
         </div>
       )}
-      <ul className="left-1/2 space-y-4">
-        {/* {menuItems.map((item, index) => (
+
+      <ul className="left-1/2 space-y-3">
+        {menuItems.map((item, index) => (
           <li key={index}>
-            <Link
-              to={item.to}
-              onClick={handleItemClick}
-              className={`flex items-center p-2 rounded-md hover:bg-white hover:text-black transition-colors ${
-                location.pathname === item.to ? "bg-white text-black" : ""
-              }`}
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span
-                className={`ml-4 whitespace-nowrap overflow-hidden transition-all duration-500 ${
-                  isOpen ? "opacity-100 w-auto" : "opacity-0 w-0"
+            {item.to ? (
+              <Link
+                to={item.to}
+                onClick={handleItemClick}
+                className={`flex items-center p-2 rounded-md hover:bg-white hover:text-black transition-colors ${
+                  location.pathname === item.to ? "bg-white text-black" : ""
                 }`}
               >
-                {item.text}
-              </span>
-            </Link>
-          </li>
-        ))} */}
-        <ul className="left-1/2 space-y-2">
-          {menuItems.map((item, index) => (
-            <li key={index}>
-              {item.to ? (
-                <Link
-                  to={item.to}
-                  onClick={handleItemClick}
-                  className={`flex items-center p-2 rounded-md hover:bg-white hover:text-black transition-colors ${
-                    location.pathname === item.to ? "bg-white text-black" : ""
+                <span className="text-xl">{item.icon}</span>
+                <span
+                  className={`ml-4 font-medium ${
+                    isOpen ? "opacity-100" : "opacity-0 w-0"
                   }`}
                 >
-                  <span className="text-xl">{item.icon}</span>
-                  <span
-                    className={`ml-4 font-medium ${
-                      isOpen ? "opacity-100" : "opacity-0 w-0"
-                    }`}
-                  >
-                    {item.text}
-                  </span>
-                </Link>
-              ) : (
-                <button
-                  onClick={item.action}
-                  className="flex items-center p-2 rounded-md hover:bg-white hover:text-black transition-colors w-full text-left"
+                  {item.text}
+                </span>
+              </Link>
+            ) : (
+              <button
+                onClick={item.action}
+                className="flex items-center p-2 rounded-md hover:bg-white hover:text-black transition-colors w-full text-left"
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span
+                  className={`ml-4 ${isOpen ? "opacity-100" : "opacity-0 w-0"}`}
                 >
-                  <span className="text-xl">{item.icon}</span>
-                  <span
-                    className={`ml-4 ${
-                      isOpen ? "opacity-100" : "opacity-0 w-0"
-                    }`}
-                  >
-                    {item.text}
-                  </span>
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
+                  {item.text}
+                </span>
+              </button>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );
