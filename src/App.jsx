@@ -4,7 +4,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Login from "./components/Login/Login";
-import ConsultationBookings from "./components/ConsultationBookings/ConsultationBookings";
+import StudentConsultations from "./components/StudentConsultations/StudentConsultations";
+import Universities from "./components/Universities/Universities";
+import AddUniversityElementor from "./components/Universities/AddUniversityElementor";
+import EditUniversityElementor from "./components/Universities/EditUniversityElementor";
 
 function App() {
   return (
@@ -24,8 +27,17 @@ function App() {
             <Route path="/SignIn" element={<Login />} />
             <Route path="/Dashboard" element={<Dashboard />} />
             <Route
-              path="/ConsultationBookings"
-              element={<ConsultationBookings />}
+              path="/StudentConsultations"
+              element={<StudentConsultations />}
+            />
+            <Route path="/Universities" element={<Universities />} />
+            <Route
+              path="/AddUniversityElementor"
+              element={<AddUniversityElementor />}
+            />
+            <Route
+              path="/EditUniversityElementor"
+              element={<EditUniversityElementor />}
             />
 
             {/* <Route path="*" element={<Error />} /> */}

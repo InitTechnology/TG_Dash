@@ -21,7 +21,7 @@ import { FaRegHandshake } from "react-icons/fa";
 import { TiCancelOutline } from "react-icons/ti";
 import axios from "axios";
 
-const ConsultationBookings = () => {
+const StudentConsultations = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
 
@@ -649,11 +649,11 @@ const ConsultationBookings = () => {
                       {/* Popup box */}
                       <div className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg w-[90%] max-w-md p-6 text-center">
                         <h2 className="text-lg font-semibold text-gray-800 mb-3">
-                          Delete Booking?
+                          Delete Consultation?
                         </h2>
                         <p className="text-sm text-gray-500 mb-6">
-                          Are you sure you want to delete this booking? This
-                          action cannot be undone.
+                          Are you sure you want to delete this Consultation?
+                          This action cannot be undone.
                         </p>
 
                         <div className="flex justify-center gap-4">
@@ -761,26 +761,10 @@ const ConsultationBookings = () => {
         </div>
 
         {/* Button */}
-        <div className=" flex justify-between gap-10 mt-8">
-          <div className="flex gap-4  w-full justify-between">
-            <button
-              onClick={() => {
-                setFormMode("add");
-                setIsOpen_popupForm(true);
-              }}
-              className="px-6 z-30 py-2 bg-indigo-800 rounded-lg text-center text-white relative hover:scale-95 ..."
-            >
-              + Add Booking
-            </button>
-
-            <select
-              class="px-3 py-2 bg-gray-200 text-gray-800 rounded-md 
-         focus:outline-none focus:ring-0 
-         border border-gray-300 
-         hover:bg-gray-300 
-         transition-all duration-150 cursor-pointer"
-            >
-              <option value="">Select office</option>
+        <div className="mt-8">
+          <div className="flex gap-4 w-full justify-between">
+            <select class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer">
+              <option value="">Filter office</option>
               <option value="">Ahmedabad</option>
               <option value="">Anand</option>
               <option value="">Chandigarh</option>
@@ -797,6 +781,16 @@ const ConsultationBookings = () => {
               <option value="">Vadodara</option>
               <option value="">Kathmandu Nepal</option>
             </select>
+
+            <button
+              onClick={() => {
+                setFormMode("add");
+                setIsOpen_popupForm(true);
+              }}
+              className="px-6 z-30 py-2 bg-indigo-900 rounded-lg font-medium text-sm text-center text-white relative hover:scale-95 transition-all duration-300 ease-in-out"
+            >
+              + Add Booking
+            </button>
           </div>
 
           <div className="relative z-50">
@@ -870,7 +864,7 @@ const ConsultationBookings = () => {
                   <div className="flex flex-col w-full">
                     <label
                       for="input"
-                      className=" text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
                     >
                       Email
                     </label>
@@ -889,7 +883,7 @@ const ConsultationBookings = () => {
                   <div className="flex flex-col w-full">
                     <label
                       for="input"
-                      className="  text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
                     >
                       Phone Number
                     </label>
@@ -913,7 +907,7 @@ const ConsultationBookings = () => {
 
                   {/* Study Destination */}
                   <div className="flex flex-col w-full">
-                    <label className=" text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                       Study Destination
                     </label>
                     <select
@@ -975,7 +969,7 @@ const ConsultationBookings = () => {
 
                   {/*  CreatedAt*/}
                   <div className="flex flex-col w-full">
-                    <label className="  text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                    <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
                       Booking Date & Time
                     </label>
                     <input
@@ -993,7 +987,7 @@ const ConsultationBookings = () => {
 
                   {/* Booking Status */}
                   <div className="flex flex-col w-full">
-                    <label className=" text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                       Booking Status
                     </label>
 
@@ -1015,7 +1009,7 @@ const ConsultationBookings = () => {
 
                   {/* Start Duration */}
                   <div className="flex flex-col w-full">
-                    <label className="\ text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                       When will they like to start?
                     </label>
 
@@ -1038,7 +1032,7 @@ const ConsultationBookings = () => {
 
                   {/* Mode Of Contact */}
                   <div className="flex flex-col w-full">
-                    <label className="\ text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                       Preferred Mode Of Counselling?
                     </label>
 
@@ -1059,7 +1053,7 @@ const ConsultationBookings = () => {
 
                   {/* Study Level */}
                   <div className="flex flex-col w-full">
-                    <label className="\ text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                       Preferred Study Level?
                     </label>
 
@@ -1079,7 +1073,7 @@ const ConsultationBookings = () => {
 
                   {/* Funding */}
                   <div className="flex flex-col w-full">
-                    <label className="\ text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                    <label className="\ text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                       How Would You Fund Your Education?
                     </label>
 
@@ -1096,7 +1090,7 @@ const ConsultationBookings = () => {
                       <option value="Bank Loan">Bank Loan</option>
                     </select>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3 mt-5">
                     <button
                       onClick={handleClosePopup}
                       className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
@@ -1106,7 +1100,7 @@ const ConsultationBookings = () => {
 
                     <button
                       onClick={handleSaveBooking}
-                      className="px-6 z-30 py-2 bg-indigo-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-900 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+                      className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
                     >
                       Save
                     </button>
@@ -1270,7 +1264,7 @@ const ConsultationBookings = () => {
                           <td className="px-4 py-3 text-center">
                             {/* <div className="flex justify-between items-center"> */}
                             <button
-                              className={`w-20 px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default capitalize ${
+                              className={`w-20 px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
                                 // statusColors[b.bookingStatus?.()] || ""
                                 statusColors[b.status] || ""
                               }`}
@@ -1350,7 +1344,7 @@ const ConsultationBookings = () => {
 
                               <>
                                 <button
-                                  className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
+                                  className="px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
                                   onClick={() => {
                                     setEditingBooking(b);
                                     setFormData({
@@ -1381,7 +1375,7 @@ const ConsultationBookings = () => {
                                       bookingId: b.id,
                                     })
                                   }
-                                  className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
+                                  className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
                                 >
                                   <MdDelete size={15} />
                                 </button>
@@ -1464,4 +1458,4 @@ const ConsultationBookings = () => {
   );
 };
 
-export default ConsultationBookings;
+export default StudentConsultations;

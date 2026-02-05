@@ -455,7 +455,7 @@ const Dashboard = () => {
 
                 <div>
                   <a
-                    href="/ConsultationBookings"
+                    href="/StudentConsultations"
                     className="text-sm text-gray-500 hover:text-black hover:underline"
                   >
                     View more
