@@ -101,12 +101,25 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       >
         <FaBars size={20} />
       </button>
-      {user && (
+      {/*   {user && (
         <div className="mb-6 text-left transition-all duration-500 ease-in-out">
           <p className="font-medium text-sm text-white"> Hello, {user.name}</p>
           <p className="text-xs text-gray-400 mt-1">
             {user.role.charAt(0).toUpperCase() +
               user.role.slice(1).toLowerCase()}
+          </p>
+        </div>
+      )}*/}
+      {user && (
+        <div className="mb-6 text-left transition-all duration-500 ease-in-out">
+          <p className="font-medium text-sm text-white">
+            Hello, {user.name ?? "User"}
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            {user?.role
+              ? user.role.charAt(0).toUpperCase() +
+                user.role.slice(1).toLowerCase()
+              : ""}
           </p>
         </div>
       )}

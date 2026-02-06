@@ -8,6 +8,11 @@ import StudentConsultations from "./components/StudentConsultations/StudentConsu
 import Universities from "./components/Universities/Universities";
 import AddUniversityElementor from "./components/Universities/AddUniversityElementor";
 import EditUniversityElementor from "./components/Universities/EditUniversityElementor";
+import axios from "axios";
+
+axios.defaults.headers.get["Cache-Control"] = "no-cache";
+axios.defaults.headers.get["Pragma"] = "no-cache";
+axios.defaults.headers.get["Expires"] = "0";
 
 function App() {
   return (
