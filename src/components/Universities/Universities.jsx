@@ -13,9 +13,10 @@ const Universities = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
 
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
+  const [loadingUniversities, setLoadingUniversities] = useState(true);
   const [bookings, setBookings] = useState([]);
-  const [dateFilter] = useState({ from: "", to: "" });
+  // const [dateFilter] = useState({ from: "", to: "" });
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -29,6 +30,119 @@ const Universities = () => {
     declined: 0,
     cancelled: 0,
   });
+  const [universities, setUniversities] = useState([]);
+
+  // 🔍 Search + Filter universities
+  const filteredUniversities = universities.filter((u) => {
+    const q = searchQuery.toLowerCase();
+
+    return (
+      u.name?.toLowerCase().includes(q) ||
+      u.country?.toLowerCase().includes(q) ||
+      u.state?.toLowerCase().includes(q) ||
+      u.city?.toLowerCase().includes(q) ||
+      u.ranking?.toLowerCase().includes(q)
+    );
+  });
+
+  // 📄 Pagination for universities
+  const rowsPerPage_uni = 20;
+  const [currentPage_uni, setCurrentPage_uni] = useState(1);
+
+  const totalPages_uni = Math.ceil(
+    filteredUniversities.length / rowsPerPage_uni,
+  );
+
+  const indexOfLast_uni = currentPage_uni * rowsPerPage_uni;
+  const indexOfFirst_uni = indexOfLast_uni - rowsPerPage_uni;
+
+  const current_universities = filteredUniversities.slice(
+    indexOfFirst_uni,
+    indexOfLast_uni,
+  );
+
+  useEffect(() => {
+    setCurrentPage_uni(1);
+  }, [searchQuery]);
+
+  // Pagination handlers
+  const handleNextPage_uni = () => {
+    if (currentPage_uni < totalPages_uni) {
+      setCurrentPage_uni(currentPage_uni + 1);
+    }
+  };
+
+  const handlePrevPage_uni = () => {
+    if (currentPage_uni > 1) {
+      setCurrentPage_uni(currentPage_uni - 1);
+    }
+  };
+
+  const handlePageChange_uni = (page) => {
+    setCurrentPage_uni(page);
+  };
+
+  // Ellipsis pagination (cleaner)
+  const generatePageNumbers_uni = () => {
+    const pages = [];
+
+    if (totalPages_uni <= 5) {
+      for (let i = 1; i <= totalPages_uni; i++) pages.push(i);
+    } else {
+      if (currentPage_uni > 2) pages.push(1, "…");
+
+      for (let i = currentPage_uni - 1; i <= currentPage_uni + 1; i++) {
+        if (i > 0 && i <= totalPages_uni) pages.push(i);
+      }
+
+      if (currentPage_uni < totalPages_uni - 1) pages.push("…", totalPages_uni);
+    }
+
+    return pages;
+  };
+
+  useEffect(() => {
+    fetchUniversities();
+  }, []);
+
+  const fetchUniversities = async () => {
+    try {
+      setLoading(true);
+
+      const res = await axios.get(
+        "https://transglobeedu.com/web-backend/getAllUniversities",
+      );
+
+      setUniversities(res.data);
+    } catch (err) {
+      console.error("Error fetching universities:", err);
+      setLoading(false);
+    } finally {
+      setLoadingUniversities(false);
+    }
+  };
+  // const fetchUniversities = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const res = await axios.get(
+  //       "https://transglobeedu.com/web-backend/getAllUniversities",
+  //       {
+  //         headers: {
+  //           "Cache-Control": "no-cache",
+  //           Pragma: "no-cache",
+  //           Expires: "0",
+  //         },
+  //       },
+  //     );
+
+  //     setUniversities(res.data);
+  //   } catch (err) {
+  //     console.error("Error fetching universities:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     fetchBookings();
@@ -65,7 +179,7 @@ const Universities = () => {
   }, []);
 
   const rowsPerPage_booking = 20;
-  const [currentPage_booking, setCurrentPage_booking] = useState(1);
+  const [currentPage_booking] = useState(1);
   //   const [selectedRows_booking, setSelectedRows_booking] = useState([]);
 
   const indexOfLastTable_booking = currentPage_booking * rowsPerPage_booking;
@@ -76,49 +190,49 @@ const Universities = () => {
     indexOfFirstTable_booking,
     indexOfLastTable_booking,
   );
-  const totalPages_booking = Math.ceil(bookings.length / rowsPerPage_booking);
+  // const totalPages_booking = Math.ceil(bookings.length / rowsPerPage_booking);
 
-  const handlePageChange_booking = (pageNumber_booking) => {
-    setCurrentPage_booking(pageNumber_booking);
-    // setSelectedRows_booking([]);
-  };
+  // const handlePageChange_booking = (pageNumber_booking) => {
+  //   setCurrentPage_booking(pageNumber_booking);
+  //   // setSelectedRows_booking([]);
+  // };
 
-  const handleNextPage_booking = () => {
-    if (currentPage_booking < totalPages_booking) {
-      setCurrentPage_booking(currentPage_booking + 1);
-    }
-  };
+  // const handleNextPage_booking = () => {
+  //   if (currentPage_booking < totalPages_booking) {
+  //     setCurrentPage_booking(currentPage_booking + 1);
+  //   }
+  // };
 
-  const handlePrevPage_booking = () => {
-    if (currentPage_booking > 1) {
-      setCurrentPage_booking(currentPage_booking - 1);
-    }
-  };
+  // const handlePrevPage_booking = () => {
+  //   if (currentPage_booking > 1) {
+  //     setCurrentPage_booking(currentPage_booking - 1);
+  //   }
+  // };
 
-  const generatePageNumbers_booking = () => {
-    const pageNumbers_booking = [];
+  // const generatePageNumbers_booking = () => {
+  //   const pageNumbers_booking = [];
 
-    if (totalPages_booking <= 3) {
-      for (let i = 1; i <= totalPages_booking; i++) {
-        pageNumbers_booking.push(i);
-      }
-    } else {
-      if (currentPage_booking > 2) {
-        pageNumbers_booking.push(1);
-        pageNumbers_booking.push("...");
-      }
-      for (let i = currentPage_booking - 1; i <= currentPage_booking + 1; i++) {
-        if (i > 0 && i <= totalPages_booking) {
-          pageNumbers_booking.push(i);
-        }
-      }
-      if (currentPage_booking < totalPages_booking - 1) {
-        pageNumbers_booking.push("...");
-        pageNumbers_booking.push(totalPages_booking);
-      }
-    }
-    return pageNumbers_booking;
-  };
+  //   if (totalPages_booking <= 3) {
+  //     for (let i = 1; i <= totalPages_booking; i++) {
+  //       pageNumbers_booking.push(i);
+  //     }
+  //   } else {
+  //     if (currentPage_booking > 2) {
+  //       pageNumbers_booking.push(1);
+  //       pageNumbers_booking.push("...");
+  //     }
+  //     for (let i = currentPage_booking - 1; i <= currentPage_booking + 1; i++) {
+  //       if (i > 0 && i <= totalPages_booking) {
+  //         pageNumbers_booking.push(i);
+  //       }
+  //     }
+  //     if (currentPage_booking < totalPages_booking - 1) {
+  //       pageNumbers_booking.push("...");
+  //       pageNumbers_booking.push(totalPages_booking);
+  //     }
+  //   }
+  //   return pageNumbers_booking;
+  // };
 
   const [selectedRows_booking, setSelectedRows_booking] = useState([]);
 
@@ -166,37 +280,37 @@ const Universities = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const normalizeDate = (dateStr) => {
-    if (!dateStr) return null;
-    const d = new Date(dateStr);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
+  // const normalizeDate = (dateStr) => {
+  //   if (!dateStr) return null;
+  //   const d = new Date(dateStr);
+  //   d.setHours(0, 0, 0, 0);
+  //   return d;
+  // };
 
-  const filteredBookings = current_booking.filter((b) => {
-    const query = searchQuery.toLowerCase();
+  // const filteredBookings = current_booking.filter((b) => {
+  //   const query = searchQuery.toLowerCase();
 
-    //  text-based search (Booking ID, Name, Destination)
-    const matchesSearch =
-      (b.bookingId && b.bookingId.toString().toLowerCase().includes(query)) ||
-      `${b.firstName} ${b.lastName}`.toLowerCase().includes(query) ||
-      (b.destination && b.destination.toLowerCase().includes(query));
+  //   //  text-based search (Booking ID, Name, Destination)
+  //   const matchesSearch =
+  //     (b.bookingId && b.bookingId.toString().toLowerCase().includes(query)) ||
+  //     `${b.firstName} ${b.lastName}`.toLowerCase().includes(query) ||
+  //     (b.destination && b.destination.toLowerCase().includes(query));
 
-    //  check-in date filter only
-    let matchesDate = true;
-    const checkinDate = normalizeDate(b.checkin);
-    const fromDate = normalizeDate(dateFilter.from);
-    const toDate = normalizeDate(dateFilter.to);
+  //   //  check-in date filter only
+  //   let matchesDate = true;
+  //   const checkinDate = normalizeDate(b.checkin);
+  //   const fromDate = normalizeDate(dateFilter.from);
+  //   const toDate = normalizeDate(dateFilter.to);
 
-    if (fromDate) {
-      matchesDate = matchesDate && checkinDate >= fromDate;
-    }
-    if (toDate) {
-      matchesDate = matchesDate && checkinDate <= toDate;
-    }
+  //   if (fromDate) {
+  //     matchesDate = matchesDate && checkinDate >= fromDate;
+  //   }
+  //   if (toDate) {
+  //     matchesDate = matchesDate && checkinDate <= toDate;
+  //   }
 
-    return matchesSearch && matchesDate;
-  });
+  //   return matchesSearch && matchesDate;
+  // });
 
   const [, setBookedByDate] = useState({});
 
@@ -299,9 +413,15 @@ const Universities = () => {
           <div className="flex gap-4 w-full justify-between">
             <select class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer">
               <option value="">Filter Country</option>
-              <option value="">Canada</option>
-              <option value="">USA</option>
-              <option value="">UK</option>
+              <option value="Canada">Canada</option>
+              <option value="USA">USA</option>
+              <option value="Australia">Australia</option>
+              <option value="New Zealand">New Zealand</option>
+              <option value="Germany">Germany</option>
+              <option value="UK">UK</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Dubai">Dubai</option>
+              <option value="Europe">Europe</option>
             </select>
 
             <a
@@ -315,15 +435,17 @@ const Universities = () => {
 
         {/* Table */}
         <div>
-          <div className="shadow-md rounded-lg mt-5">
-            {loading ? (
+          <div className="shadow-md rounded-lg mt-5 ">
+            {loadingUniversities ? (
               <div className="flex justify-center items-center py-10">
                 <div className="w-10 h-10 border-4 border-[#2B2A4C] border-t-transparent rounded-full animate-spin"></div>
-                <span className="ml-3 text-gray-600">Loading bookings...</span>
+                <span className="ml-3 text-gray-600">
+                  Loading universities...
+                </span>
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto ">
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
                       <tr>
@@ -350,9 +472,9 @@ const Universities = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredBookings.map((b) => (
+                      {current_universities.map((u) => (
                         <tr
-                          key={b.id}
+                          key={u.id}
                           className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
                         >
                           {/* Checkbox */}
@@ -360,48 +482,35 @@ const Universities = () => {
                             <input
                               type="checkbox"
                               onChange={() =>
-                                handleRowCheckboxChange_booking(b.id)
+                                handleRowCheckboxChange_booking(u.id)
                               }
-                              checked={selectedRows_booking.includes(b.id)}
+                              checked={selectedRows_booking.includes(u.id)}
                             />
                           </td>
                           {/* Booking ID */}
                           <td className="px-4 py-3 font-semibold text-gray-700">
-                            {b.id || "-"}
+                            {u.id || "-"}
                           </td>
                           {/* Customer Name */}
                           <td className="px-4 py-3">
-                            <Tooltip
-                              title={`${b.firstName} ${b.lastName}`}
-                              placement="left"
-                            >
-                              {b.firstName} {b.lastName}
-                            </Tooltip>
+                            <div className="w-16 h-16 flex items-center justify-center bg-white border rounded">
+                              <img
+                                src={u.logo}
+                                alt={u.name}
+                                className="max-w-full max-h-full object-contain"
+                              />
+                            </div>
                           </td>
 
                           {/* Property Code */}
                           <td className="px-4 py-3">
-                            <Tooltip
-                              title={`${b.nearestOffice}`}
-                              placement="left"
-                            >
-                              {b.nearestOffice || "-"}
+                            <Tooltip title={`${u.name}`} placement="left">
+                              {u.name || "-"}
                             </Tooltip>
                           </td>
 
                           {/* Destination */}
-                          <td className="px-4 py-3">
-                            <Tooltip
-                              title={
-                                b.package
-                                  ? `${b.package}-${b.destination}`
-                                  : b.destination || "-"
-                              }
-                              placement="left"
-                            >
-                              {b.destination || "-"}
-                            </Tooltip>
-                          </td>
+                          <td className="px-4 py-3">{u.country || "-"}</td>
 
                           {/* Booking Date */}
                           <td className="px-4 py-3">
@@ -412,7 +521,7 @@ const Universities = () => {
                                   )
                                 : "-"}
                             </Tooltip> */}
-                            {new Date(b.createdAt).toLocaleDateString("en-GB")}
+                            {u.state || "-"}
                           </td>
 
                           {/* Check-In */}
@@ -434,7 +543,7 @@ const Universities = () => {
                                 : "-"}
                             </Tooltip> */}
 
-                            {b.modeOfCon || "-"}
+                            {u.city || "-"}
                           </td>
 
                           {/* Check-Out */}
@@ -455,9 +564,9 @@ const Universities = () => {
                                   )
                                 : "-"}
                             </Tooltip> */}
-                            {b.fundingBy || "-"}
+                            {u.ranking || "-"}
                           </td>
-                          <td className="px-4 py-3">{b.studyLevel || "-"}</td>
+                          <td className="px-4 py-3">{u.students || "-"}</td>
 
                           {/* Actions */}
                           <td>
@@ -490,26 +599,26 @@ const Universities = () => {
                 </div>
 
                 {/* Pagination */}
-                <nav
+                {/* <nav
                   className="flex items-center flex-column flex-wrap md:flex-row justify-between rounded-b-lg px-2 py-1 bg-[#f7f7f7]"
                   aria-label="Table navigation"
                 >
                   <span className="text-xs font-normal text-gray-500 mb-4 md:mb-0 block w-full md:inline md:w-auto">
                     Showing{" "}
                     <span className="font-semibold text-gray-700 dark:text-white">
-                      {indexOfFirstTable_booking + 1}-
-                      {Math.min(indexOfLastTable_booking, bookings.length)}
+                      {indexOfFirst_uni + 1}-
+                      {Math.min(indexOfLast_uni, universities.length)}
                     </span>{" "}
                     of{" "}
                     <span className="font-semibold text-gray-700 dark:text-white">
-                      {bookings.length}
+                      {universities.length}
                     </span>
                   </span>
 
                   <ul className="inline-flex -space-x-px rtl:space-x-reverse text-xs h-8">
                     <li>
                       <button
-                        onClick={handlePrevPage_booking}
+                        onClick={handlePrevPage_uni}
                         disabled={currentPage_booking === 1}
                         className="flex items-center justify-center px-1 h-8 ms-0 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
                       >
@@ -543,6 +652,68 @@ const Universities = () => {
                       <button
                         onClick={handleNextPage_booking}
                         disabled={currentPage_booking === totalPages_booking}
+                        className="flex items-center justify-center px-1 h-8 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
+                      >
+                        <MdKeyboardDoubleArrowRight />
+                      </button>
+                    </li>
+                  </ul>
+                </nav> */}
+                <nav
+                  className="flex items-center flex-column flex-wrap md:flex-row justify-between rounded-b-lg px-2 py-1 bg-[#f7f7f7]"
+                  aria-label="Table navigation"
+                >
+                  <span className="text-xs font-normal text-gray-500 mb-4 md:mb-0 block w-full md:inline md:w-auto">
+                    Showing{" "}
+                    <span className="font-semibold text-gray-700 dark:text-white">
+                      {indexOfFirst_uni + 1}-
+                      {Math.min(indexOfLast_uni, filteredUniversities.length)}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-semibold text-gray-700 dark:text-white">
+                      {filteredUniversities.length}
+                    </span>
+                  </span>
+
+                  <ul className="inline-flex -space-x-px rtl:space-x-reverse text-xs h-8">
+                    <li>
+                      <button
+                        onClick={handlePrevPage_uni}
+                        disabled={currentPage_uni === 1}
+                        className="flex items-center justify-center px-1 h-8 ms-0 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
+                      >
+                        <MdKeyboardDoubleArrowLeft />
+                      </button>
+                    </li>
+
+                    {generatePageNumbers_uni().map((page, index) =>
+                      page === "…" ? (
+                        <li
+                          key={index}
+                          className="px-1 h-8 flex items-center justify-center text-gray-500 bg-[#f7f7f7]"
+                        >
+                          <span>…</span>
+                        </li>
+                      ) : (
+                        <li key={index}>
+                          <button
+                            onClick={() => handlePageChange_uni(page)}
+                            className={`flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 hover:bg-purple-100 hover:text-gray-700 ${
+                              currentPage_uni === page
+                                ? "text-purple-400 underline underline-offset-2"
+                                : ""
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        </li>
+                      ),
+                    )}
+
+                    <li>
+                      <button
+                        onClick={handleNextPage_uni}
+                        disabled={currentPage_uni === totalPages_uni}
                         className="flex items-center justify-center px-1 h-8 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
                       >
                         <MdKeyboardDoubleArrowRight />
