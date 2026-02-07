@@ -6,10 +6,16 @@ import { TbPhotoPlus } from "react-icons/tb";
 import { motion } from "framer-motion";
 import { FaPlus } from "react-icons/fa6";
 import { FaMinus } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import axios from "axios";
 const AddUniversityElementor = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
+  const navigate = useNavigate();
+  const [saving, setSaving] = useState(false);
+  const [scraping, setScraping] = useState(false);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -179,6 +185,7 @@ const AddUniversityElementor = () => {
   // };
   const handleSave = async () => {
     try {
+      setSaving(true);
       const fd = new FormData();
 
       // append file (REAL FILE not preview URL)
@@ -205,25 +212,33 @@ const AddUniversityElementor = () => {
         { headers: { "Content-Type": "multipart/form-data" } },
       );
 
-      alert("University saved successfully!");
-      console.log(res.data);
+      // alert("University saved successfully!");
+      // console.log(res.data);
+      toast.success("University saved successfully!");
+
+      navigate("/Universities");
     } catch (err) {
       console.error(err);
       alert("Error saving university");
+    } finally {
+      setSaving(false);
     }
   };
   const handleScrapeData = async () => {
     try {
-      if (!universityName || !country) {
-        alert("Please enter university name and select country.");
+      if (!universityName || !country || !stateValue || !websiteUrl) {
+        alert("Please enter university name , country , state and websiteURL.");
         return;
       }
+      setScraping(true);
 
       const res = await axios.post(
         "https://transglobeedu.com/web-backend/fetch-university-courses",
         {
           universityName,
           country,
+          stateValue,
+          websiteUrl,
         },
       );
 
@@ -240,7 +255,7 @@ const AddUniversityElementor = () => {
       setUniInfo(data.university_info || "");
       setRankQS(data.world_rank?.qs_ranking || "");
       setInStudents(data.international_students?.total_count || "");
-      setWebsiteUrl(""); // scraper did not return website_url
+      // setWebsiteUrl(""); // scraper did not return website_url
 
       // -----------------------------
       // SET COURSES
@@ -265,6 +280,8 @@ const AddUniversityElementor = () => {
     } catch (error) {
       console.error("Scrape error:", error);
       alert("Error scraping data");
+    } finally {
+      setScraping(false);
     }
   };
 
@@ -431,9 +448,10 @@ const AddUniversityElementor = () => {
               <div className="mb-5">
                 <button
                   onClick={handleScrapeData}
+                  disabled={scraping}
                   className="px-3 py-1.5 bg-indigo-900 rounded-lg text-center text-white hover:scale-95 transition-all duration-300 ease-in-out"
                 >
-                  Scrape Uni Info
+                  {scraping ? "Scraping..." : "Scrape Data"}
                 </button>
               </div>
             </div>
@@ -742,15 +760,19 @@ const AddUniversityElementor = () => {
           <br />
 
           <div className="flex justify-center gap-3 my-8">
-            <button className="w-28 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
+            <button
+              onClick={() => navigate("/Universities")}
+              className="w-28 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+            >
               Cancel
             </button>
 
             <button
               onClick={handleSave}
+              disabled={saving}
               className="w-28 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
             >
-              Save
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
         </div>
