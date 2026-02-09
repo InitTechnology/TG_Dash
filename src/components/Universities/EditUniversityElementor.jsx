@@ -7,10 +7,24 @@ import { motion } from "framer-motion";
 import { FaPlus } from "react-icons/fa6";
 import { FaMinus } from "react-icons/fa6";
 import { IoAlertSharp } from "react-icons/io5";
-
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const EditUniversityElementor = () => {
+  const navigate = useNavigate(); // inside your component
+
+  const [saving, setSaving] = useState(false); // inside your component
+  const { uni_id } = useParams();
+
+  // Use uni_id directly in your API call
+  const uniId = uni_id;
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
+  const [website, setWebsite] = useState("");
+  const [uniInfo, setUniInfo] = useState("");
+  const [stateName, setStateName] = useState("");
+  const [city, setCity] = useState("");
+  const [rank, setRank] = useState("");
+  const [internationalStudents, setInternationalStudents] = useState("");
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -54,6 +68,99 @@ const EditUniversityElementor = () => {
   };
 
   const [showPopup, setShowPopup] = useState(false);
+  useEffect(() => {
+    fetch(`https://transglobeedu.com/web-backend/university/${uniId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success) return;
+
+        const u = data.university;
+
+        setUniversityName(u.name || "");
+        setCountry(u.country || "");
+        setStateName(u.state || "");
+        setCity(u.city || "");
+        setRank(u.rankQS || "");
+        setInternationalStudents(u.inStudents || "");
+        setWebsite(u.websiteUrl || "");
+        setUniInfo(u.uniInfo || "");
+
+        if (u.logo_url) setLogo(u.logo_url);
+
+        setCourses(
+          data.courses.map((course) => ({
+            course_name: course.course_name || "",
+            fees: course.fees || "",
+            qualification: course.qualification || "",
+            hostel: course.hostel || "",
+            scholarship: course.scholarship || "",
+            schStartDate: course.schStartDate || "",
+            schEndDate: course.schEndDate || "",
+            isforIndian: course.isforIndian === 1,
+            duration: course.duration || "",
+            intake_start: course.intake_start || "",
+            courseInfo: course.courseInfo || "",
+          })),
+        );
+      })
+      .catch((err) => console.error("Error fetching university:", err));
+  }, [uniId]);
+  const handleSave = async () => {
+    setSaving(true);
+
+    const formData = new FormData();
+
+    // University basic details
+    formData.append("name", universityName);
+    formData.append("country", country);
+    formData.append("state", stateName);
+    formData.append("city", city);
+    formData.append("websiteUrl", website);
+    formData.append("uniInfo", uniInfo);
+    formData.append("rankQS", rank);
+    formData.append("inStudents", internationalStudents);
+
+    // Logo upload (only if new file selected)
+    if (logoInputRef.current?.files[0]) {
+      formData.append("logo", logoInputRef.current.files[0]);
+    }
+
+    // Flag upload (optional)
+    if (flagInputRef.current?.files[0]) {
+      formData.append("flag", flagInputRef.current.files[0]);
+    }
+
+    // Convert courses array → backend expects STRING
+    const coursesData = courses.map((course) => ({
+      ...course,
+      isforIndian: course.isforIndian ? 1 : 0, // convert boolean to 1/0
+    }));
+    formData.append("courses", JSON.stringify(coursesData));
+
+    try {
+      const res = await fetch(
+        `https://transglobeedu.com/web-backend/university/${uniId}`,
+        {
+          method: "PUT",
+          body: formData,
+        },
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("University updated successfully!");
+        navigate("/universities"); // redirect after save
+      } else {
+        alert("Update failed: " + data.message);
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      alert("Error updating university.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="flex bg-[#F8F9FA]">
@@ -161,6 +268,12 @@ const EditUniversityElementor = () => {
                 <option value="USA">USA</option>
                 <option value="UK">UK</option>
                 <option value="Australia">Australia</option>
+                <option value="Canada">Canada</option>
+                <option value="New Zealand">New Zealand</option>
+                <option value="Germany">Germany</option>
+                <option value="Dubai">Dubai</option>
+                <option value="Europe">Europe</option>
+                <option value="Singapore">Singapore</option>
               </select>
             </div>
           </div>
@@ -174,7 +287,8 @@ const EditUniversityElementor = () => {
             </label>
             <input
               placeholder="Enter university website link to scrape data from"
-              name="input"
+              onChange={(e) => setWebsite(e.target.value)}
+              value={website}
               className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
             />
           </div>
@@ -186,7 +300,7 @@ const EditUniversityElementor = () => {
                 className="font-bold text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl text-[#2B2A4C] mb-3"
                 style={{ lineHeight: 1.3 }}
               >
-                $UniversityName{" "}
+                {universityName || "University Name"}{" "}
                 <span className="text-[#B31312] dark:text-white font-normal">
                   Details
                 </span>
@@ -205,6 +319,8 @@ const EditUniversityElementor = () => {
             <textarea
               className="w-full leading-relaxed bg-transparent focus:outline-none border-b border-[#2B2A4C] placeholder:text-[#2B2A4C]/50 pb-20"
               placeholder="Enter university details here..."
+              value={uniInfo}
+              onChange={(e) => setUniInfo(e.target.value)}
             />
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -235,9 +351,19 @@ const EditUniversityElementor = () => {
                 <div className="border border-gray-300 rounded-xl bg-white">
                   {/* Header */}
                   <div className="w-full px-5 py-4 bg-[#F7F7FB] rounded-t-xl">
-                    <p className="font-semibold text-lg md:text-xl text-[#2B2A4C]">
-                      Course Name
-                    </p>
+                    <input
+                      type="text"
+                      value={courses[index].course_name}
+                      onChange={(e) =>
+                        setCourses((prev) => {
+                          const updated = [...prev];
+                          updated[index].course_name = e.target.value;
+                          return updated;
+                        })
+                      }
+                      className="w-full lg:w-[50%] font-semibold text-lg md:text-xl text-[#2B2A4C] outline-none focus:outline-none focus:ring-0 bg-transparent border-b-2 border-[#2B2A4C]"
+                      placeholder="Enter Course Name"
+                    />
                   </div>
 
                   <motion.div
@@ -248,6 +374,14 @@ const EditUniversityElementor = () => {
                   >
                     <textarea
                       placeholder="Enter course information here..."
+                      value={course.courseInfo}
+                      onChange={(e) =>
+                        setCourses((prev) => {
+                          const updated = [...prev];
+                          updated[index].courseInfo = e.target.value;
+                          return updated;
+                        })
+                      }
                       className="w-full h-24 border-b border-gray-300 focus:outline-none focus:ring-0"
                     ></textarea>
 
@@ -257,6 +391,14 @@ const EditUniversityElementor = () => {
                       </p>
                       <textarea
                         type="text"
+                        value={course.fees}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[index].fees = e.target.value;
+                            return updated;
+                          })
+                        }
                         className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
                         placeholder="Fee details description..."
                       />
@@ -269,6 +411,14 @@ const EditUniversityElementor = () => {
 
                       <textarea
                         type="text"
+                        value={course.qualification}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[index].qualification = e.target.value;
+                            return updated;
+                          })
+                        }
                         className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
                         placeholder="Qualification description..."
                       />
@@ -278,6 +428,14 @@ const EditUniversityElementor = () => {
                       <p className="font-medium text-[#2B2A4C]">Hostel:</p>
                       <textarea
                         type="text"
+                        value={course.hostel}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[index].hostel = e.target.value;
+                            return updated;
+                          })
+                        }
                         className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
                         placeholder="Hostel description..."
                       />
@@ -290,6 +448,14 @@ const EditUniversityElementor = () => {
                         </p>
                         <textarea
                           type="text"
+                          value={course.scholarship}
+                          onChange={(e) =>
+                            setCourses((prev) => {
+                              const updated = [...prev];
+                              updated[index].scholarship = e.target.value;
+                              return updated;
+                            })
+                          }
                           className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
                           placeholder="Scholarship description..."
                         />
@@ -304,11 +470,27 @@ const EditUniversityElementor = () => {
                           <div className="flex flex-wrap items-center gap-2">
                             <input
                               type="date"
+                              value={course.schStartDate || ""}
+                              onChange={(e) =>
+                                setCourses((prev) => {
+                                  const updated = [...prev];
+                                  updated[index].schStartDate = e.target.value;
+                                  return updated;
+                                })
+                              }
                               className="text-sm w-32 border border-[#2B2A4C] rounded-md px-2 py-1 focus:outline-none focus:ring-0"
                             />
                             -
                             <input
                               type="date"
+                              value={course.schEndDate || ""}
+                              onChange={(e) =>
+                                setCourses((prev) => {
+                                  const updated = [...prev];
+                                  updated[index].schEndDate = e.target.value;
+                                  return updated;
+                                })
+                              }
                               className="text-sm w-32 border border-[#2B2A4C] rounded-md px-2 py-1 focus:outline-none focus:ring-0"
                             />
                           </div>
@@ -316,7 +498,18 @@ const EditUniversityElementor = () => {
 
                         <div>
                           Is it for Indian Students?{" "}
-                          <input type="checkbox" className="ml-2" />
+                          <input
+                            type="checkbox"
+                            checked={course.isforIndian}
+                            onChange={(e) =>
+                              setCourses((prev) => {
+                                const updated = [...prev];
+                                updated[index].isforIndian = e.target.checked;
+                                return updated;
+                              })
+                            }
+                            className="ml-2"
+                          />
                         </div>
                       </div>
                     </div>
@@ -325,6 +518,14 @@ const EditUniversityElementor = () => {
                       <p className="font-medium text-[#2B2A4C]">Duration:</p>
                       <textarea
                         type="text"
+                        value={course.duration}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[index].duration = e.target.value;
+                            return updated;
+                          })
+                        }
                         className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
                         placeholder="Course duration description..."
                       />
@@ -334,6 +535,14 @@ const EditUniversityElementor = () => {
                       <p className="font-medium text-[#2B2A4C]">Intake:</p>
                       <textarea
                         type="text"
+                        value={course.intake_start}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[index].intake_start = e.target.value;
+                            return updated;
+                          })
+                        }
                         className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
                         placeholder="Intake description..."
                       />
@@ -446,7 +655,9 @@ const EditUniversityElementor = () => {
               </label>
               <input
                 placeholder="Enter university state"
-                name="input"
+                // name="input"
+                value={stateName}
+                onChange={(e) => setStateName(e.target.value)}
                 className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
               />
             </div>
@@ -460,7 +671,9 @@ const EditUniversityElementor = () => {
               </label>
               <input
                 placeholder="Enter university city"
-                name="input"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                // name="input"
                 className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
               />
             </div>
@@ -474,7 +687,9 @@ const EditUniversityElementor = () => {
               </label>
               <input
                 placeholder="Enter university rank"
-                name="input"
+                // name="input"
+                value={rank}
+                onChange={(e) => setRank(e.target.value)}
                 className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
               />
             </div>
@@ -488,7 +703,9 @@ const EditUniversityElementor = () => {
               </label>
               <input
                 placeholder="No. of international students"
-                name="input"
+                // name="input"
+                value={internationalStudents}
+                onChange={(e) => setInternationalStudents(e.target.value)}
                 className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
               />
             </div>
@@ -501,8 +718,12 @@ const EditUniversityElementor = () => {
               Cancel
             </button>
 
-            <button className="w-28 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
-              Save
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-28 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+            >
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
         </div>

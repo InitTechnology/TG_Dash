@@ -205,7 +205,7 @@ const AddUniversityElementor = () => {
 
       // courses → send as JSON string
       fd.append("courses", JSON.stringify(courses));
-
+      // eslint-disable-next-line
       const res = await axios.post(
         "https://transglobeedu.com/web-backend/university/add",
         fd,
@@ -396,7 +396,7 @@ const AddUniversityElementor = () => {
                 onChange={(e) => {
                   const selected = e.target.value;
                   setCountry(selected);
-                  setFlag(flagUrls[selected] || ""); // 👈 auto-sets the flag
+                  setFlag(flagUrls[selected] || "");
                 }}
                 className="bg-transparent outline-none border-b border-[#2B2A4C] text-sm text-left w-24 text-[#2B2A4C]"
               >
