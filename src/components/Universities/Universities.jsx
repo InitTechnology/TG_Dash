@@ -8,6 +8,7 @@ import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Universities = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
@@ -579,12 +580,12 @@ const Universities = () => {
                               </a>
 
                               <>
-                                <a
-                                  href="/EditUniversityElementor"
+                                <Link
+                                  to={`/EditUniversityElementor/${u.id}`}
                                   className="px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
                                 >
                                   <FaEdit size={14} />
-                                </a>
+                                </Link>
 
                                 <button className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all">
                                   <MdDelete size={15} />

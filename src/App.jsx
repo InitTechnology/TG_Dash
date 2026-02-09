@@ -41,7 +41,7 @@ function App() {
               element={<AddUniversityElementor />}
             />
             <Route
-              path="/EditUniversityElementor"
+              path="/EditUniversityElementor/:uni_id"
               element={<EditUniversityElementor />}
             />
 
