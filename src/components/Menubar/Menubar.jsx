@@ -132,7 +132,12 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
                 to={item.to}
                 onClick={handleItemClick}
                 className={`flex items-center p-2 rounded-md hover:bg-white hover:text-black transition-colors ${
-                  location.pathname === item.to ? "bg-white text-black" : ""
+                  location.pathname === item.to ||
+                  (item.to === "/Universities" &&
+                    (location.pathname.startsWith("/EditUniversityElementor") ||
+                      location.pathname === "/AddUniversityElementor"))
+                    ? "bg-white text-black"
+                    : ""
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>
