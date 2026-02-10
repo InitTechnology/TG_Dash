@@ -8,7 +8,7 @@ import { FaPlus } from "react-icons/fa6";
 import { FaMinus } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { useMemo } from "react";
 import axios from "axios";
 const AddUniversityElementor = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
@@ -19,26 +19,29 @@ const AddUniversityElementor = () => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
-  const flagUrls = {
-    Australia:
-      "https://cdn.britannica.com/78/6078-050-18D5DEFE/Flag-Australia.jpg",
-    Canada:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/1200px-Flag_of_Canada_%28Pantone%29.svg.png",
-    UK: "https://cdn.britannica.com/25/4825-050-977D8C5E/Flag-United-Kingdom.jpg",
-    USA: "https://upload.wikimedia.org/wikipedia/commons/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg",
-    Germany:
-      "https://img.freepik.com/free-vector/illustration-german-flag_53876-27101.jpg?semt=ais_hybrid&w=740&q=80",
-    Dubai:
-      "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_United_Arab_Emirates.svg",
-    Europe:
-      "https://img.freepik.com/free-vector/illustration-european-union-flag_53876-27018.jpg?semt=ais_hybrid&w=740&q=80",
-    Ireland:
-      "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg",
-    Singapore:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Flag_of_Singapore.svg/1200px-Flag_of_Singapore.svg.png",
-    "New Zealand":
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/1200px-Flag_of_New_Zealand.svg.png",
-  };
+  const flagUrls = useMemo(
+    () => ({
+      Australia:
+        "https://cdn.britannica.com/78/6078-050-18D5DEFE/Flag-Australia.jpg",
+      Canada:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/1200px-Flag_of_Canada_%28Pantone%29.svg.png",
+      UK: "https://cdn.britannica.com/25/4825-050-977D8C5E/Flag-United-Kingdom.jpg",
+      USA: "https://upload.wikimedia.org/wikipedia/commons/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg",
+      Germany:
+        "https://img.freepik.com/free-vector/illustration-german-flag_53876-27101.jpg?semt=ais_hybrid&w=740&q=80",
+      Dubai:
+        "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_United_Arab_Emirates.svg",
+      Europe:
+        "https://img.freepik.com/free-vector/illustration-european-union-flag_53876-27018.jpg?semt=ais_hybrid&w=740&q=80",
+      Ireland:
+        "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg",
+      Singapore:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Flag_of_Singapore.svg/1200px-Flag_of_Singapore.svg.png",
+      "New Zealand":
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/1200px-Flag_of_New_Zealand.svg.png",
+    }),
+    [],
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -75,7 +78,7 @@ const AddUniversityElementor = () => {
   // -------------------------------
   // STATE MANAGEMENT
   // -------------------------------
-  const [country, setCountry] = useState("United States");
+  const [country, setCountry] = useState("");
   const [stateValue, setStateValue] = useState("");
   const [city, setCity] = useState("");
 
@@ -84,6 +87,11 @@ const AddUniversityElementor = () => {
   const [rankQS, setRankQS] = useState("");
   const [inStudents, setInStudents] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  useEffect(() => {
+    if (country) {
+      setFlag(flagUrls[country] || null);
+    }
+  }, [country, flagUrls]);
 
   // const [courses, setCourses] = useState([
   //   {
@@ -416,21 +424,106 @@ const AddUniversityElementor = () => {
             </div>
           </div>
 
-          <div className="flex flex-col w-full mt-5">
-            <label
-              for="input"
-              className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+          <hr className="border-t border-gray-300 my-12" />
+
+          <div className="lg:mx-[5%]">
+            <div className="flex flex-col w-full mt-5">
+              <p className="font-semibold text-center text-xl text-gray-700">
+                Additional Information{" "}
+                <span className="text-xs">
+                  (Used internally and may not be displayed)
+                </span>{" "}
+              </p>
+
+              {/* <button
+              onClick={handleScrapeData}
+              className="w-36 px-3 py-1.5 bg-indigo-900 rounded-lg text-center text-white hover:scale-95 transition-all duration-300 ease-in-out"
             >
-              University Website Link
-            </label>
-            <input
-              value={websiteUrl}
-              onChange={(e) => setWebsiteUrl(e.target.value)}
-              placeholder="Enter university website link to scrape data from"
-              name="input"
-              className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-            />
+              Scrape Data
+            </button> */}
+            </div>
+
+            <div className="flex flex-col w-full mt-5">
+              <label
+                for="input"
+                className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+              >
+                University Website Link
+              </label>
+              <input
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                placeholder="Enter university website link to scrape data from"
+                name="input"
+                className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+              />
+            </div>
+            {/* Additional Info */}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 mt-5">
+              <div className="flex flex-col w-full">
+                <label
+                  for="input"
+                  className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                >
+                  State
+                </label>
+                <input
+                  value={stateValue}
+                  onChange={(e) => setStateValue(e.target.value)}
+                  placeholder="Enter university state"
+                  className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                />
+              </div>
+
+              <div className="flex flex-col w-full">
+                <label
+                  for="input"
+                  className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                >
+                  City
+                </label>
+                <input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Enter university city"
+                  className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                />
+              </div>
+
+              <div className="flex flex-col w-full">
+                <label
+                  for="input"
+                  className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                >
+                  Rank
+                </label>
+                <input
+                  value={rankQS}
+                  onChange={(e) => setRankQS(e.target.value)}
+                  placeholder="Enter university rank"
+                  className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                />
+              </div>
+
+              <div className="flex flex-col w-full">
+                <label
+                  for="input"
+                  className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                >
+                  International Students
+                </label>
+                <input
+                  value={inStudents}
+                  onChange={(e) => setInStudents(e.target.value)}
+                  placeholder="No. of international students"
+                  className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                />
+              </div>
+            </div>
           </div>
+
+          <hr className="border-t border-gray-300 my-14" />
 
           {/* University Info */}
           <div className="mt-8">
@@ -677,85 +770,6 @@ const AddUniversityElementor = () => {
           ))}
 
           <hr className="border-t border-gray-300 mx-[10%] mt-10 mb-14" />
-
-          {/* Additional Info */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <p className="font-semibold text-lg text-gray-700">
-              Additional Information{" "}
-              <span className="text-xs">
-                (Used internally and may not be displayed)
-              </span>{" "}
-            </p>
-
-            {/* <button
-              onClick={handleScrapeData}
-              className="w-36 px-3 py-1.5 bg-indigo-900 rounded-lg text-center text-white hover:scale-95 transition-all duration-300 ease-in-out"
-            >
-              Scrape Data
-            </button> */}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 mt-5">
-            <div className="flex flex-col w-full">
-              <label
-                for="input"
-                className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-              >
-                State
-              </label>
-              <input
-                value={stateValue}
-                onChange={(e) => setStateValue(e.target.value)}
-                placeholder="Enter university state"
-                className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-              />
-            </div>
-
-            <div className="flex flex-col w-full">
-              <label
-                for="input"
-                className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-              >
-                City
-              </label>
-              <input
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Enter university city"
-                className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-              />
-            </div>
-
-            <div className="flex flex-col w-full">
-              <label
-                for="input"
-                className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-              >
-                Rank
-              </label>
-              <input
-                value={rankQS}
-                onChange={(e) => setRankQS(e.target.value)}
-                placeholder="Enter university rank"
-                className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-              />
-            </div>
-
-            <div className="flex flex-col w-full">
-              <label
-                for="input"
-                className="text-gray-500 text-sm font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-              >
-                International Students
-              </label>
-              <input
-                value={inStudents}
-                onChange={(e) => setInStudents(e.target.value)}
-                placeholder="No. of international students"
-                className="bg-[#F8F9FA] border-gray-400 p-3 border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-              />
-            </div>
-          </div>
 
           <br />
 

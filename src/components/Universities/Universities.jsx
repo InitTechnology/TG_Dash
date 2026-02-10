@@ -23,6 +23,7 @@ const Universities = () => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [filterCountry, setFilterCountry] = useState("");
 
   const [, setStatusCounts] = useState({
     pending: 0,
@@ -34,16 +35,30 @@ const Universities = () => {
   const [universities, setUniversities] = useState([]);
 
   // 🔍 Search + Filter universities
+  // const filteredUniversities = universities.filter((u) => {
+  //   const q = searchQuery.toLowerCase();
+
+  //   return (
+  //     u.name?.toLowerCase().includes(q) ||
+  //     u.country?.toLowerCase().includes(q) ||
+  //     u.state?.toLowerCase().includes(q) ||
+  //     u.city?.toLowerCase().includes(q) ||
+  //     u.ranking?.toLowerCase().includes(q)
+  //   );
+  // });
   const filteredUniversities = universities.filter((u) => {
     const q = searchQuery.toLowerCase();
 
-    return (
+    const matchesSearch =
       u.name?.toLowerCase().includes(q) ||
       u.country?.toLowerCase().includes(q) ||
       u.state?.toLowerCase().includes(q) ||
       u.city?.toLowerCase().includes(q) ||
-      u.ranking?.toLowerCase().includes(q)
-    );
+      u.ranking?.toLowerCase().includes(q);
+
+    const matchesCountry = filterCountry === "" || u.country === filterCountry;
+
+    return matchesSearch && matchesCountry;
   });
 
   // 📄 Pagination for universities
@@ -347,6 +362,25 @@ const Universities = () => {
   useEffect(() => {
     getStatusCounts();
   }, []);
+
+  const handleDeleteUniversity = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this University?"))
+      return;
+
+    try {
+      const res = await axios.delete(
+        `https://transglobeedu.com/web-backend/university/${id}`,
+      );
+
+      if (res.data.success) {
+        setUniversities((prev) => prev.filter((u) => u.id !== id));
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete university");
+    }
+  };
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -412,7 +446,11 @@ const Universities = () => {
         {/* Button */}
         <div className="mt-8">
           <div className="flex gap-4 w-full justify-between">
-            <select class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer">
+            <select
+              value={filterCountry}
+              onChange={(e) => setFilterCountry(e.target.value)}
+              class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer"
+            >
               <option value="">Filter Country</option>
               <option value="Canada">Canada</option>
               <option value="USA">USA</option>
@@ -572,12 +610,13 @@ const Universities = () => {
                           {/* Actions */}
                           <td>
                             <div className="flex justify-center">
-                              <a
-                                href="/EditUniversityElementor"
+                              <Link
+                                to={`/EditUniversityElementor/${u.id}`}
+                                state={{ viewOnly: true }}
                                 className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
                               >
                                 <FaEye size={15} />
-                              </a>
+                              </Link>
 
                               <>
                                 <Link
@@ -587,7 +626,10 @@ const Universities = () => {
                                   <FaEdit size={14} />
                                 </Link>
 
-                                <button className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all">
+                                <button
+                                  onClick={() => handleDeleteUniversity(u.id)}
+                                  className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
+                                >
                                   <MdDelete size={15} />
                                 </button>
                               </>
