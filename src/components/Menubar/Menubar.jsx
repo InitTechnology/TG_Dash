@@ -53,11 +53,11 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       text: "Universities",
       to: "/Universities",
     },
-       {
-      icon: <HiDocumentCheck />,
-      text: "Document Evaluator",
-      to: "/StudentDocument",
-    },
+    //    {
+    //   icon: <HiDocumentCheck />,
+    //   text: "Document Evaluator",
+    //   to: "/StudentDocument",
+    // },
     // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },
     // { icon: <FaUsers />, text: "Guests\u00A0Records", to: "/GuestRecords" },
     // { icon: <FaCalendarAlt />, text: "Calendar", to: "/Calendar" },
