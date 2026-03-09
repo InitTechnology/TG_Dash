@@ -8,6 +8,7 @@ import StudentConsultations from "./components/StudentConsultations/StudentConsu
 import Universities from "./components/Universities/Universities";
 import AddUniversityElementor from "./components/Universities/AddUniversityElementor";
 import EditUniversityElementor from "./components/Universities/EditUniversityElementor";
+import StudentDocument from "./components/Applications/StudentDocument";
 import axios from "axios";
 
 axios.defaults.headers.get["Cache-Control"] = "no-cache";
@@ -36,6 +37,7 @@ function App() {
               element={<StudentConsultations />}
             />
             <Route path="/Universities" element={<Universities />} />
+              <Route path="/StudentDocument" element={<StudentDocument />} />
             <Route
               path="/AddUniversityElementor"
               element={<AddUniversityElementor />}
