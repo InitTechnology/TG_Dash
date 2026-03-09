@@ -14,6 +14,7 @@ import {
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { HiMiniBuildingLibrary } from "react-icons/hi2";
 import { Link, useLocation } from "react-router-dom";
+import { HiDocumentCheck } from "react-icons/hi2";
 
 const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
   const location = useLocation();
@@ -51,6 +52,11 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       icon: <HiMiniBuildingLibrary />,
       text: "Universities",
       to: "/Universities",
+    },
+       {
+      icon: <HiDocumentCheck />,
+      text: "Document Evaluator",
+      to: "/StudentDocument",
     },
     // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },
     // { icon: <FaUsers />, text: "Guests\u00A0Records", to: "/GuestRecords" },
