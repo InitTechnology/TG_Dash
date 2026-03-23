@@ -448,7 +448,7 @@ const Dashboard = () => {
                   <p className="font-semibold">Recent Consultations</p>
                   <p className="text-xs text-gray-500 mt-1 flex items-center">
                     <IoIosCheckmarkCircle className="text-green-500 mr-1" />
-                    {todayBookings} booking{todayBookings !== 1 ? "s" : ""} came
+                    {todayBookings} Inquiry{todayBookings !== 1 ? "s" : ""} came
                     today
                   </p>
                 </div>

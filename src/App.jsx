@@ -37,7 +37,7 @@ function App() {
               element={<StudentConsultations />}
             />
             <Route path="/Universities" element={<Universities />} />
-              <Route path="/StudentDocument" element={<StudentDocument />} />
+            <Route path="/StudentDocument" element={<StudentDocument />} />
             <Route
               path="/AddUniversityElementor"
               element={<AddUniversityElementor />}

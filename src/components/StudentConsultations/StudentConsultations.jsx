@@ -463,7 +463,7 @@ const StudentConsultations = () => {
         <div className="flex justify-between gap-5 items-start lg:items-center">
           <div className="flex flex-col lg:flex-row gap-5 items-start lg:items-center">
             <p className="font-semibold text-xl text-gray-700 ml-10 lg:ml-0">
-              Consultation Bookings
+              Consultation Inquiry
             </p>
           </div>
 
@@ -789,7 +789,7 @@ const StudentConsultations = () => {
               }}
               className="px-6 z-30 py-2 bg-indigo-900 rounded-lg font-medium text-sm text-center text-white relative hover:scale-95 transition-all duration-300 ease-in-out"
             >
-              + Add Booking
+              + Add Inquiry
             </button>
           </div>
 
