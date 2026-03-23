@@ -35,9 +35,11 @@ const EditUniversityElementor = () => {
   const [city, setCity] = useState("");
   const [rank, setRank] = useState("");
   const [internationalStudents, setInternationalStudents] = useState("");
-
+  const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [editingIndices, setEditingIndices] = useState(new Set());
+
   const flagUrls = useMemo(
     () => ({
       Australia:
@@ -228,11 +230,20 @@ const EditUniversityElementor = () => {
     if (flagInputRef.current?.files[0]) {
       formData.append("flag", flagInputRef.current.files[0]);
     }
+    const toMysqlDate = (val) => {
+      if (!val) return "";
+      // Already in YYYY-MM-DD format (from <input type="date">)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+      // ISO string like "2026-02-07T18:30:00.000Z" → slice to "2026-02-07"
+      return val.slice(0, 10);
+    };
 
     // Convert courses array → backend expects STRING
     const coursesData = courses.map((course) => ({
       ...course,
-      isforIndian: course.isforIndian ? 1 : 0, // convert boolean to 1/0
+      isforIndian: course.isforIndian ? 1 : 0,
+      schStartDate: toMysqlDate(course.schStartDate),
+      schEndDate: toMysqlDate(course.schEndDate),
     }));
     formData.append("courses", JSON.stringify(coursesData));
 
@@ -325,6 +336,26 @@ const EditUniversityElementor = () => {
       setScraping(false);
     }
   };
+  // const updateCourse = (index, field, value) => {
+  //   setCourses((prev) => {
+  //     const updated = [...prev];
+  //     updated[index][field] = value;
+  //     return updated;
+  //   });
+  // };
+
+  const filteredCourses = courses
+    .map((course, originalIndex) => ({ course, originalIndex }))
+    .filter(({ course, originalIndex }) => {
+      // Always show courses that are currently being edited (focused)
+      if (editingIndices.has(originalIndex)) return true;
+      // Show all if no search query
+      if (!searchQuery.trim()) return true;
+      // Filter by course name
+      return course.course_name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    });
 
   return (
     <div className="flex bg-[#F8F9FA]">
@@ -646,7 +677,13 @@ const EditUniversityElementor = () => {
                   Courses
                 </span>
               </p>
-
+              <input
+                type="text"
+                placeholder="Search courses..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-900"
+              />
               {/* <div>
                 <button
                   onClick={() => setShowPopup(true)}
@@ -658,11 +695,10 @@ const EditUniversityElementor = () => {
             </div>
           </div>
 
-          {courses.map((course, index) => (
+          {/* {courses.map((course, index) => (
             <>
               <div key={index} className="mt-5 space-y-4">
                 <div className="border border-gray-300 rounded-xl bg-white">
-                  {/* Header */}
                   <div className="w-full px-5 py-4 bg-[#F7F7FB] rounded-t-xl">
                     <input
                       type="text"
@@ -893,8 +929,248 @@ const EditUniversityElementor = () => {
                 </button>
               </div>
             </>
-          ))}
+          ))} */}
+          {filteredCourses.map(({ course, originalIndex }) => (
+            <React.Fragment key={originalIndex}>
+              <div className="mt-5 space-y-4">
+                <div
+                  className="border border-gray-300 rounded-xl bg-white"
+                  onFocus={() =>
+                    setEditingIndices((prev) =>
+                      new Set(prev).add(originalIndex),
+                    )
+                  }
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      setEditingIndices((prev) => {
+                        const next = new Set(prev);
+                        next.delete(originalIndex);
+                        return next;
+                      });
+                    }
+                  }}
+                >
+                  <div className="w-full px-5 py-4 bg-[#F7F7FB] rounded-t-xl">
+                    <input
+                      type="text"
+                      value={courses[originalIndex].course_name}
+                      onChange={(e) =>
+                        setCourses((prev) => {
+                          const updated = [...prev];
+                          updated[originalIndex].course_name = e.target.value;
+                          return updated;
+                        })
+                      }
+                      {...disableIfView}
+                      className="w-full lg:w-[50%] font-semibold text-lg md:text-xl text-[#2B2A4C] outline-none focus:outline-none focus:ring-0 bg-transparent border-b-2 border-[#2B2A4C]"
+                      placeholder="Enter Course Name"
+                    />
+                  </div>
 
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="px-5 pb-5 text-sm md:text-base text-gray-600 space-y-5 mt-3"
+                  >
+                    <textarea
+                      placeholder="Enter course information here..."
+                      value={courses[originalIndex].courseInfo}
+                      onChange={(e) =>
+                        setCourses((prev) => {
+                          const updated = [...prev];
+                          updated[originalIndex].courseInfo = e.target.value;
+                          return updated;
+                        })
+                      }
+                      {...disableIfView}
+                      className="w-full h-24 border-b border-gray-300 focus:outline-none focus:ring-0"
+                    />
+
+                    <div>
+                      <p className="font-medium text-[#2B2A4C]">Fee Details:</p>
+                      <textarea
+                        value={courses[originalIndex].fees}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[originalIndex].fees = e.target.value;
+                            return updated;
+                          })
+                        }
+                        {...disableIfView}
+                        className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
+                        placeholder="Fee details description..."
+                      />
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-[#2B2A4C]">
+                        Qualification:
+                      </p>
+                      <textarea
+                        value={courses[originalIndex].qualification}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[originalIndex].qualification =
+                              e.target.value;
+                            return updated;
+                          })
+                        }
+                        {...disableIfView}
+                        className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
+                        placeholder="Qualification description..."
+                      />
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-[#2B2A4C]">Hostel:</p>
+                      <textarea
+                        value={courses[originalIndex].hostel}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[originalIndex].hostel = e.target.value;
+                            return updated;
+                          })
+                        }
+                        {...disableIfView}
+                        className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
+                        placeholder="Hostel description..."
+                      />
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-[#2B2A4C]">Scholarship:</p>
+                      <textarea
+                        value={courses[originalIndex].scholarship}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[originalIndex].scholarship = e.target.value;
+                            return updated;
+                          })
+                        }
+                        {...disableIfView}
+                        className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
+                        placeholder="Scholarship description..."
+                      />
+
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mt-3 mb-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                          <p className="font-medium text-[#2B2A4C]">
+                            Scholarship Application Period:
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <input
+                              type="date"
+                              value={courses[originalIndex].schStartDate || ""}
+                              onChange={(e) =>
+                                setCourses((prev) => {
+                                  const updated = [...prev];
+                                  updated[originalIndex].schStartDate =
+                                    e.target.value;
+                                  return updated;
+                                })
+                              }
+                              {...disableIfView}
+                              className="text-sm w-32 border border-[#2B2A4C] rounded-md px-2 py-1 focus:outline-none focus:ring-0"
+                            />
+                            -
+                            <input
+                              type="date"
+                              value={courses[originalIndex].schEndDate || ""}
+                              onChange={(e) =>
+                                setCourses((prev) => {
+                                  const updated = [...prev];
+                                  updated[originalIndex].schEndDate =
+                                    e.target.value;
+                                  return updated;
+                                })
+                              }
+                              {...disableIfView}
+                              className="text-sm w-32 border border-[#2B2A4C] rounded-md px-2 py-1 focus:outline-none focus:ring-0"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          Is it for Indian Students?{" "}
+                          <input
+                            type="checkbox"
+                            checked={courses[originalIndex].isforIndian}
+                            onChange={(e) =>
+                              setCourses((prev) => {
+                                const updated = [...prev];
+                                updated[originalIndex].isforIndian =
+                                  e.target.checked;
+                                return updated;
+                              })
+                            }
+                            {...disableIfView}
+                            className="ml-2"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-[#2B2A4C]">Duration:</p>
+                      <textarea
+                        value={courses[originalIndex].duration}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[originalIndex].duration = e.target.value;
+                            return updated;
+                          })
+                        }
+                        {...disableIfView}
+                        className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
+                        placeholder="Course duration description..."
+                      />
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-[#2B2A4C]">Intake:</p>
+                      <textarea
+                        value={courses[originalIndex].intake_start}
+                        onChange={(e) =>
+                          setCourses((prev) => {
+                            const updated = [...prev];
+                            updated[originalIndex].intake_start =
+                              e.target.value;
+                            return updated;
+                          })
+                        }
+                        {...disableIfView}
+                        className="mt-1 border-b border-gray-300 focus:outline-none focus:ring-0 w-full"
+                        placeholder="Intake description..."
+                      />
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 items-center mt-2">
+                {originalIndex !== 0 && (
+                  <button
+                    onClick={() => removeCourse(originalIndex)}
+                    className="p-2 border border-indigo-900 rounded-full text-indigo-900 hover:scale-95 transition-all duration-300"
+                  >
+                    <FaMinus />
+                  </button>
+                )}
+                <button
+                  onClick={addCourse}
+                  className="p-2 bg-indigo-900 rounded-full text-white hover:scale-95 transition-all duration-300"
+                >
+                  <FaPlus />
+                </button>
+              </div>
+            </React.Fragment>
+          ))}
           <br />
 
           <div className="flex justify-center gap-3 my-8">
