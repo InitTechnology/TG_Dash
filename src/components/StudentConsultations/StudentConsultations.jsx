@@ -9,11 +9,9 @@ import { FaEdit, FaEye } from "react-icons/fa";
 import { MdCancel } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 // import { toast } from "react-toastify";
-
-import DatePicker from "react-datepicker";
-
-import "react-datepicker/dist/react-datepicker.css";
-import { format, parseISO } from "date-fns";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+// import { format, parseISO } from "date-fns";
 import { MdOutlinePendingActions } from "react-icons/md";
 import { GiCheckMark } from "react-icons/gi";
 import { ImCross } from "react-icons/im";
@@ -28,7 +26,7 @@ const StudentConsultations = () => {
   const [loading, setLoading] = useState(true);
   const [formMode, setFormMode] = useState("add");
   const [bookings, setBookings] = useState([]);
-  const [dateFilter, setDateFilter] = useState({ from: "", to: "" });
+  const [dateFilter] = useState({ from: "", to: "" });
   const [isViewOnly, setIsViewOnly] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,6 +51,7 @@ const StudentConsultations = () => {
     studyLevel: "",
     fundingBy: "",
     status: "pending",
+    stage: "New Lead",
   });
 
   const [, setIdProofFile] = useState(null);
@@ -120,6 +119,7 @@ const StudentConsultations = () => {
         studyLevel: formData.studyLevel,
         fundingBy: formData.fundingBy,
         status: formData.status,
+        stage: formData.stage,
       };
 
       if (formMode === "add") {
@@ -194,11 +194,27 @@ const StudentConsultations = () => {
   }, []);
 
   const statusColors = {
-    pending: "bg-yellow-100 text-yellow-500",
-    declined: "bg-orange-100 text-orange-400",
-    converted: "bg-sky-100 text-sky-500",
-    cancelled: "bg-red-100 text-red-400",
-    approved: "bg-green-100 text-green-500",
+    pending: "border border-yellow-300 text-yellow-400",
+    declined: "border border-orange-300 text-orange-400",
+    converted: "border border-sky-400 text-sky-500",
+    cancelled: "border border-red-500 text-red-500",
+    approved: "border border-green-400 text-green-500",
+  };
+
+  const stageColors = {
+    "New Lead": "bg-emerald-100 text-emerald-500",
+    Prospect: "bg-yellow-100 text-yellow-500",
+    Counselling: "bg-purple-100 text-purple-400",
+    "Coaching Only": "bg-sky-100 text-sky-500",
+    "Future Lead": "bg-pink-100 text-pink-600",
+    "Verified Lead": "bg-teal-100 text-teal-700",
+    "Lead Lost": "bg-red-100 text-red-500",
+    "Offer Letter": "bg-blue-100 text-blue-600",
+    "Letter Acceptance": "bg-lime-100 text-lime-600",
+    "Confirmation of Admission": "bg-green-200 text-green-700",
+    "Deposit Payment": "bg-cyan-100 text-cyan-500",
+    "Visa Docs Required": "bg-amber-100 text-amber-800",
+    Discontinued: "bg-gray-300 text-gray-800",
   };
 
   const rowsPerPage_booking = 20;
@@ -277,19 +293,20 @@ const StudentConsultations = () => {
 
   const [isOpen_popupForm, setIsOpen_popupForm] = useState(false);
 
-  const [showPopup_filter, setShowPopup_filter] = useState(false);
-  const filterRef = useRef(null);
+  // const [showPopup_filter, setShowPopup_filter] = useState(false);
+  // const filterRef = useRef(null);
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setShowPopup_filter(false);
-      }
-    }
+  // useEffect(() => {
+  //   function handleClickOutside(event) {
+  //     if (filterRef.current && !filterRef.current.contains(event.target)) {
+  //       setShowPopup_filter(false);
+  //     }
+  //   }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
+
   // when popup opens, set default bookingTime
   useEffect(() => {
     if (isOpen_popupForm) {
@@ -372,43 +389,43 @@ const StudentConsultations = () => {
     return matchesSearch && matchesDate;
   });
 
-  const today = new Date();
+  // const today = new Date();
 
-  const setQuickFilter = (type) => {
-    let from, to;
+  // const setQuickFilter = (type) => {
+  //   let from, to;
 
-    if (type === "Today") {
-      from = to = today.toISOString().split("T")[0];
-    }
+  //   if (type === "Today") {
+  //     from = to = today.toISOString().split("T")[0];
+  //   }
 
-    if (type === "Week") {
-      const start = new Date(today);
-      start.setDate(today.getDate() - today.getDay()); // start of week (Sunday)
-      const end = new Date(start);
-      end.setDate(start.getDate() + 6); // end of week (Saturday)
+  //   if (type === "Week") {
+  //     const start = new Date(today);
+  //     start.setDate(today.getDate() - today.getDay()); // start of week (Sunday)
+  //     const end = new Date(start);
+  //     end.setDate(start.getDate() + 6); // end of week (Saturday)
 
-      from = start.toISOString().split("T")[0];
-      to = end.toISOString().split("T")[0];
-    }
+  //     from = start.toISOString().split("T")[0];
+  //     to = end.toISOString().split("T")[0];
+  //   }
 
-    if (type === "Month") {
-      const start = new Date(today.getFullYear(), today.getMonth(), 1);
-      const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  //   if (type === "Month") {
+  //     const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  //     const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-      from = start.toISOString().split("T")[0];
-      to = end.toISOString().split("T")[0];
-    }
+  //     from = start.toISOString().split("T")[0];
+  //     to = end.toISOString().split("T")[0];
+  //   }
 
-    if (type === "Year") {
-      const start = new Date(today.getFullYear(), 0, 1);
-      const end = new Date(today.getFullYear(), 11, 31);
+  //   if (type === "Year") {
+  //     const start = new Date(today.getFullYear(), 0, 1);
+  //     const end = new Date(today.getFullYear(), 11, 31);
 
-      from = start.toISOString().split("T")[0];
-      to = end.toISOString().split("T")[0];
-    }
+  //     from = start.toISOString().split("T")[0];
+  //     to = end.toISOString().split("T")[0];
+  //   }
 
-    setDateFilter({ from, to });
-  };
+  //   setDateFilter({ from, to });
+  // };
 
   const [, setBookedByDate] = useState({});
 
@@ -518,7 +535,7 @@ const StudentConsultations = () => {
                 </button>
               </div>
 
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <div className="relative inline-block" ref={filterRef}>
                   <div
                     onClick={() => setShowPopup_filter((prev) => !prev)}
@@ -570,7 +587,6 @@ const StudentConsultations = () => {
                       <h3 className="text-sm font-semibold text-gray-700 mb-2">
                         Filter out on Check-In Date
                       </h3>
-                      {/* Quick buttons */}
                       <div className="flex justify-between gap-2">
                         {["Today", "Week", "Month", "Year"].map((label) => (
                           <button
@@ -583,7 +599,6 @@ const StudentConsultations = () => {
                         ))}
                       </div>
 
-                      {/* Custom date range */}
                       <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
                           <DatePicker
@@ -618,7 +633,6 @@ const StudentConsultations = () => {
                         </div>
                       </div>
 
-                      {/* Apply & Reset */}
                       <div className="flex justify-end gap-2 pt-2">
                         <button
                           onClick={() => setDateFilter({ from: "", to: "" })}
@@ -635,51 +649,8 @@ const StudentConsultations = () => {
                       </div>
                     </div>
                   )}
-
-                  {deletePopup.open && (
-                    <>
-                      {/* Overlay */}
-                      <div
-                        className="fixed inset-0 bg-black bg-opacity-40 z-40"
-                        onClick={() =>
-                          setDeletePopup({ open: false, bookingId: null })
-                        }
-                      />
-
-                      {/* Popup box */}
-                      <div className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg w-[90%] max-w-md p-6 text-center">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-3">
-                          Delete Consultation?
-                        </h2>
-                        <p className="text-sm text-gray-500 mb-6">
-                          Are you sure you want to delete this Consultation?
-                          This action cannot be undone.
-                        </p>
-
-                        <div className="flex justify-center gap-4">
-                          <button
-                            onClick={() =>
-                              setDeletePopup({ open: false, bookingId: null })
-                            }
-                            className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                          >
-                            Cancel
-                          </button>
-
-                          <button
-                            onClick={() =>
-                              handleDeleteBooking(deletePopup.bookingId)
-                            }
-                            className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -806,12 +777,50 @@ const StudentConsultations = () => {
                 isOpen_popupForm ? "translate-x-0" : "translate-x-full"
               } panel_popupForm`}
             >
-              <div className="p-4 flex justify-between items-center border-b header_popupForm">
-                <h2 className="text-[#1D2826] text-lg font-semibold">
-                  {formMode === "add" && "Add New Booking"}
-                  {formMode === "edit" && "Edit Booking"}
-                  {formMode === "view" && "View Booking"}
-                </h2>
+              <div className="p-4 flex justify-between items-start border-b header_popupForm">
+                <div>
+                  {" "}
+                  <h2 className="text-[#1D2826] text-lg font-semibold">
+                    {formMode === "add" && "Add New Inquiry"}
+                    {formMode === "edit" && "Edit Inquiry"}
+                    {formMode === "view" && "View Inquiry"}
+                  </h2>
+                  {/* Stage */}
+                  <div className="flex items-center w-full mt-2">
+                    <label className="text-gray-400 text-xs mr-2 px-1 bg-white w-fit">
+                      Stage:
+                    </label>
+                    <select
+                      name="stage"
+                      value={formData.stage}
+                      onChange={handleChange}
+                      disabled={isViewOnly}
+                      className="border-gray-400 p-1 text-xs font-semibold border-b w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black"
+                    >
+                      <option value="">Select</option>
+                      <option value="New Lead">New Lead</option>
+                      <option value="Prospect">Prospect</option>
+                      <option value="Counselling">Counselling</option>
+                      <option value="Coaching Only">Coaching Only</option>
+                      <option value="Future Lead">Future Lead</option>
+                      <option value="Verified Lead">Verified Lead</option>
+                      <option value="Lead Lost">Lead Lost</option>
+                      <option value="Offer Letter">Offer Letter</option>
+                      <option value="Letter Acceptance">
+                        Letter Acceptance
+                      </option>
+                      <option value="Confirmation of Admission">
+                        Confirmation of Admission
+                      </option>
+                      <option value="Deposit Payment">Deposit Payment</option>
+                      <option value="Visa Docs Required">
+                        Visa Docs Required
+                      </option>
+                      <option value="Discontinued">Discontinued</option>
+                    </select>
+                  </div>
+                </div>
+
                 <button
                   onClick={handleClosePopup}
                   className="text-gray-500 hover:text-black text-xl"
@@ -915,7 +924,8 @@ const StudentConsultations = () => {
                       value={formData.destination}
                       onChange={handleChange}
                       disabled={isViewOnly}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none focus:border-black"
+                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      // className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none focus:border-black"
                     >
                       <option value="">Select</option>
                       <option value="Study in Australia">
@@ -947,7 +957,7 @@ const StudentConsultations = () => {
                       value={formData.nearestOffice || ""}
                       onChange={handleChange}
                       disabled={isViewOnly}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none focus:border-black"
+                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     >
                       <option value="">Select </option>
                       <option value="Rajkot">Rajkot</option>
@@ -996,7 +1006,7 @@ const StudentConsultations = () => {
                       value={formData.status || ""} // controlled value
                       onChange={handleChange}
                       disabled={isViewOnly}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     >
                       <option value="">Select </option>
                       <option value="pending">Pending</option>
@@ -1018,7 +1028,7 @@ const StudentConsultations = () => {
                       value={formData.startDuration || ""} // controlled value
                       onChange={handleChange}
                       disabled={isViewOnly}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     >
                       <option value="">Select</option>
                       <option value="Now">Now</option>
@@ -1041,7 +1051,7 @@ const StudentConsultations = () => {
                       value={formData.modeOfCon || ""} // controlled value
                       onChange={handleChange}
                       disabled={isViewOnly}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     >
                       <option value="">Select</option>
                       <option value="In Person">In Person</option>
@@ -1062,7 +1072,7 @@ const StudentConsultations = () => {
                       value={formData.studyLevel || ""} // controlled value
                       onChange={handleChange}
                       disabled={isViewOnly}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     >
                       <option value="">Select</option>
                       <option value="In Person">School</option>
@@ -1082,7 +1092,7 @@ const StudentConsultations = () => {
                       value={formData.fundingBy || ""} // controlled value
                       onChange={handleChange}
                       disabled={isViewOnly}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                     >
                       <option value="">Select</option>
                       <option value="Self Funded">Self Funded</option>
@@ -1113,7 +1123,11 @@ const StudentConsultations = () => {
 
         {/* Table */}
         <div>
-          <div className="shadow-md rounded-lg mt-5">
+          <div
+            className={`shadow-md rounded-lg mt-5 transition-all ease-linear duration-300 ${
+              isSidebarOpen ? "lg:max-w-[79vw]" : "lg:max-w-[93vw]"
+            }`}
+          >
             {loading ? (
               <div className="flex justify-center items-center py-10">
                 <div className="w-10 h-10 border-4 border-[#2B2A4C] border-t-transparent rounded-full animate-spin"></div>
@@ -1144,7 +1158,8 @@ const StudentConsultations = () => {
                         <th className="p-4 w-1/10">Mode</th>
                         <th className="p-4 w-1/10">Fund-By</th>
                         <th className="p-4 w-1/10">Study Level</th>
-                        <th className="p-4 w-1/10">Status</th>
+                        <th className="p-4 min-w-52 text-center">Stage</th>
+                        <th className="p-4 w-1/10 text-center">Status</th>
                         <th className="p-4 w-1/10">Actions</th>
                       </tr>
                     </thead>
@@ -1256,10 +1271,24 @@ const StudentConsultations = () => {
                             </Tooltip> */}
                             {b.fundingBy || "-"}
                           </td>
-                          {/* Status */}
+
+                          {/* Study Level */}
+                          <td className="px-4 py-3">{b.studyLevel || "-"}</td>
+
+                          {/* Stage */}
                           <td className="px-4 py-3 text-center">
-                            {b.studyLevel || "-"}
+                            {/* <div className="flex justify-between items-center"> */}
+                            <button
+                              className={`w-auto px-2 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
+                                // statusColors[b.bookingStatus?.()] || ""
+                                stageColors[b.stage] || ""
+                              }`}
+                            >
+                              {b.stage}
+                            </button>
+                            {/* </div> */}
                           </td>
+
                           {/* Status */}
                           <td className="px-4 py-3 text-center">
                             {/* <div className="flex justify-between items-center"> */}
@@ -1452,6 +1481,45 @@ const StudentConsultations = () => {
               </>
             )}
           </div>
+
+          {deletePopup.open && (
+            <>
+              {/* Overlay */}
+              <div
+                className="fixed inset-0 bg-black bg-opacity-40 z-40"
+                onClick={() => setDeletePopup({ open: false, bookingId: null })}
+              />
+
+              {/* Popup box */}
+              <div className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg w-[90%] max-w-md p-6 text-center">
+                <h2 className="text-lg font-semibold text-gray-800 mb-3">
+                  Delete Consultation?
+                </h2>
+                <p className="text-sm text-gray-500 mb-6">
+                  Are you sure you want to delete this Consultation? This action
+                  cannot be undone.
+                </p>
+
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={() =>
+                      setDeletePopup({ open: false, bookingId: null })
+                    }
+                    className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteBooking(deletePopup.bookingId)}
+                    className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>

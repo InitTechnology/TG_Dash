@@ -14,7 +14,8 @@ import {
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { HiMiniBuildingLibrary } from "react-icons/hi2";
 import { Link, useLocation } from "react-router-dom";
-import { HiDocumentCheck } from "react-icons/hi2";
+import { FaUserTie } from "react-icons/fa";
+// import { HiDocumentCheck } from "react-icons/hi2";
 
 const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
   const location = useLocation();
@@ -53,11 +54,16 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       text: "Universities",
       to: "/Universities",
     },
-    //    {
+    // {
     //   icon: <HiDocumentCheck />,
-    //   text: "Document Evaluator",
+    //   text: "Document\u00A0Evaluator",
     //   to: "/StudentDocument",
     // },
+    {
+      icon: <FaUserTie />,
+      text: "Staff Management",
+      to: "/StaffManagement",
+    },
     // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },
     // { icon: <FaUsers />, text: "Guests\u00A0Records", to: "/GuestRecords" },
     // { icon: <FaCalendarAlt />, text: "Calendar", to: "/Calendar" },
@@ -121,6 +127,19 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
           <p className="font-medium text-sm text-white">
             Hello, {user.name ?? "User"}
           </p>
+
+          {/* <div className="font-medium text-sm text-white">
+            {!isMobile && !isOpen ? (
+              <div className="w-8 h-8 mx-auto flex items-center justify-center rounded-full border border-white text-white mb-2">
+                {(user.name ?? "User").charAt(0).toUpperCase()}
+              </div>
+            ) : (
+              <p className="transition-all ease-in-out duration-500">
+                Hello,&nbsp;{user.name ?? "User"}
+              </p>
+            )}
+          </div> */}
+
           <p className="text-xs text-gray-400 mt-1">
             {user?.role
               ? user.role.charAt(0).toUpperCase() +

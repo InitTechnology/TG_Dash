@@ -448,8 +448,10 @@ const Dashboard = () => {
                   <p className="font-semibold">Recent Consultations</p>
                   <p className="text-xs text-gray-500 mt-1 flex items-center">
                     <IoIosCheckmarkCircle className="text-green-500 mr-1" />
-                    {todayBookings} Inquiry{todayBookings !== 1 ? "s" : ""} came
-                    today
+                    {todayBookings}{" "}
+                    {todayBookings === 1 ? "Inquiry" : "Inquiries"}{" "}
+                    {/* {todayBookings} Inquiry{todayBookings !== 1 ? "s" : ""}  */}
+                    Today
                   </p>
                 </div>
 

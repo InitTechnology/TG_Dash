@@ -87,6 +87,7 @@ const AddUniversityElementor = () => {
   const [rankQS, setRankQS] = useState("");
   const [inStudents, setInStudents] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [totalCourses, setTotalCourses] = useState(0);
   useEffect(() => {
     if (country) {
       setFlag(flagUrls[country] || null);
@@ -263,6 +264,7 @@ const AddUniversityElementor = () => {
       setUniInfo(data.university_info || "");
       setRankQS(data.world_rank?.qs_ranking || "");
       setInStudents(data.international_students?.total_count || "");
+      setTotalCourses(res.data.total_courses || 0);
       // setWebsiteUrl(""); // scraper did not return website_url
 
       // -----------------------------
@@ -556,7 +558,7 @@ const AddUniversityElementor = () => {
               placeholder="Enter university details here..."
             />
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 ">
               <p
                 className="font-bold text-2xl md:text-3xl lg:text-4xl 2xl:text-5xl text-[#2B2A4C] mt-10"
                 style={{ lineHeight: 1.3 }}
@@ -566,6 +568,11 @@ const AddUniversityElementor = () => {
                   Courses
                 </span>
               </p>
+              {totalCourses > 0 && (
+                <span className="ml-3 text-lg md:text-xl font-semibold text-gray-600">
+                  (From Scraper: {totalCourses})
+                </span>
+              )}
 
               {/* <div>
                 <button className="px-3 py-1.5 bg-indigo-900 rounded-lg text-center text-white hover:scale-95 transition-all duration-300 ease-in-out">
@@ -580,7 +587,7 @@ const AddUniversityElementor = () => {
               <div key={index} className="mt-5 space-y-4">
                 <div className="border border-gray-300 rounded-xl bg-white">
                   {/* Header */}
-                  <div className="w-full px-5 py-4 bg-[#F7F7FB] rounded-t-xl">
+                  <div className="w-full px-5 py-4 bg-[#F7F7FB] rounded-t-xl flex items-center justify-between">
                     <input
                       type="text"
                       value={courses[index].course_name}
@@ -590,6 +597,9 @@ const AddUniversityElementor = () => {
                       className="w-full lg:w-[50%] font-semibold text-lg md:text-xl text-[#2B2A4C] outline-none focus:outline-none focus:ring-0 bg-transparent border-b-2 border-[#2B2A4C]"
                       placeholder="Enter Course Name"
                     />
+                    <span className="font-bold text-lg md:text-xl text-gray-600">
+                      ({index + 1})
+                    </span>
                   </div>
 
                   <motion.div
