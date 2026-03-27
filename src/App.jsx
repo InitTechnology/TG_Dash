@@ -10,6 +10,9 @@ import AddUniversityElementor from "./components/Universities/AddUniversityEleme
 import EditUniversityElementor from "./components/Universities/EditUniversityElementor";
 import StudentDocument from "./components/Applications/StudentDocument";
 import axios from "axios";
+import DocumentEvaluator from "./components/Applications/DocumentEvaluator";
+import StudentDocuments from "./components/Applications/StudentDocuments";
+import StaffManagement from "./components/StaffManagement/StaffManagement";
 
 axios.defaults.headers.get["Cache-Control"] = "no-cache";
 axios.defaults.headers.get["Pragma"] = "no-cache";
@@ -46,6 +49,12 @@ function App() {
               path="/EditUniversityElementor/:uni_id"
               element={<EditUniversityElementor />}
             />
+
+            <Route path="/DocumentEvaluator" element={<DocumentEvaluator />} />
+
+            <Route path="/StudentDocuments" element={<StudentDocuments />} />
+
+            <Route path="/StaffManagement" element={<StaffManagement />} />
 
             {/* <Route path="*" element={<Error />} /> */}
           </Routes>
