@@ -298,7 +298,7 @@ const Dashboard = () => {
           </div>
 
           <div className="flex items-center">
-            <div className="">
+            {/* <div className="">
               <button className="Btn">
                 <svg
                   className="svgIcon"
@@ -311,7 +311,7 @@ const Dashboard = () => {
                 <span className="icon2"></span>
                 <span className="tooltip text-sm">Download</span>
               </button>
-            </div>
+            </div> */}
 
             <div className="flex items-center">
               <div className="relative inline-block" ref={filterRef}>

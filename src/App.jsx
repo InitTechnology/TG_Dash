@@ -54,7 +54,7 @@ function App() {
 
             <Route path="/StudentDocuments" element={<StudentDocuments />} />
 
-            <Route path="/StaffManagement" element={<StaffManagement />} />
+            <Route path="/UserManagement" element={<StaffManagement />} />
 
             {/* <Route path="*" element={<Error />} /> */}
           </Routes>

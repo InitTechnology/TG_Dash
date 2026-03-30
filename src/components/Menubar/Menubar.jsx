@@ -61,8 +61,8 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
     // },
     {
       icon: <FaUserTie />,
-      text: "Staff Management",
-      to: "/StaffManagement",
+      text: "User Management",
+      to: "/UserManagement",
     },
     // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },
     // { icon: <FaUsers />, text: "Guests\u00A0Records", to: "/GuestRecords" },
