@@ -39,7 +39,7 @@ const EditUniversityElementor = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [editingIndices, setEditingIndices] = useState(new Set());
-
+  const [totalCourses, setTotalCourses] = useState(0);
   const flagUrls = useMemo(
     () => ({
       Australia:
@@ -162,6 +162,7 @@ const EditUniversityElementor = () => {
         setInternationalStudents(u.inStudents || "");
         setWebsite(u.websiteUrl || "");
         setUniInfo(u.uniInfo || "");
+        setTotalCourses(u.total_courses || 0);
 
         if (u.logo_url) setLogo(u.logo_url);
 
@@ -326,6 +327,7 @@ const EditUniversityElementor = () => {
 
       if (parsedCourses.length > 0) {
         setCourses(parsedCourses);
+        setTotalCourses(parsedCourses.length);
       }
 
       alert("Scrape successful! Data updated.");
@@ -677,6 +679,12 @@ const EditUniversityElementor = () => {
                   Courses
                 </span>
               </p>
+              {/* {totalCourses > 0 && (
+                <span className="ml-3 text-lg md:text-xl font-semibold text-gray-600">
+                  (From Scraper: {totalCourses})
+                </span>
+              )} */}
+
               <input
                 type="text"
                 placeholder="Search courses..."
@@ -684,6 +692,7 @@ const EditUniversityElementor = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-900"
               />
+
               {/* <div>
                 <button
                   onClick={() => setShowPopup(true)}
@@ -693,6 +702,11 @@ const EditUniversityElementor = () => {
                 </button>
               </div> */}
             </div>
+            {totalCourses > 0 && (
+              <span className="ml-3 text-lg md:text-xl font-semibold text-gray-600">
+                (From Scraper: {totalCourses})
+              </span>
+            )}
           </div>
 
           {/* {courses.map((course, index) => (
@@ -950,7 +964,7 @@ const EditUniversityElementor = () => {
                     }
                   }}
                 >
-                  <div className="w-full px-5 py-4 bg-[#F7F7FB] rounded-t-xl">
+                  <div className="w-full px-5 py-4 bg-[#F7F7FB] rounded-t-xl flex items-center justify-between">
                     <input
                       type="text"
                       value={courses[originalIndex].course_name}
@@ -965,6 +979,9 @@ const EditUniversityElementor = () => {
                       className="w-full lg:w-[50%] font-semibold text-lg md:text-xl text-[#2B2A4C] outline-none focus:outline-none focus:ring-0 bg-transparent border-b-2 border-[#2B2A4C]"
                       placeholder="Enter Course Name"
                     />
+                    <span className="font-bold text-lg md:text-xl text-gray-600">
+                      ({originalIndex + 1})
+                    </span>
                   </div>
 
                   <motion.div

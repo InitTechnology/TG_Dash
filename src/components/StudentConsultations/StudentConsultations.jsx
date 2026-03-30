@@ -127,7 +127,7 @@ const StudentConsultations = () => {
           "https://transglobeedu.com/web-backend/create",
           payload,
         );
-        alert("Booking added successfully!");
+        alert("Lead added successfully!");
       }
 
       if (formMode === "edit" && editingBooking?.id) {
@@ -135,7 +135,7 @@ const StudentConsultations = () => {
           `https://transglobeedu.com/web-backend/update/${editingBooking.id}`,
           payload,
         );
-        alert("Booking updated successfully!");
+        alert("Lead updated successfully!");
       }
 
       handleClosePopup();
@@ -148,7 +148,7 @@ const StudentConsultations = () => {
   const handleDeleteBooking = async () => {
     try {
       if (!deletePopup.bookingId) {
-        alert("Invalid booking ID");
+        alert("Invalid Lead ID");
         return;
       }
 
@@ -156,7 +156,7 @@ const StudentConsultations = () => {
         `https://transglobeedu.com/web-backend/delete/${deletePopup.bookingId}`,
       );
 
-      alert("Booking deleted successfully.");
+      alert("Lead deleted successfully.");
       setDeletePopup({ open: false, bookingId: null });
       fetchBookings();
     } catch (err) {
@@ -480,7 +480,7 @@ const StudentConsultations = () => {
         <div className="flex justify-between gap-5 items-start lg:items-center">
           <div className="flex flex-col lg:flex-row gap-5 items-start lg:items-center">
             <p className="font-semibold text-xl text-gray-700 ml-10 lg:ml-0">
-              Consultation Inquiry
+              Consultation Lead
             </p>
           </div>
 
@@ -520,7 +520,7 @@ const StudentConsultations = () => {
                 )}
               </div>
 
-              <div className="">
+              {/* <div className="">
                 <button class="Btn">
                   <svg
                     class="svgIcon"
@@ -533,7 +533,7 @@ const StudentConsultations = () => {
                   <span class="icon2"></span>
                   <span class="tooltip text-sm">Download</span>
                 </button>
-              </div>
+              </div> */}
 
               {/* <div className="flex items-center">
                 <div className="relative inline-block" ref={filterRef}>
@@ -760,7 +760,7 @@ const StudentConsultations = () => {
               }}
               className="px-6 z-30 py-2 bg-indigo-900 rounded-lg font-medium text-sm text-center text-white relative hover:scale-95 transition-all duration-300 ease-in-out"
             >
-              + Add Inquiry
+              + Add Leads
             </button>
           </div>
 
@@ -781,9 +781,9 @@ const StudentConsultations = () => {
                 <div>
                   {" "}
                   <h2 className="text-[#1D2826] text-lg font-semibold">
-                    {formMode === "add" && "Add New Inquiry"}
-                    {formMode === "edit" && "Edit Inquiry"}
-                    {formMode === "view" && "View Inquiry"}
+                    {formMode === "add" && "Add New Lead"}
+                    {formMode === "edit" && "Edit Lead"}
+                    {formMode === "view" && "View Lead"}
                   </h2>
                   {/* Stage */}
                   <div className="flex items-center w-full mt-2">
@@ -980,7 +980,7 @@ const StudentConsultations = () => {
                   {/*  CreatedAt*/}
                   <div className="flex flex-col w-full">
                     <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
-                      Booking Date & Time
+                      Lead Date & Time
                     </label>
                     <input
                       type="text"
@@ -998,7 +998,7 @@ const StudentConsultations = () => {
                   {/* Booking Status */}
                   <div className="flex flex-col w-full">
                     <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      Booking Status
+                      Lead Status
                     </label>
 
                     <select
@@ -1154,7 +1154,7 @@ const StudentConsultations = () => {
                         <th className="p-4 w-1/10">Student Name</th>
                         <th className="p-4 w-1/10">Nearest Office</th>
                         <th className="p-4 w-1/10">Study Destination</th>
-                        <th className="p-4 w-1/10">Booking Date</th>
+                        <th className="p-4 w-1/10">Lead Date</th>
                         <th className="p-4 w-1/10">Mode</th>
                         <th className="p-4 w-1/10">Fund-By</th>
                         <th className="p-4 w-1/10">Study Level</th>
@@ -1388,6 +1388,7 @@ const StudentConsultations = () => {
                                       studyLevel: b.studyLevel || "",
                                       fundingBy: b.fundingBy || "",
                                       status: b.status || "pending",
+                                      stage: b.stage || "New Lead",
                                     });
                                     setFormMode("edit");
                                     setIsViewOnly(false);
@@ -1493,11 +1494,11 @@ const StudentConsultations = () => {
               {/* Popup box */}
               <div className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg w-[90%] max-w-md p-6 text-center">
                 <h2 className="text-lg font-semibold text-gray-800 mb-3">
-                  Delete Consultation?
+                  Delete Consultation Lead?
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
-                  Are you sure you want to delete this Consultation? This action
-                  cannot be undone.
+                  Are you sure you want to delete this Consultation Lead? This
+                  action cannot be undone.
                 </p>
 
                 <div className="flex justify-center gap-4">
