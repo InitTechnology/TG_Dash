@@ -427,7 +427,9 @@ const Dashboard = () => {
               {/* Past Consultations */}
               <div className="flex items-center justify-between bg-[#E7E7F8] p-4 rounded-lg">
                 <div>
-                  <p>Past Consultations (2 Week)</p>
+                  <p>
+                    Past Consultations <sup className="text-xs">(2 Week)</sup>
+                  </p>
                   <p className="text-lg font-medium">
                     {dashboardData.pastConsultations}
                   </p>

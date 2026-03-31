@@ -461,6 +461,47 @@ const StudentConsultations = () => {
   useEffect(() => {
     getStatusCounts();
   }, []);
+
+  const options_uniPref = [
+    { value: "uni1", label: "Uni 1" },
+    { value: "uni2", label: "Uni 2" },
+    { value: "uni3", label: "Uni 3" },
+    { value: "uni4", label: "Uni 4" },
+    { value: "uni5", label: "Uni 5" },
+    { value: "uni6", label: "Uni 6" },
+    { value: "uni7", label: "Uni 7" },
+    { value: "uni8", label: "Uni 8" },
+    { value: "uni9", label: "Uni 9" },
+    { value: "uni10", label: "Uni 10" },
+    { value: "uni11", label: "Uni 11" },
+    { value: "uni12", label: "Uni 12" },
+    { value: "uni13", label: "Uni 13" },
+    { value: "uni14", label: "Uni 14" },
+  ];
+
+  const [selected_uniPref, setSelected_uniPref] = useState([]);
+  const [isOpen_uniPref, setIsOpen_uniPref] = useState(false);
+  const dropdownRef_uniPref = useRef();
+
+  // Close on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!dropdownRef_uniPref.current?.contains(e.target)) {
+        setIsOpen_uniPref(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleOption_uniPref = (option) => {
+    setSelected_uniPref((prev) =>
+      prev.some((item) => item.value === option.value)
+        ? prev.filter((item) => item.value !== option.value)
+        : [...prev, option],
+    );
+  };
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -773,7 +814,7 @@ const StudentConsultations = () => {
             )}
 
             <div
-              className={`fixed top-0 right-0 h-full w-[85%] md:w-[640px] bg-white z-50 shadow-lg transform transition-transform duration-500 ease-in-out ${
+              className={`fixed top-0 right-0 h-full w-[85%] md:w-[680px] bg-white z-50 shadow-lg transform transition-transform duration-500 ease-in-out ${
                 isOpen_popupForm ? "translate-x-0" : "translate-x-full"
               } panel_popupForm`}
             >
@@ -785,40 +826,6 @@ const StudentConsultations = () => {
                     {formMode === "edit" && "Edit Lead"}
                     {formMode === "view" && "View Lead"}
                   </h2>
-                  {/* Stage */}
-                  <div className="flex items-center w-full mt-2">
-                    <label className="text-gray-400 text-xs mr-2 px-1 bg-white w-fit">
-                      Stage:
-                    </label>
-                    <select
-                      name="stage"
-                      value={formData.stage}
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 p-1 text-xs font-semibold border-b w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black"
-                    >
-                      <option value="">Select</option>
-                      <option value="New Lead">New Lead</option>
-                      <option value="Prospect">Prospect</option>
-                      <option value="Counselling">Counselling</option>
-                      <option value="Coaching Only">Coaching Only</option>
-                      <option value="Future Lead">Future Lead</option>
-                      <option value="Verified Lead">Verified Lead</option>
-                      <option value="Lead Lost">Lead Lost</option>
-                      <option value="Offer Letter">Offer Letter</option>
-                      <option value="Letter Acceptance">
-                        Letter Acceptance
-                      </option>
-                      <option value="Confirmation of Admission">
-                        Confirmation of Admission
-                      </option>
-                      <option value="Deposit Payment">Deposit Payment</option>
-                      <option value="Visa Docs Required">
-                        Visa Docs Required
-                      </option>
-                      <option value="Discontinued">Discontinued</option>
-                    </select>
-                  </div>
                 </div>
 
                 <button
@@ -829,292 +836,640 @@ const StudentConsultations = () => {
                 </button>
               </div>
 
-              <div className="p-4">
-                {/* first name */}
-                <div className=" grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3 items-center max-h-[85vh] overflow-y-auto py-2">
-                  <div className="flex flex-col w-full ">
-                    <label
-                      for="input"
-                      className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
-                    >
-                      First Name
-                    </label>
-                    <input
-                      placeholder="Enter first name"
-                      required
-                      name="firstName"
-                      onChange={handleChange}
-                      readOnly={isViewOnly}
-                      disabled={isViewOnly}
-                      value={formData.firstName || ""}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    />
+              <div className="max-h-[85vh] overflow-y-auto p-5 space-y-4">
+                <div>
+                  <p className="font-semibold text-[15px] text-indigo-800 mb-1">
+                    Details:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-1.5 items-center border-2 border-dashed border-indigo-100 rounded-lg pt-1 p-4">
+                    {/* first name */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        First Name
+                      </label>
+                      <input
+                        placeholder="Enter first name"
+                        required
+                        name="firstName"
+                        onChange={handleChange}
+                        readOnly={isViewOnly}
+                        disabled={isViewOnly}
+                        value={formData.firstName || ""}
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    {/* last name */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="  text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        Last Name
+                      </label>
+                      <input
+                        placeholder="Enter last name"
+                        required
+                        name="lastName"
+                        value={formData.lastName || ""}
+                        readOnly={isViewOnly}
+                        disabled={isViewOnly}
+                        onChange={handleChange}
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    {/* email */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        Email
+                      </label>
+                      <input
+                        placeholder="Enter your email"
+                        required
+                        name="email"
+                        value={formData.email || ""}
+                        readOnly={isViewOnly}
+                        disabled={isViewOnly}
+                        onChange={handleChange}
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    {/* Phone */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        Phone Number
+                      </label>
+                      <input
+                        placeholder="Enter phone number"
+                        required
+                        maxLength={10}
+                        name="phone"
+                        value={formData.phone || ""}
+                        readOnly={isViewOnly}
+                        disabled={isViewOnly}
+                        onChange={(e) => {
+                          const digitsOnly = e.target.value.replace(/\D/g, "");
+                          handleChange({
+                            target: { name: "phone", value: digitsOnly },
+                          });
+                        }}
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    {/* Stage */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Stage
+                      </label>
+                      <select
+                        name="stage"
+                        value={formData.stage}
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="New Lead">New Lead</option>
+                        <option value="Prospect">Prospect</option>
+                        <option value="Counselling">Counselling</option>
+                        <option value="Coaching Only">Coaching Only</option>
+                        <option value="Future Lead">Future Lead</option>
+                        <option value="Verified Lead">Verified Lead</option>
+                        <option value="Lead Lost">Lead Lost</option>
+                        <option value="Offer Letter">Offer Letter</option>
+                        <option value="Letter Acceptance">
+                          Letter Acceptance
+                        </option>
+                        <option value="Confirmation of Admission">
+                          Confirmation of Admission
+                        </option>
+                        <option value="Deposit Payment">Deposit Payment</option>
+                        <option value="Visa Docs Required">
+                          Visa Docs Required
+                        </option>
+                        <option value="Discontinued">Discontinued</option>
+                      </select>
+                    </div>
+                    {/* Lead Status */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Lead Status
+                      </label>
+
+                      <select
+                        name="status"
+                        value={formData.status || ""} // controlled value
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select </option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="converted">Converted</option>
+                        <option value="declined">Declined</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                    {/* CreatedAt*/}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                        Lead Date & Time
+                      </label>
+                      <input
+                        type="text"
+                        name="bookingTime"
+                        readOnly
+                        value={
+                          formData.bookingTime
+                            ? new Date(formData.bookingTime).toLocaleString()
+                            : ""
+                        }
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md text-black"
+                      />
+                    </div>
+                    {/* office */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Nearest Office
+                      </label>
+                      <select
+                        name="nearestOffice"
+                        value={formData.nearestOffice || ""}
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select </option>
+                        <option value="Rajkot">Rajkot</option>
+                        <option value="Surat">Surat</option>
+                        <option value="Ahemdabad">Ahemdabad</option>
+                        <option value="Jamnagar">Jamnagar</option>
+                        <option value="Morbi">Morbi</option>
+                        <option value="Junagadh">Junagadh</option>
+                        <option value="Gandhinagar">Gandhinagar</option>
+                        <option value="Anand">Anand</option>
+                        <option value="Vadodra">Vadodra</option>
+                        <option value="Indore">Indore</option>
+                        <option value="Jaipur">Jaipur</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Kathmandu, Nepal">
+                          Kathmandu, Nepal
+                        </option>
+                      </select>
+                    </div>
+                    {/* Source */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Discovery Source
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select </option>
+                        <option value="">Social Media</option>
+                        <option value="">Employee Referral</option>
+                        <option value="">Student Referral</option>
+                        <option value="">Events</option>
+                        <option value="">Friends / Family</option>
+                        <option value="">Inbound Call</option>
+                        <option value="">Partner</option>
+                        <option value="">Walk-in</option>
+                        <option value="">Other</option>
+                      </select>
+                    </div>
+                    {/* Rate */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Rate
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">Hot</option>
+                        <option value="">Warm</option>
+                        <option value="">Cold</option>
+                      </select>
+                    </div>
+                    {/* Assignee */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Assignee
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">admin user 1</option>
+                        <option value="">admin user 2</option>
+                        <option value="">admin user 3</option>
+                      </select>
+                    </div>
                   </div>
-                  {/* last name */}
-                  <div className="flex flex-col w-full">
-                    <label
-                      for="input"
-                      className="  text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
-                    >
-                      Last Name
-                    </label>
-                    <input
-                      placeholder="Enter last name"
-                      required
-                      name="lastName"
-                      value={formData.lastName || ""}
-                      readOnly={isViewOnly}
-                      disabled={isViewOnly}
-                      onChange={handleChange}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    />
+                </div>
+
+                <div>
+                  <p className="font-semibold text-[15px] text-indigo-800 mb-1">
+                    Personal Info:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-1.5 items-center border-2 border-dashed border-indigo-100 rounded-lg pt-1 p-4">
+                    {/* DOB */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        Date of Birth
+                      </label>
+                      <input
+                        type="date"
+                        required
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    {/* Gender */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Gender
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">Male</option>
+                        <option value="">Female</option>
+                        <option value="">Other</option>
+                      </select>
+                    </div>
+                    {/* Current Education */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Current Education
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">Completed 12th / Diploma</option>
+                        <option value="">Completed Undergraduate Degree</option>
+                        <option value="">Completed Postgraduate Degree</option>
+                        <option value="">Pursuing 12th / Diploma</option>
+                        <option value="">Pursuing Undergraduate Degree</option>
+                        <option value="">Pursuing Postgraduate Degree</option>
+                        <option value="">Other</option>
+                      </select>
+                    </div>
+                    {/* Work Exp */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        Work Experience
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Enter your work experience"
+                        required
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    {/* City */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        City
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">City 1</option>
+                        <option value="">City 2</option>
+                        <option value="">City 3</option>
+                      </select>
+                    </div>
+                    {/* State */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        State
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">State 1</option>
+                        <option value="">State 2</option>
+                        <option value="">State 3</option>
+                      </select>
+                    </div>
+                    {/* Country */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Country
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">Country 1</option>
+                        <option value="">Country 2</option>
+                        <option value="">Country 3</option>
+                      </select>
+                    </div>
+                    {/* Parent Name */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        Parent's Name
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Enter parent's name"
+                        required
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    {/* Parent Contact */}
+                    <div className="flex flex-col w-full">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                      >
+                        Parent's Contact No.
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Enter parent's contact no."
+                        required
+                        className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
                   </div>
-                  {/* email */}
-                  <div className="flex flex-col w-full">
-                    <label
-                      for="input"
-                      className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                </div>
+
+                <div>
+                  <p className="font-semibold text-[15px] text-indigo-800 mb-1">
+                    Preference:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-1.5 items-center border-2 border-dashed border-indigo-100 rounded-lg pt-1 p-4">
+                    {/* Study Level */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Preferred Study Program
+                      </label>
+
+                      <select
+                        name="studyLevel"
+                        value={formData.studyLevel || ""} // controlled value
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="In Person">School</option>
+                        <option value="Undergraduate">Undergraduate</option>
+                        <option value="Postgraduate">Postgraduate</option>
+                      </select>
+                    </div>
+                    {/* Study Destination */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Study Destination
+                      </label>
+                      <select
+                        name="destination"
+                        value={formData.destination}
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                        // className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none focus:border-black"
+                      >
+                        <option value="">Select</option>
+                        <option value="Study in Australia">
+                          Study in Australia
+                        </option>
+                        <option value="Study in Canada">Study in Canada</option>
+                        <option value="Study in USA">Study in USA</option>
+                        <option value="Study in UK">Study in UK</option>
+                        <option value="Study in New Zealand">
+                          Study in New Zealand
+                        </option>
+                        <option value="Study in Germany">
+                          Study in Germany
+                        </option>
+                        <option value="Study in Singapore">
+                          Study in Singapore
+                        </option>
+                        <option value="Study in Dubai">Study in Dubai</option>
+                        <option value="Study in Europe">Study in Europe</option>
+                        <option value="Study in Ireland">
+                          Study in Ireland
+                        </option>
+                      </select>
+                    </div>
+                    {/* Intake Month */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Intake Month
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">January</option>
+                        <option value="">February</option>
+                        <option value="">March</option>
+                        <option value="">April</option>
+                        <option value="">May</option>
+                        <option value="">June</option>
+                        <option value="">July</option>
+                        <option value="">August</option>
+                        <option value="">September</option>
+                        <option value="">October</option>
+                        <option value="">November</option>
+                        <option value="">December</option>
+                        <option value="">Spring</option>
+                        <option value="">Summer</option>
+                        <option value="">Rolling</option>
+                      </select>
+                    </div>
+                    {/* Intake Month */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Intake Year
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">2026</option>
+                        <option value="">2027</option>
+                        <option value="">2028</option>
+                        <option value="">2029</option>
+                        <option value="">2030</option>
+                        <option value="">2031</option>
+                        <option value="">2032</option>
+                        <option value="">2033</option>
+                        <option value="">2034</option>
+                        <option value="">2035</option>
+                      </select>
+                    </div>
+
+                    {/* University */}
+                    <div
+                      className="sm:col-span-2 flex flex-col w-full relative"
+                      ref={dropdownRef_uniPref}
                     >
-                      Email
-                    </label>
-                    <input
-                      placeholder="Enter your email"
-                      required
-                      name="email"
-                      value={formData.email || ""}
-                      readOnly={isViewOnly}
-                      disabled={isViewOnly}
-                      onChange={handleChange}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    />
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Preferred University
+                      </label>
+
+                      <div
+                        onClick={() => setIsOpen_uniPref(!isOpen_uniPref)}
+                        className="border border-gray-400 rounded-lg min-h-[44px] px-3 py-2 text-sm flex flex-wrap gap-1 items-center cursor-pointer focus-within:border-black focus-within:shadow-md"
+                      >
+                        {selected_uniPref.length > 0 ? (
+                          selected_uniPref.map((item) => (
+                            <span
+                              key={item.value}
+                              className="bg-indigo-100/80 px-2 py-0.5 my-1 rounded text-sm flex items-center gap-1"
+                            >
+                              {item.label}
+                              <span
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleOption_uniPref(item);
+                                }}
+                                className="cursor-pointer text-red-500"
+                              >
+                                ×
+                              </span>
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-black/25">
+                            Select universities
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Dropdown */}
+                      {isOpen_uniPref && (
+                        <div className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-b-lg shadow-md z-50 max-h-32 overflow-auto">
+                          {options_uniPref.map((option) => {
+                            const isSelected = selected_uniPref.some(
+                              (item) => item.value === option.value,
+                            );
+
+                            return (
+                              <div
+                                key={option.value}
+                                onClick={() => toggleOption_uniPref(option)}
+                                className={`px-3 py-2 text-sm cursor-pointer flex justify-between items-center ${
+                                  isSelected
+                                    ? "bg-indigo-50"
+                                    : "hover:bg-gray-100"
+                                }`}
+                              >
+                                {option.label}
+                                {isSelected && <span>✓</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Start Duration */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Willing to start in?
+                      </label>
+
+                      <select
+                        name="startDuration"
+                        value={formData.startDuration || ""} // controlled value
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="Now">Now</option>
+                        <option value="In 1 Months">In 1 Months</option>
+                        <option value="In 3 Months">In 3 Months</option>
+                        <option value="In 6 Months">In 6 Months</option>
+                        <option value="In 12 Months">In 12 Months</option>
+                        <option value="Not Sure Yet">Not Sure Yet</option>
+                      </select>
+                    </div>
+                    {/* Mode Of Contact */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Preferred Mode Of Counselling
+                      </label>
+
+                      <select
+                        name="modeOfCon"
+                        value={formData.modeOfCon || ""} // controlled value
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="In Person">In Person</option>
+                        <option value="Virtual Counselling">
+                          Virtual Counselling
+                        </option>
+                      </select>
+                    </div>
+                    {/* Funding */}
+                    <div className="flex flex-col w-full">
+                      <label className="\ text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Education Funded by?
+                      </label>
+
+                      <select
+                        name="fundingBy"
+                        value={formData.fundingBy || ""} // controlled value
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="Self Funded">Self Funded</option>
+                        <option value="Parents">Parents</option>
+                        <option value="Bank Loan">Bank Loan</option>
+                      </select>
+                    </div>
                   </div>
-                  {/* Phone */}
-                  <div className="flex flex-col w-full">
-                    <label
-                      for="input"
-                      className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
-                    >
-                      Phone Number
-                    </label>
-                    <input
-                      placeholder="Enter phone number"
-                      required
-                      maxLength={10}
-                      name="phone"
-                      value={formData.phone || ""}
-                      readOnly={isViewOnly}
-                      disabled={isViewOnly}
-                      onChange={(e) => {
-                        const digitsOnly = e.target.value.replace(/\D/g, "");
-                        handleChange({
-                          target: { name: "phone", value: digitsOnly },
-                        });
-                      }}
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    />
+                </div>
+
+                <div>
+                  <p className="font-semibold text-[15px] text-indigo-800 mb-1">
+                    Identity Docs:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-1.5 items-center border-2 border-dashed border-indigo-100 rounded-lg pt-1 p-4">
+                    {/* Country */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Country of Passport
+                      </label>
+                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                        <option value="">Select</option>
+                        <option value="">Country 1</option>
+                        <option value="">Country 2</option>
+                        <option value="">Country 3</option>
+                      </select>
+                    </div>
                   </div>
+                </div>
 
-                  {/* Study Destination */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      Study Destination
-                    </label>
-                    <select
-                      name="destination"
-                      value={formData.destination}
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                      // className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none focus:border-black"
-                    >
-                      <option value="">Select</option>
-                      <option value="Study in Australia">
-                        Study in Australia
-                      </option>
-                      <option value="Study in Canada">Study in Canada</option>
-                      <option value="Study in USA">Study in USA</option>
-                      <option value="Study in UK">Study in UK</option>
-                      <option value="Study in New Zealand">
-                        Study in New Zealand
-                      </option>
-                      <option value="Study in Germany">Study in Germany</option>
-                      <option value="Study in Singapore">
-                        Study in Singapore
-                      </option>
-                      <option value="Study in Dubai">Study in Dubai</option>
-                      <option value="Study in Europe">Study in Europe</option>
-                      <option value="Study in Ireland">Study in Ireland</option>
-                    </select>
-                  </div>
+                <div className="grid grid-cols-2 justify-self-center w-96 gap-3 mt-5">
+                  <button
+                    onClick={handleClosePopup}
+                    className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+                  >
+                    Cancel
+                  </button>
 
-                  {/* office */}
-                  <div className="flex flex-col w-full">
-                    <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      Nearest Office
-                    </label>
-                    <select
-                      name="nearestOffice"
-                      value={formData.nearestOffice || ""}
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    >
-                      <option value="">Select </option>
-                      <option value="Rajkot">Rajkot</option>
-                      <option value="Surat">Surat</option>
-                      <option value="Ahemdabad">Ahemdabad</option>
-                      <option value="Jamnagar">Jamnagar</option>
-                      <option value="Morbi">Morbi</option>
-                      <option value="Junagadh">Junagadh</option>
-                      <option value="Gandhinagar">Gandhinagar</option>
-                      <option value="Anand">Anand</option>
-                      <option value="Vadodra">Vadodra</option>
-                      <option value="Indore">Indore</option>
-                      <option value="Jaipur">Jaipur</option>
-                      <option value="Delhi">Delhi</option>
-                      <option value="Chandigarh">Chandigarh</option>
-                      <option value="Kathmandu, Nepal">Kathmandu, Nepal</option>
-                    </select>
-                  </div>
-
-                  {/*  CreatedAt*/}
-                  <div className="flex flex-col w-full">
-                    <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
-                      Lead Date & Time
-                    </label>
-                    <input
-                      type="text"
-                      name="bookingTime"
-                      readOnly
-                      value={
-                        formData.bookingTime
-                          ? new Date(formData.bookingTime).toLocaleString()
-                          : ""
-                      }
-                      className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md text-black"
-                    />
-                  </div>
-
-                  {/* Booking Status */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      Lead Status
-                    </label>
-
-                    <select
-                      name="status"
-                      value={formData.status || ""} // controlled value
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    >
-                      <option value="">Select </option>
-                      <option value="pending">Pending</option>
-                      <option value="approved">Approved</option>
-                      <option value="converted">Converted</option>
-                      <option value="declined">Declined</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </div>
-
-                  {/* Start Duration */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      When will they like to start?
-                    </label>
-
-                    <select
-                      name="startDuration"
-                      value={formData.startDuration || ""} // controlled value
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    >
-                      <option value="">Select</option>
-                      <option value="Now">Now</option>
-                      <option value="In 1 Months">In 1 Months</option>
-                      <option value="In 3 Months">In 3 Months</option>
-                      <option value="In 6 Months">In 6 Months</option>
-                      <option value="In 12 Months">In 12 Months</option>
-                      <option value="Not Sure Yet">Not Sure Yet</option>
-                    </select>
-                  </div>
-
-                  {/* Mode Of Contact */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      Preferred Mode Of Counselling?
-                    </label>
-
-                    <select
-                      name="modeOfCon"
-                      value={formData.modeOfCon || ""} // controlled value
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    >
-                      <option value="">Select</option>
-                      <option value="In Person">In Person</option>
-                      <option value="Virtual Counselling">
-                        Virtual Counselling
-                      </option>
-                    </select>
-                  </div>
-
-                  {/* Study Level */}
-                  <div className="flex flex-col w-full">
-                    <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      Preferred Study Level?
-                    </label>
-
-                    <select
-                      name="studyLevel"
-                      value={formData.studyLevel || ""} // controlled value
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    >
-                      <option value="">Select</option>
-                      <option value="In Person">School</option>
-                      <option value="Undergraduate">Undergraduate</option>
-                      <option value="Postgraduate">Postgraduate</option>
-                    </select>
-                  </div>
-
-                  {/* Funding */}
-                  <div className="flex flex-col w-full">
-                    <label className="\ text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                      How Would You Fund Your Education?
-                    </label>
-
-                    <select
-                      name="fundingBy"
-                      value={formData.fundingBy || ""} // controlled value
-                      onChange={handleChange}
-                      disabled={isViewOnly}
-                      className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    >
-                      <option value="">Select</option>
-                      <option value="Self Funded">Self Funded</option>
-                      <option value="Parents">Parents</option>
-                      <option value="Bank Loan">Bank Loan</option>
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 mt-5">
-                    <button
-                      onClick={handleClosePopup}
-                      className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
-                    >
-                      Cancel
-                    </button>
-
-                    <button
-                      onClick={handleSaveBooking}
-                      className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
-                    >
-                      Save
-                    </button>
-                  </div>
+                  <button
+                    onClick={handleSaveBooking}
+                    className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+                  >
+                    Save
+                  </button>
                 </div>
               </div>
             </div>
