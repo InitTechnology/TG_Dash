@@ -61,7 +61,7 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
     // },
     {
       icon: <FaUserTie />,
-      text: "User Management",
+      text: "User\u00A0Management",
       to: "/UserManagement",
     },
     // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },
@@ -124,9 +124,16 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       )}*/}
       {user && (
         <div className="mb-6 text-left transition-all duration-500 ease-in-out">
-          <p className="font-medium text-sm text-white">
+          {/* <p className="font-medium text-sm text-white">
             Hello, {user.name ?? "User"}
           </p>
+
+          <p className="text-xs text-gray-400 mt-1">
+            {user?.role
+              ? user.role.charAt(0).toUpperCase() +
+                user.role.slice(1).toLowerCase()
+              : ""}
+          </p> */}
 
           {/* <div className="font-medium text-sm text-white">
             {!isMobile && !isOpen ? (
@@ -139,13 +146,6 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
               </p>
             )}
           </div> */}
-
-          <p className="text-xs text-gray-400 mt-1">
-            {user?.role
-              ? user.role.charAt(0).toUpperCase() +
-                user.role.slice(1).toLowerCase()
-              : ""}
-          </p>
         </div>
       )}
 

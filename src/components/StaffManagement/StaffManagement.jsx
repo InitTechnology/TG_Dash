@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Menubar from "../Menubar/Menubar";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import "../Dashboard/Dashboard.css";
 import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
-import { FaEdit, FaEye } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 import { MdDelete, MdCancel } from "react-icons/md";
 import axios from "axios";
 

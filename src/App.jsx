@@ -13,6 +13,7 @@ import axios from "axios";
 import DocumentEvaluator from "./components/Applications/DocumentEvaluator";
 import StudentDocuments from "./components/Applications/StudentDocuments";
 import StaffManagement from "./components/StaffManagement/StaffManagement";
+import Events from "./components/Events/Events";
 
 axios.defaults.headers.get["Cache-Control"] = "no-cache";
 axios.defaults.headers.get["Pragma"] = "no-cache";
@@ -55,6 +56,8 @@ function App() {
             <Route path="/StudentDocuments" element={<StudentDocuments />} />
 
             <Route path="/UserManagement" element={<StaffManagement />} />
+
+            <Route path="/Events" element={<Events />} />
 
             {/* <Route path="*" element={<Error />} /> */}
           </Routes>
