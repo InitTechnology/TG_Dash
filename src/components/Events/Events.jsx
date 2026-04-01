@@ -8,6 +8,10 @@ import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
+import { DateRange } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import { format } from "date-fns";
 
 const Events = () => {
   const [events] = useState([
@@ -122,7 +126,56 @@ const Events = () => {
     setIsOpen_popupForm(false);
   };
 
-  // ✅ Static Events Array
+  const [openCalendar, setOpenCalendar] = useState(false);
+
+  const [range, setRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
+
+  const [error, setError] = useState("");
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const inputRef = useRef(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Only WEBP
+    if (file.type !== "image/webp") {
+      setError("Only WEBP images are allowed.");
+      e.target.value = "";
+      setImage(null);
+      setPreview(null);
+      return;
+    }
+
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      if (img.width !== img.height) {
+        setError("Please select a square ratio (1:1) image.");
+        e.target.value = "";
+        setImage(null);
+        setPreview(null);
+      } else {
+        setError("");
+        setImage(file);
+        setPreview(objectUrl);
+      }
+    };
+
+    img.src = objectUrl;
+  };
+
+  const handleClick = () => {
+    inputRef.current.click(); // open file picker again
+  };
 
   return (
     <div className="flex bg-[#F8F9FA]">
@@ -176,8 +229,8 @@ const Events = () => {
 
         {/* Button */}
         <div className="mt-8">
-          <div className="flex gap-4 w-full justify-between">
-            <select class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer">
+          <div className="flex gap-4 w-full justify-end">
+            {/* <select class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer">
               <option value="">Filter Country</option>
               <option value="Canada">Canada</option>
               <option value="USA">USA</option>
@@ -189,7 +242,7 @@ const Events = () => {
               <option value="Dubai">Dubai</option>
               <option value="Europe">Europe</option>
               <option value="Global">Global</option>
-            </select>
+            </select> */}
 
             <div>
               <button
@@ -216,7 +269,6 @@ const Events = () => {
                 >
                   <div className="p-4 flex justify-between items-start border-b header_popupForm">
                     <div>
-                      {" "}
                       <h2 className="text-[#1D2826] text-lg font-semibold">
                         Add Event
                       </h2>
@@ -230,8 +282,21 @@ const Events = () => {
                     </button>
                   </div>
 
-                  <div className="max-h-[85vh] overflow-y-auto p-5 space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-1.5 items-center">
+                  <div className="max-h-[90vh] overflow-y-auto p-5 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 items-center">
+                      {/* Event ID */}
+                      <div className="flex flex-col w-full">
+                        <label
+                          for="input"
+                          className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                        >
+                          Event ID
+                        </label>
+                        <p className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                          01
+                        </p>
+                      </div>
+
                       {/* Event Title */}
                       <div className="flex flex-col w-full">
                         <label
@@ -246,9 +311,200 @@ const Events = () => {
                           className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                         />
                       </div>
+
+                      {/* Event Date(s) */}
+                      <div className="flex flex-col w-full relative">
+                        <label
+                          htmlFor="eventDates"
+                          className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit z-10"
+                        >
+                          Event Date(s)
+                        </label>
+
+                        {/* Input Box */}
+                        <div
+                          onClick={() => setOpenCalendar(true)}
+                          className="border border-gray-400 p-3 text-sm rounded-lg w-full cursor-pointer focus-within:border-black focus-within:shadow-md"
+                        >
+                          {range[0].startDate && range[0].endDate ? (
+                            <span className="text-gray-800">
+                              {format(range[0].startDate, "dd MMM yyyy")}
+                              {range[0].startDate !== range[0].endDate && (
+                                <>
+                                  {" "}
+                                  - {format(range[0].endDate, "dd MMM yyyy")}
+                                </>
+                              )}
+                            </span>
+                          ) : (
+                            <span className="text-black/25">
+                              Select event date(s)
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Calendar Popup */}
+                        {openCalendar && (
+                          <>
+                            {/* <div
+                              className="fixed inset-0 bg-black/0 z-40"
+                              onClick={() => setOpenCalendar(false)}
+                            ></div> */}
+
+                            {/* Calendar Box */}
+                            <div className="absolute z-50 -left-11 sm:left-0 top-2 sm:top-[68px] bg-white shadow-custom rounded-xl p-4 w-auto scale-[0.75] sm:scale-100">
+                              {/* Header */}
+                              <div className="flex justify-between items-center mb-3">
+                                <p className="font-semibold text-gray-800">
+                                  Select Event Date(s)
+                                </p>
+
+                                <button
+                                  onClick={() => setOpenCalendar(false)}
+                                  className="text-gray-400 hover:text-black"
+                                >
+                                  <MdCancel size={20} />
+                                </button>
+                              </div>
+
+                              {/* Selected Date Preview */}
+                              <div className="text-sm text-center mb-3 text-gray-700">
+                                {format(range[0].startDate, "dd MMM yyyy")}
+                                {range[0].startDate !== range[0].endDate && (
+                                  <>
+                                    {" "}
+                                    - {format(range[0].endDate, "dd MMM yyyy")}
+                                  </>
+                                )}
+                              </div>
+
+                              {/* Calendar */}
+                              <DateRange
+                                ranges={range}
+                                onChange={(item) => setRange([item.selection])}
+                                moveRangeOnFirstSelection={false}
+                                minDate={new Date()}
+                                rangeColors={["#312e81"]}
+                              />
+
+                              {/* Actions */}
+                              <div className="flex justify-end mt-3 gap-2">
+                                <button
+                                  onClick={() => setOpenCalendar(false)}
+                                  className="px-4 py-1.5 text-sm rounded-md border border-gray-300 hover:bg-gray-100"
+                                >
+                                  Cancel
+                                </button>
+
+                                <button
+                                  onClick={() => setOpenCalendar(false)}
+                                  className="px-4 py-1.5 text-sm rounded-md bg-[#2B2A4C] text-white hover:opacity-90"
+                                >
+                                  Apply
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Display Date */}
+                      <div className="flex flex-col w-full">
+                        <label
+                          for="input"
+                          className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                        >
+                          Display Date (Text)
+                        </label>
+                        <input
+                          placeholder="20th to 25th July 2026 / 9th June 2026"
+                          required
+                          className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                        />
+                      </div>
+
+                      {/* Destination */}
+                      <div className="flex flex-col w-full">
+                        <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                          Destination
+                        </label>
+                        <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                          <option value="">Select</option>
+                          <option value="Australia">Australia</option>
+                          <option value="Canada">Canada</option>
+                          <option value="USA">USA</option>
+                          <option value="UK">UK</option>
+                          <option value="New Zealand">New Zealand</option>
+                          <option value="Germany">Germany</option>
+                          <option value="Singapore">Singapore</option>
+                          <option value="Dubai">Dubai</option>
+                          <option value="Europe">Europe</option>
+                          <option value="Ireland">Ireland</option>
+                          <option value="Ireland">Global</option>
+                        </select>
+                      </div>
+
+                      {/* City */}
+                      <div className="flex flex-col w-full">
+                        <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                          City
+                        </label>
+                        <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                          <option value="">Select</option>
+                          <option value="">City 1</option>
+                          <option value="">City 2</option>
+                          <option value="">City 3</option>
+                        </select>
+                      </div>
+
+                      {/* Image */}
+                      <div className="flex flex-col w-full sm:col-span-2">
+                        {/* Messages */}
+                        {error && (
+                          <span className="text-red-500 text-xs mt-2">
+                            {error}
+                          </span>
+                        )}
+
+                        {image && !error && (
+                          <span className="text-green-600 text-xs mt-2">
+                            ✅ Image selected. Click it again to replace.
+                          </span>
+                        )}
+                        <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
+                          Add Image
+                        </label>
+
+                        {/* Hidden Input */}
+                        <input
+                          ref={inputRef}
+                          type="file"
+                          accept="image/webp"
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+
+                        {/* Upload Box / Image Preview */}
+                        <div
+                          onClick={handleClick}
+                          className="border-indigo-200 border-2 border-dashed p-3 rounded-lg w-full min-h-80 flex items-center justify-center cursor-pointer overflow-hidden hover:border-indigo-800 transition"
+                        >
+                          {!preview ? (
+                            <span className="text-gray-400 text-sm">
+                              Click to upload image
+                            </span>
+                          ) : (
+                            <img
+                              src={preview}
+                              alt="preview"
+                              className="w-full h-full object-contain"
+                            />
+                          )}
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-2 justify-self-center w-96 gap-3 mt-5">
+                    <div className="grid grid-cols-2 max-w-[310px] gap-3 mt-5">
                       <button
                         onClick={handleClosePopup}
                         className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
@@ -287,10 +543,10 @@ const Events = () => {
                   <th className="p-4 w-1/10">Image</th>
                   <th className="p-4 w-1/10">Event Title</th>
                   <th className="p-4 w-1/10">Date Displayed</th>
-                  <th className="p-4 w-1/10">Date(s)</th>
+                  {/* <th className="p-4 w-1/10">Date(s)</th> */}
                   <th className="p-4 w-1/10">Destination</th>
                   <th className="p-4 w-1/10">City</th>
-                  <th className="p-4 w-1/10">Actions</th>
+                  <th className="p-4 w-1/10 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -312,7 +568,7 @@ const Events = () => {
                     </td>
                     <td className="px-4 py-3">{event.title}</td>
                     <td className="px-4 py-3">{event.dateShown}</td>
-                    <td className="px-4 py-3">{event.dates.join(", ")}</td>
+                    {/* <td className="px-4 py-3">{event.dates.join(", ")}</td> */}
                     <td className="px-4 py-3">{event.destination}</td>
                     <td className="px-4 py-3">{event.city}</td>
 

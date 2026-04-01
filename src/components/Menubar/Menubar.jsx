@@ -15,6 +15,8 @@ import { RiLogoutCircleRLine } from "react-icons/ri";
 import { HiMiniBuildingLibrary } from "react-icons/hi2";
 import { Link, useLocation } from "react-router-dom";
 import { FaUserTie } from "react-icons/fa";
+import { BsCalendar2EventFill } from "react-icons/bs";
+// import { CgTemplate } from "react-icons/cg";
 // import { HiDocumentCheck } from "react-icons/hi2";
 
 const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
@@ -50,6 +52,11 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       to: "/StudentConsultations",
     },
     {
+      icon: <BsCalendar2EventFill />,
+      text: "Events",
+      to: "/Events",
+    },
+    {
       icon: <HiMiniBuildingLibrary />,
       text: "Universities",
       to: "/Universities",
@@ -64,26 +71,12 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       text: "User\u00A0Management",
       to: "/UserManagement",
     },
-    // { icon: <FaBuilding />, text: "Properties", to: "/Properties" },
-    // { icon: <FaUsers />, text: "Guests\u00A0Records", to: "/GuestRecords" },
-    // { icon: <FaCalendarAlt />, text: "Calendar", to: "/Calendar" },
     // {
-    //   icon: <FaUserTie />,
-    //   text: "Staff\u00A0Management",
-    //   to: "/StaffManagement",
+    //   icon: <CgTemplate />,
+    //   text: "Banner\u00A0Elementor",
+    //   to: "/",
     // },
-    // {
-    //   icon: <FaMoneyCheckAlt />,
-    //   text: "Payments\u00A0&\u00A0Invoicing",
-    //   to: "/Payments",
-    // },
-    // {
-    //   icon: <FaCommentDots />,
-    //   text: "Reviews\u00A0&\u00A0Feedback",
-    //   to: "/Reviews",
-    // },
-    // { icon: <FaTasks />, text: "Kanban\u00A0Board", to: "/KanbanBoard" },
-    // { icon: <FaTags />, text: "Discounts", to: "/Discounts" },
+
     { icon: <RiLogoutCircleRLine />, text: "Logout", action: handleLogout },
   ];
   const handleItemClick = () => {

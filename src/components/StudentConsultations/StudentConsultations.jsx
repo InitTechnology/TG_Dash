@@ -28,9 +28,19 @@ const StudentConsultations = () => {
   const [bookings, setBookings] = useState([]);
   const [dateFilter] = useState({ from: "", to: "" });
   const [isViewOnly, setIsViewOnly] = useState(false);
-
+  const [options_uniPref, setOptions_uniPref] = useState([]);
+  const [uniSearchQuery, setUniSearchQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [staffList, setStaffList] = useState([]);
+  const [worldData, setWorldData] = useState([]);
+  const [stateList, setStateList] = useState([]);
+  const [cityList, setCityList] = useState([]);
+  useEffect(() => {
+    fetch("/world.json") // or import worldData from "../assets/world.json"
+      .then((res) => res.json())
+      .then((data) => setWorldData(data))
+      .catch((err) => console.error("Error loading world data:", err));
+  }, []);
   const [deletePopup, setDeletePopup] = useState({
     open: false,
     bookingId: null,
@@ -47,13 +57,69 @@ const StudentConsultations = () => {
     destination: "",
     startDuration: "",
     nearestOffice: "",
+    specificOffice: "",
     modeOfCon: "",
     studyLevel: "",
     fundingBy: "",
     status: "pending",
     stage: "New Lead",
+    discoverySource: "",
+    rate: "",
+    assignee: "",
+    dob: "",
+    gender: "",
+    currentEdu: "",
+    workExp: "",
+    city: "",
+    state: "",
+    country: "",
+    parentName: "",
+    parentPhone: "",
+    intakeMonth: "",
+    intakeYear: "",
+    prefUni: "",
+    docPass: "",
   });
-
+  const nearestOffice = [
+    {
+      value: "rajkot",
+      label: "Rajkot",
+      subAreas: [
+        { value: "rajkot_corporate", label: "Rajkot Corporate Office" },
+        { value: "rajkot_head", label: "Rajkot Head Office" },
+      ],
+    },
+    {
+      value: "surat",
+      label: "Surat",
+      subAreas: [
+        { value: "surat_ar_mall", label: "Surat-AR Mall" },
+        { value: "surat_katargam", label: "Surat-Katargam" },
+        { value: "surat_sarthana", label: "Surat-Sarthana" },
+      ],
+    },
+    {
+      value: "ahmedabad",
+      label: "Ahmedabad",
+      subAreas: [
+        { value: "ahmedabad_bodakdev", label: "Ahmedabad-Bodakdev" },
+        { value: "ahmedabad_motera", label: "Ahmedabad-Motera" },
+        { value: "ahmedabad_nikol", label: "Ahmedabad-Nikol" },
+      ],
+    },
+    { value: "jamnagar", label: "Jamnagar" },
+    { value: "morbi", label: "Morbi" },
+    { value: "gandhinagar", label: "Gandhinagar" },
+    { value: "anand", label: "Anand" },
+    { value: "vadodara", label: "Vadodara" },
+    { value: "pune", label: "Pune" },
+    { value: "indore", label: "Indore" },
+    { value: "jaipur", label: "Jaipur" },
+    { value: "delhi", label: "Delhi" },
+    { value: "chandigarh", label: "Chandigarh" },
+    { value: "kochi", label: "Kochi" },
+    { value: "kathmandu_nepal", label: "Kathmandu, Nepal" },
+  ];
   const [, setIdProofFile] = useState(null);
   const [statusCounts, setStatusCounts] = useState({
     pending: 0,
@@ -68,7 +134,19 @@ const StudentConsultations = () => {
 
     setFormData((prev) => {
       const updated = { ...prev, [name]: value };
+      if (name === "country") {
+        updated.state = "";
+        updated.city = "";
+        const found = worldData.find((c) => c.name === value);
+        setStateList(found ? found.states : []);
+        setCityList([]);
+      }
 
+      if (name === "state") {
+        updated.city = "";
+        const foundState = stateList.find((s) => s.name === value);
+        setCityList(foundState ? foundState.cities : []);
+      }
       if (name === "destination") {
         updated.state = "";
         updated.city = "";
@@ -84,6 +162,13 @@ const StudentConsultations = () => {
 
       return updated;
     });
+  };
+  const restoreStateAndCity = (countryName, stateName) => {
+    const foundCountry = worldData.find((c) => c.name === countryName);
+    const states = foundCountry ? foundCountry.states : [];
+    setStateList(states);
+    const foundState = states.find((s) => s.name === stateName);
+    setCityList(foundState ? foundState.cities : []);
   };
   useEffect(() => {
     fetchBookings();
@@ -104,7 +189,21 @@ const StudentConsultations = () => {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    const fetchStaff = async () => {
+      try {
+        const res = await axios.get(
+          "https://transglobeedu.com/web-backend/getAllStaff",
+        );
+        if (res.data.success) {
+          setStaffList(res.data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching staff:", err);
+      }
+    };
+    fetchStaff();
+  }, []);
   const handleSaveBooking = async () => {
     try {
       const payload = {
@@ -115,11 +214,28 @@ const StudentConsultations = () => {
         destination: formData.destination,
         startDuration: formData.startDuration,
         nearestOffice: formData.nearestOffice,
+        specificOffice: formData.specificOffice,
         modeOfCon: formData.modeOfCon,
         studyLevel: formData.studyLevel,
         fundingBy: formData.fundingBy,
         status: formData.status,
         stage: formData.stage,
+        discoverySource: formData.discoverySource,
+        rate: formData.rate,
+        assignee: formData.assignee,
+        dob: formData.dob,
+        gender: formData.gender,
+        currentEdu: formData.currentEdu,
+        workExp: formData.workExp,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        parentName: formData.parentName,
+        parentPhone: formData.parentPhone,
+        intakeMonth: formData.intakeMonth,
+        intakeYear: formData.intakeYear,
+        prefUni: formData.prefUni,
+        docPass: formData.docPass,
       };
 
       if (formMode === "add") {
@@ -169,7 +285,12 @@ const StudentConsultations = () => {
       country: "",
       state: "",
       city: "",
+      prefUni: "",
+      assignee: "",
+      specificOffice: "",
     });
+    setSelected_uniPref([]);
+    setUniSearchQuery("");
     setIdProofFile(null);
     setEditingBooking(null);
   };
@@ -462,23 +583,39 @@ const StudentConsultations = () => {
     getStatusCounts();
   }, []);
 
-  const options_uniPref = [
-    { value: "uni1", label: "Uni 1" },
-    { value: "uni2", label: "Uni 2" },
-    { value: "uni3", label: "Uni 3" },
-    { value: "uni4", label: "Uni 4" },
-    { value: "uni5", label: "Uni 5" },
-    { value: "uni6", label: "Uni 6" },
-    { value: "uni7", label: "Uni 7" },
-    { value: "uni8", label: "Uni 8" },
-    { value: "uni9", label: "Uni 9" },
-    { value: "uni10", label: "Uni 10" },
-    { value: "uni11", label: "Uni 11" },
-    { value: "uni12", label: "Uni 12" },
-    { value: "uni13", label: "Uni 13" },
-    { value: "uni14", label: "Uni 14" },
-  ];
-
+  // const options_uniPref = [
+  //   { value: "uni1", label: "Uni 1" },
+  //   { value: "uni2", label: "Uni 2" },
+  //   { value: "uni3", label: "Uni 3" },
+  //   { value: "uni4", label: "Uni 4" },
+  //   { value: "uni5", label: "Uni 5" },
+  //   { value: "uni6", label: "Uni 6" },
+  //   { value: "uni7", label: "Uni 7" },
+  //   { value: "uni8", label: "Uni 8" },
+  //   { value: "uni9", label: "Uni 9" },
+  //   { value: "uni10", label: "Uni 10" },
+  //   { value: "uni11", label: "Uni 11" },
+  //   { value: "uni12", label: "Uni 12" },
+  //   { value: "uni13", label: "Uni 13" },
+  //   { value: "uni14", label: "Uni 14" },
+  // ];
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      try {
+        const res = await axios.get(
+          "https://transglobeedu.com/web-backend/getAllUniversities",
+        );
+        const mapped = res.data.map((uni) => ({
+          value: uni.id.toString(),
+          label: uni.name,
+        }));
+        setOptions_uniPref(mapped);
+      } catch (err) {
+        console.error("Error fetching universities:", err);
+      }
+    };
+    fetchUniversities();
+  }, []);
   const [selected_uniPref, setSelected_uniPref] = useState([]);
   const [isOpen_uniPref, setIsOpen_uniPref] = useState(false);
   const dropdownRef_uniPref = useRef();
@@ -494,14 +631,37 @@ const StudentConsultations = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleOption_uniPref = (option) => {
-    setSelected_uniPref((prev) =>
-      prev.some((item) => item.value === option.value)
-        ? prev.filter((item) => item.value !== option.value)
-        : [...prev, option],
-    );
-  };
+  // const toggleOption_uniPref = (option) => {
+  //   setSelected_uniPref((prev) => {
+  //     const updated = prev.some((item) => item.value === option.value)
+  //       ? prev.filter((item) => item.value !== option.value)
+  //       : [...prev, option];
 
+  //     setFormData((f) => ({
+  //       ...f,
+  //       prefUni: updated.map((i) => i.label).join(", "),
+  //     }));
+
+  //     return updated;
+  //   });
+  // };
+
+  const parsePrefUni = (prefUniStr) => {
+    if (!prefUniStr) return [];
+    return prefUniStr.split(", ").map((name) => {
+      const found = options_uniPref.find((o) => o.label === name);
+      return found || { value: name, label: name }; // fallback if not matched
+    });
+  };
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    // Use local timezone methods, not UTC
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -996,8 +1156,97 @@ const StudentConsultations = () => {
                         className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md text-black"
                       />
                     </div>
-                    {/* office */}
+
+                    {/* Assignee */}
+
                     <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Assignee
+                      </label>
+                      <select
+                        name="assignee"
+                        value={formData.assignee}
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        {staffList.map((staff) => (
+                          <option
+                            key={staff.id}
+                            value={`${staff.first_name} ${staff.last_name} - ${staff.role} (${staff.office})`}
+                          >
+                            {staff.first_name} {staff.last_name} — {staff.role}{" "}
+                            ({staff.office})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* Source */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Discovery Source
+                      </label>
+                      <select
+                        name="discoverySource"
+                        value={formData.discoverySource}
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Employee Referral">
+                          Employee Referral
+                        </option>
+                        <option value="Student Referral">
+                          Student Referral
+                        </option>
+                        <option value="Events">Events</option>
+                        <option value="Friends / Family">
+                          Friends / Family
+                        </option>
+                        <option value="Inbound Call">Inbound Call</option>
+                        <option value="Partner">Partner</option>
+                        <option value="Walk-in">Walk-in</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    {/* Rate */}
+                    <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Rate
+                      </label>
+                      <select
+                        name="rate"
+                        value={formData.rate}
+                        onChange={handleChange}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="Hot">Hot</option>
+                        <option value="Warm">Warm</option>
+                        <option value="Cold">Cold</option>
+                      </select>
+                    </div>
+                    {/* Assignee */}
+                    {/* <div className="flex flex-col w-full">
+                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Assignee
+                      </label>
+                      <select
+                        name="assignee"
+                        value={formData.assignee}
+                        onChange={handleChange}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
+                        <option value="">Select</option>
+                        <option value="admin user 1">admin user 1</option>
+                        <option value="admin user 2">admin user 2</option>
+                      </select>
+                    </div> */}
+                    {/* office */}
+                    {/* <div className="flex flex-col w-full">
                       <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                         Nearest Office
                       </label>
@@ -1026,49 +1275,62 @@ const StudentConsultations = () => {
                           Kathmandu, Nepal
                         </option>
                       </select>
-                    </div>
-                    {/* Source */}
+                    </div> */}
+                    {/* office */}
                     <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                        Discovery Source
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        Nearest Office
                       </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
-                        <option value="">Select </option>
-                        <option value="">Social Media</option>
-                        <option value="">Employee Referral</option>
-                        <option value="">Student Referral</option>
-                        <option value="">Events</option>
-                        <option value="">Friends / Family</option>
-                        <option value="">Inbound Call</option>
-                        <option value="">Partner</option>
-                        <option value="">Walk-in</option>
-                        <option value="">Other</option>
-                      </select>
-                    </div>
-                    {/* Rate */}
-                    <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                        Rate
-                      </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                      <select
+                        name="nearestOffice"
+                        value={formData.nearestOffice || ""}
+                        onChange={(e) => {
+                          const selectedLabel = e.target.value;
+                          // reset specificArea when office changes
+                          setFormData((prev) => ({
+                            ...prev,
+                            nearestOffice: selectedLabel,
+                            specificOffice: "",
+                          }));
+                        }}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
                         <option value="">Select</option>
-                        <option value="">Hot</option>
-                        <option value="">Warm</option>
-                        <option value="">Cold</option>
+                        {nearestOffice.map((office) => (
+                          <option key={office.value} value={office.label}>
+                            {office.label}
+                          </option>
+                        ))}
                       </select>
                     </div>
-                    {/* Assignee */}
-                    <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                        Assignee
-                      </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
-                        <option value="">Select</option>
-                        <option value="">admin user 1</option>
-                        <option value="">admin user 2</option>
-                        <option value="">admin user 3</option>
-                      </select>
-                    </div>
+
+                    {/* Specific Area — only shows if selected office has subAreas */}
+                    {nearestOffice.find(
+                      (o) => o.label === formData.nearestOffice,
+                    )?.subAreas && (
+                      <div className="flex flex-col w-full">
+                        <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                          Specific Area
+                        </label>
+                        <select
+                          name="specificOffice"
+                          value={formData.specificOffice || ""}
+                          onChange={handleChange}
+                          disabled={isViewOnly}
+                          className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                        >
+                          <option value="">Select area</option>
+                          {nearestOffice
+                            .find((o) => o.label === formData.nearestOffice)
+                            ?.subAreas.map((area) => (
+                              <option key={area.value} value={area.label}>
+                                {area.label}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1087,7 +1349,15 @@ const StudentConsultations = () => {
                       </label>
                       <input
                         type="date"
-                        required
+                        name="dob"
+                        value={formData.dob ? formData.dob.slice(0, 10) : ""}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            dob: e.target.value,
+                          }))
+                        }
+                        disabled={isViewOnly}
                         className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                       />
                     </div>
@@ -1096,11 +1366,16 @@ const StudentConsultations = () => {
                       <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                         Gender
                       </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                      <select
+                        name="gender"
+                        value={formData.gender}
+                        onChange={handleChange}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
                         <option value="">Select</option>
-                        <option value="">Male</option>
-                        <option value="">Female</option>
-                        <option value="">Other</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
                       </select>
                     </div>
                     {/* Current Education */}
@@ -1108,15 +1383,33 @@ const StudentConsultations = () => {
                       <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                         Current Education
                       </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                      <select
+                        name="currentEdu"
+                        value={formData.currentEdu}
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
                         <option value="">Select</option>
-                        <option value="">Completed 12th / Diploma</option>
-                        <option value="">Completed Undergraduate Degree</option>
-                        <option value="">Completed Postgraduate Degree</option>
-                        <option value="">Pursuing 12th / Diploma</option>
-                        <option value="">Pursuing Undergraduate Degree</option>
-                        <option value="">Pursuing Postgraduate Degree</option>
-                        <option value="">Other</option>
+                        <option value="Completed 12th / Diploma">
+                          Completed 12th / Diploma
+                        </option>
+                        <option value="Completed Undergraduate Degree">
+                          Completed Undergraduate Degree
+                        </option>
+                        <option value="Completed Postgraduate Degree">
+                          Completed Postgraduate Degree
+                        </option>
+                        <option value="Pursuing 12th / Diploma">
+                          Pursuing 12th / Diploma
+                        </option>
+                        <option value="Pursuing Undergraduate Degree">
+                          Pursuing Undergraduate Degree
+                        </option>
+                        <option value="Pursuing Postgraduate Degree">
+                          Pursuing Postgraduate Degree
+                        </option>
+                        <option value="Other">Other</option>
                       </select>
                     </div>
                     {/* Work Exp */}
@@ -1128,46 +1421,88 @@ const StudentConsultations = () => {
                         Work Experience
                       </label>
                       <input
-                        type="text"
+                        name="workExp"
+                        value={formData.workExp}
+                        onChange={handleChange}
                         placeholder="Enter your work experience"
                         required
                         className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                       />
                     </div>
-                    {/* City */}
-                    <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                        City
-                      </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
-                        <option value="">Select</option>
-                        <option value="">City 1</option>
-                        <option value="">City 2</option>
-                        <option value="">City 3</option>
-                      </select>
-                    </div>
-                    {/* State */}
-                    <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                        State
-                      </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
-                        <option value="">Select</option>
-                        <option value="">State 1</option>
-                        <option value="">State 2</option>
-                        <option value="">State 3</option>
-                      </select>
-                    </div>
                     {/* Country */}
                     <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                         Country
                       </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                      <select
+                        name="country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        disabled={isViewOnly}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
                         <option value="">Select</option>
-                        <option value="">Country 1</option>
-                        <option value="">Country 2</option>
-                        <option value="">Country 3</option>
+                        {worldData.map((c) => (
+                          <option key={c.iso2} value={c.name}>
+                            {c.name} {c.emoji}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* State */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        State
+                      </label>
+                      <select
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                        disabled={isViewOnly || !formData.country}
+                        className={`border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none focus:ring-0 focus:border-black focus:shadow-md ${
+                          !formData.country
+                            ? "bg-gray-100 cursor-not-allowed text-gray-400"
+                            : ""
+                        }`}
+                      >
+                        <option value="">
+                          {!formData.country
+                            ? "Select country first"
+                            : "Select"}
+                        </option>
+                        {stateList.map((s) => (
+                          <option key={s.id} value={s.name}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* City */}
+                    <div className="flex flex-col w-full">
+                      <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                        City
+                      </label>
+                      <select
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        disabled={isViewOnly || !formData.state}
+                        className={`border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none focus:ring-0 focus:border-black focus:shadow-md ${
+                          !formData.state
+                            ? "bg-gray-100 cursor-not-allowed text-gray-400"
+                            : ""
+                        }`}
+                      >
+                        <option value="">
+                          {!formData.state ? "Select state first" : "Select"}
+                        </option>
+                        {cityList.map((city) => (
+                          <option key={city.id} value={city.name}>
+                            {city.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     {/* Parent Name */}
@@ -1179,7 +1514,9 @@ const StudentConsultations = () => {
                         Parent's Name
                       </label>
                       <input
-                        type="text"
+                        name="parentName"
+                        value={formData.parentName}
+                        onChange={handleChange}
                         placeholder="Enter parent's name"
                         required
                         className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
@@ -1194,7 +1531,9 @@ const StudentConsultations = () => {
                         Parent's Contact No.
                       </label>
                       <input
-                        type="text"
+                        name="parentPhone"
+                        value={formData.parentPhone}
+                        onChange={handleChange}
                         placeholder="Enter parent's contact no."
                         required
                         className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
@@ -1202,7 +1541,7 @@ const StudentConsultations = () => {
                     </div>
                   </div>
                 </div>
-
+                {/* Pref Uni */}
                 <div>
                   <p className="font-semibold text-[15px] text-indigo-800 mb-1">
                     Preference:
@@ -1268,23 +1607,28 @@ const StudentConsultations = () => {
                       <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                         Intake Month
                       </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                      <select
+                        name="intakeMonth"
+                        value={formData.intakeMonth}
+                        onChange={handleChange}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
                         <option value="">Select</option>
-                        <option value="">January</option>
-                        <option value="">February</option>
-                        <option value="">March</option>
-                        <option value="">April</option>
-                        <option value="">May</option>
-                        <option value="">June</option>
-                        <option value="">July</option>
-                        <option value="">August</option>
-                        <option value="">September</option>
-                        <option value="">October</option>
-                        <option value="">November</option>
-                        <option value="">December</option>
-                        <option value="">Spring</option>
-                        <option value="">Summer</option>
-                        <option value="">Rolling</option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Rolling">Rolling</option>
                       </select>
                     </div>
                     {/* Intake Month */}
@@ -1292,21 +1636,27 @@ const StudentConsultations = () => {
                       <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                         Intake Year
                       </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                      <select
+                        name="intakeYear"
+                        value={formData.intakeYear}
+                        onChange={handleChange}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
                         <option value="">Select</option>
-                        <option value="">2026</option>
-                        <option value="">2027</option>
-                        <option value="">2028</option>
-                        <option value="">2029</option>
-                        <option value="">2030</option>
-                        <option value="">2031</option>
-                        <option value="">2032</option>
-                        <option value="">2033</option>
-                        <option value="">2034</option>
-                        <option value="">2035</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                        <option value="2032">2032</option>
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>
+                        <option value="2035">2035</option>
                       </select>
                     </div>
 
+                    {/* University */}
                     {/* University */}
                     <div
                       className="sm:col-span-2 flex flex-col w-full relative"
@@ -1330,7 +1680,16 @@ const StudentConsultations = () => {
                               <span
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  toggleOption_uniPref(item);
+                                  const updated = selected_uniPref.filter(
+                                    (i) => i.value !== item.value,
+                                  );
+                                  setSelected_uniPref(updated);
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    prefUni: updated
+                                      .map((i) => i.label)
+                                      .join(", "),
+                                  }));
                                 }}
                                 className="cursor-pointer text-red-500"
                               >
@@ -1347,27 +1706,74 @@ const StudentConsultations = () => {
 
                       {/* Dropdown */}
                       {isOpen_uniPref && (
-                        <div className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-b-lg shadow-md z-50 max-h-32 overflow-auto">
-                          {options_uniPref.map((option) => {
-                            const isSelected = selected_uniPref.some(
-                              (item) => item.value === option.value,
-                            );
+                        <div className="absolute top-full mt-1 w-full bg-white border border-gray-300 rounded-b-lg shadow-md z-50">
+                          {/* Search Input */}
+                          <div className="px-3 py-2 border-b border-gray-200">
+                            <input
+                              type="text"
+                              autoFocus
+                              placeholder="Search university..."
+                              value={uniSearchQuery}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) =>
+                                setUniSearchQuery(e.target.value)
+                              }
+                              className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:border-indigo-400"
+                            />
+                          </div>
 
-                            return (
-                              <div
-                                key={option.value}
-                                onClick={() => toggleOption_uniPref(option)}
-                                className={`px-3 py-2 text-sm cursor-pointer flex justify-between items-center ${
-                                  isSelected
-                                    ? "bg-indigo-50"
-                                    : "hover:bg-gray-100"
-                                }`}
-                              >
-                                {option.label}
-                                {isSelected && <span>✓</span>}
+                          {/* Filtered List */}
+                          <div className="max-h-40 overflow-auto">
+                            {options_uniPref
+                              .filter((opt) =>
+                                opt.label
+                                  .toLowerCase()
+                                  .includes(uniSearchQuery.toLowerCase()),
+                              )
+                              .map((option) => {
+                                const isSelected = selected_uniPref.some(
+                                  (item) => item.value === option.value,
+                                );
+                                return (
+                                  <div
+                                    key={option.value}
+                                    onClick={() => {
+                                      const updated = isSelected
+                                        ? selected_uniPref.filter(
+                                            (item) =>
+                                              item.value !== option.value,
+                                          )
+                                        : [...selected_uniPref, option];
+                                      setSelected_uniPref(updated);
+                                      setFormData((prev) => ({
+                                        ...prev,
+                                        prefUni: updated
+                                          .map((i) => i.label)
+                                          .join(", "),
+                                      }));
+                                    }}
+                                    className={`px-3 py-2 text-sm cursor-pointer flex justify-between items-center ${
+                                      isSelected
+                                        ? "bg-indigo-50"
+                                        : "hover:bg-gray-100"
+                                    }`}
+                                  >
+                                    {option.label}
+                                    {isSelected && <span>✓</span>}
+                                  </div>
+                                );
+                              })}
+
+                            {options_uniPref.filter((opt) =>
+                              opt.label
+                                .toLowerCase()
+                                .includes(uniSearchQuery.toLowerCase()),
+                            ).length === 0 && (
+                              <div className="px-3 py-2 text-sm text-gray-400">
+                                No universities found
                               </div>
-                            );
-                          })}
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1446,17 +1852,20 @@ const StudentConsultations = () => {
                       <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                         Country of Passport
                       </label>
-                      <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                      <select
+                        name="docPass"
+                        value={formData.docPass}
+                        onChange={handleChange}
+                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      >
                         <option value="">Select</option>
-                        <option value="">Country 1</option>
-                        <option value="">Country 2</option>
-                        <option value="">Country 3</option>
+                        <option value="Passport">Passport</option>
                       </select>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 justify-self-center w-96 gap-3 mt-5">
+                <div className="grid grid-cols-2 max-w-[310px] gap-3 mt-5">
                   <button
                     onClick={handleClosePopup}
                     className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
@@ -1714,11 +2123,16 @@ const StudentConsultations = () => {
                                   setFormData({
                                     ...b,
                                     isPackageBooking: !!b.package,
+                                    dob: formatDateForInput(b.dob),
+                                    specificOffice: b.specificOffice || "",
                                     bookingTime: b.bookingTime
                                       ? new Date(b.bookingTime).toISOString()
                                       : new Date().toISOString(),
                                   });
+                                  setSelected_uniPref(parsePrefUni(b.prefUni));
                                   setFormMode("view");
+
+                                  restoreStateAndCity(b.country, b.state);
                                   setIsViewOnly(true);
                                   setIsOpen_popupForm(true);
                                 }}
@@ -1739,14 +2153,36 @@ const StudentConsultations = () => {
                                       destination: b.destination || "",
                                       startDuration: b.startDuration || "",
                                       nearestOffice: b.nearestOffice || "",
+                                      specificOffice: b.specificOffice || "",
                                       modeOfCon: b.modeOfCon || "",
                                       studyLevel: b.studyLevel || "",
                                       fundingBy: b.fundingBy || "",
                                       status: b.status || "pending",
                                       stage: b.stage || "New Lead",
+                                      discoverySource: b.discoverySource || "",
+                                      rate: b.rate || "",
+                                      assignee: b.assignee || "",
+                                      dob: formatDateForInput(b.dob),
+                                      gender: b.gender || "",
+                                      currentEdu: b.currentEdu || "",
+                                      workExp: b.workExp || "",
+                                      city: b.city || "",
+                                      state: b.state || "",
+                                      country: b.country || "",
+                                      parentName: b.parentName || "",
+                                      parentPhone: b.parentPhone || "",
+                                      intakeMonth: b.intakeMonth || "",
+                                      intakeYear: b.intakeYear || "",
+                                      prefUni: b.prefUni || "",
+                                      docPass: b.docPass || "",
                                     });
+                                    setSelected_uniPref(
+                                      parsePrefUni(b.prefUni),
+                                    );
                                     setFormMode("edit");
                                     setIsViewOnly(false);
+
+                                    restoreStateAndCity(b.country, b.state);
                                     setIsOpen_popupForm(true);
                                   }}
                                 >
