@@ -36,10 +36,15 @@ const Login = () => {
 
       const data = await res.json();
 
-      if (res.ok && data.success) {
+      if (data.success) {
+        if (data.user.isApproved === 0) {
+          toast.warning("Your account is pending approval");
+          return;
+        }
+
         localStorage.setItem("user", JSON.stringify(data.user));
-        toast.success("Login successful!"); // ✅ was alert()
-        setTimeout(() => navigate("/Dashboard"), 800); // slight delay so toast is visible
+        toast.success("Login successful!");
+        setTimeout(() => navigate("/Dashboard"), 800);
       } else {
         toast.error(data.message || "Login failed"); // ✅ was alert()
       }

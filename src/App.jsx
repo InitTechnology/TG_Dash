@@ -16,6 +16,7 @@ import StaffManagement from "./components/StaffManagement/StaffManagement";
 import Events from "./components/Events/Events";
 import BannerElementor from "./components/BannerElementor/BannerElementor";
 import ProtectedRoute from "./components/ProtechtedRoutes";
+import ExamPageElementor from "./components/ExamPageElementor/ExamPageElementor";
 
 axios.defaults.headers.get["Cache-Control"] = "no-cache";
 axios.defaults.headers.get["Pragma"] = "no-cache";
@@ -128,6 +129,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <BannerElementor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ExamPageElementor"
+              element={
+                <ProtectedRoute>
+                  <ExamPageElementor />
                 </ProtectedRoute>
               }
             />

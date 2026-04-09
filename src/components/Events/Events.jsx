@@ -13,13 +13,15 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 import axios from "axios";
+import { toast } from "react-toastify";
+
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
-
+  const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line
   const [isFetching, setIsFetching] = useState(false); // optional
 
@@ -28,10 +30,35 @@ const Events = () => {
     title: "",
     date: "",
     eventDate: "",
-    destination: "",
-    city: "",
+    destination: [],
+    city: [],
   });
+  const [destDropdownOpen, setDestDropdownOpen] = useState(false);
+  const destinationRef = useRef(null);
+  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
+  const cityRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      // Destination dropdown
+      if (
+        destinationRef.current &&
+        !destinationRef.current.contains(e.target)
+      ) {
+        setDestDropdownOpen(false);
+      }
 
+      // City dropdown
+      if (cityRef.current && !cityRef.current.contains(e.target)) {
+        setCityDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   // const [events] = useState([
   //   {
   //     id: 1,
@@ -88,16 +115,34 @@ const Events = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const rowsPerPage_events = 5;
+  useEffect(() => {
+    setCurrentPage_events(1);
+  }, [searchQuery]);
+
+  const filteredEvents = events.filter((e) => {
+    const query = searchQuery.toLowerCase();
+
+    const matchesTitle = e.title?.toLowerCase().includes(query);
+    const matchesDestination = e.destination?.toLowerCase().includes(query);
+
+    return matchesTitle || matchesDestination;
+  });
+  const rowsPerPage_events = 20;
   const [currentPage_events, setCurrentPage_events] = useState(1);
 
-  const totalPages_events = Math.ceil(events.length / rowsPerPage_events);
+  // const totalPages_events = Math.ceil(events.length / rowsPerPage_events);
+  const totalPages_events = Math.ceil(
+    filteredEvents.length / rowsPerPage_events,
+  );
 
   const indexOfLast_events = currentPage_events * rowsPerPage_events;
   const indexOfFirst_events = indexOfLast_events - rowsPerPage_events;
 
-  const current_events = events.slice(indexOfFirst_events, indexOfLast_events);
-
+  // const current_events = events.slice(indexOfFirst_events, indexOfLast_events);
+  const current_events = filteredEvents.slice(
+    indexOfFirst_events,
+    indexOfLast_events,
+  );
   const handleNextPage_events = () => {
     if (currentPage_events < totalPages_events) {
       setCurrentPage_events(currentPage_events + 1);
@@ -158,8 +203,8 @@ const Events = () => {
       title: "",
       date: "",
       eventDate: "",
-      destination: "",
-      city: "",
+      destination: [],
+      city: [],
     });
     setPreview(null);
     setImage(null);
@@ -180,6 +225,38 @@ const Events = () => {
   const [preview, setPreview] = useState(null);
   const inputRef = useRef(null);
 
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   // Only WEBP
+  //   if (file.type !== "image/webp") {
+  //     setError("Only WEBP images are allowed.");
+  //     e.target.value = "";
+  //     setImage(null);
+  //     setPreview(null);
+  //     return;
+  //   }
+
+  //   const img = new Image();
+  //   const objectUrl = URL.createObjectURL(file);
+
+  //   img.onload = () => {
+  //     if (img.width !== img.height) {
+  //       setError("Please select a square ratio (1:1) image.");
+  //       e.target.value = "";
+  //       setImage(null);
+  //       setPreview(null);
+  //     } else {
+  //       setError("");
+  //       setImage(file);
+  //       setPreview(objectUrl);
+  //     }
+  //   };
+
+  //   img.src = objectUrl;
+  // };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -197,8 +274,10 @@ const Events = () => {
     const objectUrl = URL.createObjectURL(file);
 
     img.onload = () => {
-      if (img.width !== img.height) {
-        setError("Please select a square ratio (1:1) image.");
+      const diff = Math.abs(img.width - img.height);
+
+      if (diff > 50) {
+        setError("Image should be approximately square (max 50px difference).");
         e.target.value = "";
         setImage(null);
         setPreview(null);
@@ -261,9 +340,8 @@ const Events = () => {
       form.append("title", formData.title);
       form.append("eventDate", formattedEventDate); // ✅ FIXED
       form.append("date", formData.date);
-      form.append("destination", formData.destination);
-      form.append("city", formData.city);
-
+      form.append("destination", formData.destination.join(", "));
+      form.append("city", formData.city.join(", "));
       if (image) {
         form.append("image", image);
       }
@@ -284,15 +362,26 @@ const Events = () => {
       const data = await res.json();
 
       if (data.success) {
-        alert(isEditMode ? "Event Updated ✅" : "Event Created ✅");
+        // ✅ SUCCESS TOAST
+        toast.success(
+          isEditMode
+            ? "Event updated successfully ✅"
+            : "Event created successfully ✅",
+        );
+
         handleClosePopup();
-        fetchEvents();
+
+        // ✅ REFRESH PAGE AFTER TOAST
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
       } else {
-        alert(data.message);
+        // ❌ ERROR TOAST
+        toast.error(data.message || "Something went wrong");
       }
     } catch (err) {
       console.error(err);
-      alert("Error saving event");
+      toast.error("Error saving event");
     } finally {
       setIsSaving(false);
     }
@@ -306,8 +395,16 @@ const Events = () => {
       title: event.title || "",
       date: event.date || "",
       eventDate: event.eventDate || "",
-      destination: event.destination || "",
-      city: event.city || "",
+      destination: Array.isArray(event.destination)
+        ? event.destination
+        : event.destination
+          ? event.destination.split(",").map((d) => d.trim())
+          : [],
+      city: Array.isArray(event.city)
+        ? event.city
+        : event.city
+          ? event.city.split(",").map((c) => c.trim())
+          : [],
     });
 
     if (event.eventDate && event.eventDate.includes("-")) {
@@ -345,8 +442,16 @@ const Events = () => {
       title: event.title || "",
       date: event.date || "",
       eventDate: event.eventDate || "",
-      destination: event.destination || "",
-      city: event.city || "",
+      destination: Array.isArray(event.destination)
+        ? event.destination
+        : event.destination
+          ? event.destination.split(",").map((d) => d.trim())
+          : [],
+      city: Array.isArray(event.city)
+        ? event.city
+        : event.city
+          ? event.city.split(",").map((c) => c.trim())
+          : [],
     });
 
     if (event.eventDate && event.eventDate.includes("-")) {
@@ -445,6 +550,8 @@ const Events = () => {
                 <input
                   type="text"
                   placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="border-none outline-none text-sm bg-transparent w-full font-normal px-2 focus:ring-0"
                 />
               </div>
@@ -657,7 +764,7 @@ const Events = () => {
                       </div>
 
                       {/* Destination */}
-                      <div className="flex flex-col w-full">
+                      {/* <div className="flex flex-col w-full">
                         <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                           Destination
                         </label>
@@ -681,10 +788,99 @@ const Events = () => {
                           <option value="Ireland">Ireland</option>
                           <option value="Global">Global</option>
                         </select>
-                      </div>
+                      </div> */}
+                      {/* Destination */}
+                      <div
+                        className="flex flex-col w-full relative"
+                        ref={destinationRef}
+                      >
+                        <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                          Destination
+                        </label>
 
+                        {/* Trigger Box */}
+                        <div
+                          onClick={() =>
+                            !isViewMode && setDestDropdownOpen((p) => !p)
+                          }
+                          className={`border border-gray-400 h-11 px-3 text-sm rounded-lg w-full flex items-center justify-between
+      ${isViewMode ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer focus-within:border-black focus-within:shadow-md"}`}
+                        >
+                          <span
+                            className={
+                              formData.destination.length
+                                ? "text-gray-800"
+                                : "text-black/25"
+                            }
+                          >
+                            {formData.destination.length
+                              ? formData.destination.join(", ")
+                              : "Select destination(s)"}
+                          </span>
+                          <svg
+                            className={`w-4 h-4 text-gray-400 transition-transform ${destDropdownOpen ? "rotate-180" : ""}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </div>
+
+                        {/* Dropdown */}
+                        {destDropdownOpen && (
+                          <div className="absolute top-[72px] left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-56 overflow-y-auto">
+                            {[
+                              "Australia",
+                              "Canada",
+                              "USA",
+                              "UK",
+                              "New Zealand",
+                              "Germany",
+                              "Singapore",
+                              "Dubai",
+                              "Europe",
+                              "Ireland",
+                              "Global",
+                            ].map((country) => (
+                              <label
+                                key={country}
+                                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 cursor-pointer"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={formData.destination.includes(
+                                    country,
+                                  )}
+                                  onChange={() => {
+                                    setFormData((prev) => {
+                                      const already =
+                                        prev.destination.includes(country);
+                                      return {
+                                        ...prev,
+                                        destination: already
+                                          ? prev.destination.filter(
+                                              (d) => d !== country,
+                                            )
+                                          : [...prev.destination, country],
+                                      };
+                                    });
+                                  }}
+                                  className="accent-indigo-700"
+                                />
+                                {country}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       {/* City */}
-                      <div className="flex flex-col w-full">
+                      {/* <div className="flex flex-col w-full">
                         <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                           City
                         </label>
@@ -714,8 +910,99 @@ const Events = () => {
                             Kathmandu Nepal
                           </option>
                         </select>
-                      </div>
+                      </div> */}
+                      {/* City Multi Select */}
+                      <div
+                        className="flex flex-col w-full relative"
+                        ref={cityRef}
+                      >
+                        <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                          City
+                        </label>
 
+                        {/* Trigger */}
+                        <div
+                          onClick={() =>
+                            !isViewMode && setCityDropdownOpen((p) => !p)
+                          }
+                          className={`border border-gray-400 h-11 px-3 text-sm rounded-lg w-full flex items-center justify-between
+    ${isViewMode ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"}`}
+                        >
+                          <span
+                            className={
+                              formData.city.length
+                                ? "text-gray-800"
+                                : "text-black/25"
+                            }
+                          >
+                            {formData.city.length
+                              ? formData.city.join(", ")
+                              : "Select city(s)"}
+                          </span>
+
+                          <svg
+                            className={`w-4 h-4 text-gray-400 transition-transform ${
+                              cityDropdownOpen ? "rotate-180" : ""
+                            }`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </div>
+
+                        {/* Dropdown */}
+                        {cityDropdownOpen && (
+                          <div className="absolute top-[72px] left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-56 overflow-y-auto">
+                            {[
+                              "Ahmedabad",
+                              "Anand",
+                              "Chandigarh",
+                              "Delhi",
+                              "Gandhinagar",
+                              "Indore",
+                              "Jaipur",
+                              "Jamnagar",
+                              "Junagadh",
+                              "Morbi",
+                              "Pune",
+                              "Rajkot",
+                              "Surat",
+                              "Vadodara",
+                              "Kathmandu Nepal",
+                            ].map((city) => (
+                              <label
+                                key={city}
+                                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 cursor-pointer"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={formData.city.includes(city)}
+                                  onChange={() => {
+                                    setFormData((prev) => {
+                                      const already = prev.city.includes(city);
+                                      return {
+                                        ...prev,
+                                        city: already
+                                          ? prev.city.filter((c) => c !== city)
+                                          : [...prev.city, city],
+                                      };
+                                    });
+                                  }}
+                                  className="accent-indigo-700"
+                                />
+                                {city}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       {/* Image */}
                       <div className="flex flex-col w-full sm:col-span-2">
                         {/* Messages */}
@@ -778,7 +1065,7 @@ const Events = () => {
                         <button
                           onClick={handleSubmit}
                           disabled={isSaving}
-                          className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+                          className="px-6 py-2 bg-indigo-900 rounded-lg text-white flex items-center justify-center gap-2"
                         >
                           {isSaving ? (
                             <>
