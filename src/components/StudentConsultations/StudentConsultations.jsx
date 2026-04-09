@@ -18,6 +18,7 @@ import { ImCross } from "react-icons/im";
 import { FaRegHandshake } from "react-icons/fa";
 import { TiCancelOutline } from "react-icons/ti";
 import axios from "axios";
+import { Check } from "lucide-react";
 
 const StudentConsultations = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
@@ -47,8 +48,19 @@ const StudentConsultations = () => {
   });
   const [editingBooking, setEditingBooking] = useState(null); // store booking being edited
 
+  const [activeStage_stage, setActiveStage_stage] = useState(null);
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -332,11 +344,13 @@ const StudentConsultations = () => {
     "Lead Lost": "bg-red-100 text-red-500",
     "Offer Letter": "bg-blue-100 text-blue-600",
     "Letter Acceptance": "bg-lime-100 text-lime-600",
-    "Confirmation of Admission": "bg-green-200 text-green-700",
+    "Admission Confirmation": "bg-green-200 text-green-700",
     "Deposit Payment": "bg-cyan-100 text-cyan-500",
     "Visa Docs Required": "bg-amber-100 text-amber-800",
     Discontinued: "bg-gray-300 text-gray-800",
   };
+
+  const stages = Object.keys(stageColors);
 
   const rowsPerPage_booking = 20;
   const [currentPage_booking, setCurrentPage_booking] = useState(1);
@@ -507,7 +521,10 @@ const StudentConsultations = () => {
       matchesDate = matchesDate && checkinDate <= toDate;
     }
 
-    return matchesSearch && matchesDate;
+    // Stage filter
+    const matchesStage = !activeStage_stage || b.stage === activeStage_stage;
+
+    return matchesSearch && matchesDate && matchesStage;
   });
 
   // const today = new Date();
@@ -662,6 +679,7 @@ const StudentConsultations = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -858,7 +876,7 @@ const StudentConsultations = () => {
 
         {/* Boxes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-center gap-5 text-gray-700 font-semibold mt-5">
-          <div className="flex items-center justify-between gap-5 bg-yellow-100 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-yellow-300 py-2 px-4 rounded-lg h-full">
             <div>
               <p>Pending</p>
               <p className="mt-2 text-lg text-black">
@@ -873,7 +891,7 @@ const StudentConsultations = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 bg-green-100 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-green-300 py-2 px-4 rounded-lg h-full">
             <div>
               <p>Approved</p>
               <p className="mt-2 text-lg text-black">
@@ -888,7 +906,7 @@ const StudentConsultations = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 bg-sky-100 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-sky-300 py-2 px-4 rounded-lg h-full">
             <div>
               <p>Converted</p>
               <p className="mt-2 text-lg text-black">
@@ -903,7 +921,7 @@ const StudentConsultations = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 bg-orange-100 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-orange-300 py-2 px-4 rounded-lg h-full">
             <div>
               <p>Declined</p>
               <p className="mt-2 text-lg text-black">
@@ -917,7 +935,7 @@ const StudentConsultations = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 bg-red-100 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-red-300 py-2 px-4 rounded-lg h-full">
             <div>
               <p>Cancelled</p>
               <p className="mt-2 text-lg text-black">
@@ -1885,11 +1903,48 @@ const StudentConsultations = () => {
           </div>
         </div>
 
+        {/* Stages */}
+        <div
+          className={`flex overflow-x-auto py-4 mt-5 transition-all ease-linear duration-300 ${
+            isSidebarOpen
+              ? "lg:max-w-[79vw] 2xl:max-w-full"
+              : "lg:max-w-[93vw] 2xl:max-w-full"
+          }`}
+        >
+          {stages.map((stage, index_stage) => {
+            const isActive_stage = stage === activeStage_stage;
+
+            return (
+              <div
+                key={index_stage}
+                onClick={() =>
+                  setActiveStage_stage((prev) =>
+                    prev === stage ? null : stage,
+                  )
+                }
+                className={`relative cursor-pointer min-w-[220px] pl-6 py-3 text-xs font-medium flex items-center justify-center whitespace-nowrap transition-all duration-200 shadow-newcustom ${stageColors[stage]} ${isActive_stage ? "ring-2 ring-black z-20" : "z-0"}`}
+                style={{
+                  clipPath:
+                    "polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 20% 50%)",
+                  marginLeft: index_stage === 0 ? "0px" : "-50px",
+                }}
+              >
+                {stage}
+                {isActive_stage && (
+                  <Check className="w-[14px] h-[14px] ml-1 -mr-3 border border-current rounded-full p-[1px]" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
         {/* Table */}
         <div>
           <div
             className={`shadow-md rounded-lg mt-5 transition-all ease-linear duration-300 ${
-              isSidebarOpen ? "lg:max-w-[79vw]" : "lg:max-w-[93vw]"
+              isSidebarOpen
+                ? "lg:max-w-[79vw] 2xl:max-w-full"
+                : "lg:max-w-[93vw] 2xl:max-w-full"
             }`}
           >
             {loading ? (

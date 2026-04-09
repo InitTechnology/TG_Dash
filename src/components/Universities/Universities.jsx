@@ -22,7 +22,16 @@ const Universities = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [filterCountry, setFilterCountry] = useState("");
 
   const [, setStatusCounts] = useState({
