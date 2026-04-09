@@ -1,19 +1,13 @@
-import React, { useEffect, useState } from "react";
+// Table Reference
+
+import React, { useState, useEffect } from "react";
 import Menubar from "../Menubar/Menubar";
 import { Outlet } from "react-router-dom";
+import "../Dashboard/Dashboard.css";
 
-const StudentDocuments = () => {
+const ExamPageElementor = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
-    const savedState = localStorage.getItem("menubarOpen");
-
-    if (savedState !== null) {
-      return JSON.parse(savedState);
-    }
-
-    return window.innerWidth >= 1024;
-  });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,18 +41,19 @@ const StudentDocuments = () => {
         {/* Header */}
         <div className="flex justify-between gap-5 items-start lg:items-center">
           <div className="flex flex-col lg:flex-row gap-5 items-start lg:items-center">
-            <p className="font-semibold text-lg sm:text-xl text-gray-700 ml-10 lg:ml-0">
-              $StudentName's Documents
+            <p className="font-semibold text-xl text-gray-700 ml-10 lg:ml-0">
+              Exam Page Elementor
             </p>
           </div>
-
-          <div className="flex items-center gap-1"></div>
         </div>
 
-        <div></div>
+        {/* Content */}
+        <div className="mt-5">
+          <div></div>
+        </div>
       </main>
     </div>
   );
 };
 
-export default StudentDocuments;
+export default ExamPageElementor;

@@ -1,3 +1,5 @@
+// Table Reference
+
 import React, { useState, useEffect, useRef } from "react";
 import Menubar from "../Menubar/Menubar";
 import { Outlet } from "react-router-dom";
@@ -12,67 +14,40 @@ import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
-import axios from "axios";
-const Events = () => {
-  const [events, setEvents] = useState([]);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isViewMode, setIsViewMode] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
 
-  // eslint-disable-next-line
-  const [isFetching, setIsFetching] = useState(false); // optional
-
-  const [selectedEventId, setSelectedEventId] = useState(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    date: "",
-    eventDate: "",
-    destination: "",
-    city: "",
-  });
-
-  // const [events] = useState([
-  //   {
-  //     id: 1,
-  //     title: "Study in Canada",
-  //     dateShown: "10 Apr 2026",
-  //     dates: ["10 Apr 2026"],
-  //     image: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
-  //     destination: "Canada",
-  //     city: "Toronto",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "USA Admission Seminar",
-  //     dateShown: "15 Apr 2026",
-  //     dates: ["15-04-2026", "16-04-2026"],
-  //     image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
-  //     destination: "USA",
-  //     city: "New York",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Australia Education Expo",
-  //     dateShown: "20 Apr 2026",
-  //     dates: ["20-04-2026"],
-  //     image: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
-  //     destination: "Australia",
-  //     city: "Melbourne",
-  //   },
-  // ]);
+const Test = () => {
+  const [events] = useState([
+    {
+      id: 1,
+      title: "Study in Canada",
+      dateShown: "10 Apr 2026",
+      dates: ["10 Apr 2026"],
+      image: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
+      destination: "Canada",
+      city: "Toronto",
+    },
+    {
+      id: 2,
+      title: "USA Admission Seminar",
+      dateShown: "15 Apr 2026",
+      dates: ["15-04-2026", "16-04-2026"],
+      image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
+      destination: "USA",
+      city: "New York",
+    },
+    {
+      id: 3,
+      title: "Australia Education Expo",
+      dateShown: "20 Apr 2026",
+      dates: ["20-04-2026"],
+      image: "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
+      destination: "Australia",
+      city: "Melbourne",
+    },
+  ]);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
-    const savedState = localStorage.getItem("menubarOpen");
-
-    if (savedState !== null) {
-      return JSON.parse(savedState);
-    }
-
-    return window.innerWidth >= 1024;
-  });
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
 
   useEffect(() => {
     const handleResize = () => {
@@ -151,18 +126,6 @@ const Events = () => {
 
   const handleClosePopup = () => {
     setIsOpen_popupForm(false);
-    setIsEditMode(false);
-    setIsViewMode(false);
-    setSelectedEventId(null);
-    setFormData({
-      title: "",
-      date: "",
-      eventDate: "",
-      destination: "",
-      city: "",
-    });
-    setPreview(null);
-    setImage(null);
   };
 
   const [openCalendar, setOpenCalendar] = useState(false);
@@ -216,192 +179,6 @@ const Events = () => {
     inputRef.current.click(); // open file picker again
   };
 
-  const fetchEvents = async () => {
-    try {
-      setIsFetching(true);
-      const res = await axios.get(
-        "https://transglobeedu.com/web-backend/events",
-      );
-
-      console.log(res.data); // ✅ correct
-
-      setEvents(res.data.events || []);
-    } catch (err) {
-      console.error("Error fetching events:", err);
-    } finally {
-      setIsFetching(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-  // const formattedStart = format(range[0].startDate, "yyyy-MM-dd");
-  // const formattedEnd = format(range[0].endDate, "yyyy-MM-dd");
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async () => {
-    try {
-      setIsSaving(true);
-      const start = range[0].startDate;
-      const end = range[0].endDate;
-
-      const formattedEventDate = `${format(start, "dd/MM/yyyy")}-${format(
-        end,
-        "dd/MM/yyyy",
-      )}`;
-
-      const form = new FormData();
-
-      form.append("title", formData.title);
-      form.append("eventDate", formattedEventDate); // ✅ FIXED
-      form.append("date", formData.date);
-      form.append("destination", formData.destination);
-      form.append("city", formData.city);
-
-      if (image) {
-        form.append("image", image);
-      }
-
-      let url = "https://transglobeedu.com/web-backend/event";
-      let method = "POST";
-
-      if (isEditMode) {
-        url = `https://transglobeedu.com/web-backend/event/${selectedEventId}`;
-        method = "PUT"; // or PATCH depending backend
-      }
-
-      const res = await fetch(url, {
-        method,
-        body: form,
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert(isEditMode ? "Event Updated ✅" : "Event Created ✅");
-        handleClosePopup();
-        fetchEvents();
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error saving event");
-    } finally {
-      setIsSaving(false);
-    }
-  };
-  const handleEdit = (event) => {
-    setIsEditMode(true);
-    setSelectedEventId(event.id);
-    setIsOpen_popupForm(true);
-
-    setFormData({
-      title: event.title || "",
-      date: event.date || "",
-      eventDate: event.eventDate || "",
-      destination: event.destination || "",
-      city: event.city || "",
-    });
-
-    if (event.eventDate && event.eventDate.includes("-")) {
-      const [startStr, endStr] = event.eventDate.split("-");
-
-      const parseDate = (str) => {
-        const [day, month, year] = str.split("/");
-        return new Date(`${year}-${month}-${day}`);
-      };
-
-      const startDate = parseDate(startStr);
-      const endDate = parseDate(endStr);
-
-      setRange([
-        {
-          startDate,
-          endDate,
-          key: "selection",
-        },
-      ]);
-    }
-
-    // Set preview image
-    if (event.imageUrl) {
-      setPreview(event.imageUrl);
-    }
-  };
-  const handleView = (event) => {
-    setIsViewMode(true);
-    setIsEditMode(false);
-    setSelectedEventId(event.id);
-    setIsOpen_popupForm(true);
-
-    setFormData({
-      title: event.title || "",
-      date: event.date || "",
-      eventDate: event.eventDate || "",
-      destination: event.destination || "",
-      city: event.city || "",
-    });
-
-    if (event.eventDate && event.eventDate.includes("-")) {
-      const [startStr, endStr] = event.eventDate.split("-");
-
-      const parseDate = (str) => {
-        const [day, month, year] = str.split("/");
-        return new Date(`${year}-${month}-${day}`);
-      };
-
-      const startDate = parseDate(startStr);
-      const endDate = parseDate(endStr);
-
-      setRange([
-        {
-          startDate,
-          endDate,
-          key: "selection",
-        },
-      ]);
-    }
-    if (event.imageUrl) {
-      setPreview(event.imageUrl);
-    }
-  };
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this event?",
-    );
-    if (!confirmDelete) return;
-
-    try {
-      setDeletingId(id);
-      const res = await fetch(
-        `https://transglobeedu.com/web-backend/event/${id}`,
-        {
-          method: "DELETE",
-        },
-      );
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("Event deleted ✅");
-        fetchEvents(); // refresh table
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Delete failed");
-    } finally {
-      setDeletingId(null); // ✅ reset
-    }
-  };
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -495,11 +272,7 @@ const Events = () => {
                   <div className="p-4 flex justify-between items-start border-b header_popupForm">
                     <div>
                       <h2 className="text-[#1D2826] text-lg font-semibold">
-                        {isViewMode
-                          ? "View Event"
-                          : isEditMode
-                            ? "Edit Event"
-                            : "Add Event"}
+                        Add Event
                       </h2>
                     </div>
 
@@ -513,6 +286,19 @@ const Events = () => {
 
                   <div className="max-h-[90vh] overflow-y-auto p-5 space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 items-center">
+                      {/* Event ID */}
+                      <div className="flex flex-col w-full">
+                        <label
+                          for="input"
+                          className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit"
+                        >
+                          Event ID
+                        </label>
+                        <p className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
+                          01
+                        </p>
+                      </div>
+
                       {/* Event Title */}
                       <div className="flex flex-col w-full">
                         <label
@@ -522,17 +308,13 @@ const Events = () => {
                           Event Title
                         </label>
                         <input
-                          name="title"
-                          value={formData.title}
-                          onChange={handleChange}
-                          disabled={isViewMode}
                           placeholder="Enter event title"
                           required
                           className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                         />
                       </div>
 
-                      {/* Event Date(s) , stores in db as dd/mm/yyyy-dd/mm/yyyy in eventDate column */}
+                      {/* Event Date(s) */}
                       <div className="flex flex-col w-full relative">
                         <label
                           htmlFor="eventDates"
@@ -543,17 +325,8 @@ const Events = () => {
 
                         {/* Input Box */}
                         <div
-                          onClick={() => {
-                            if (!isViewMode) {
-                              setOpenCalendar(true);
-                            }
-                          }}
-                          className={`border border-gray-400 p-3 text-sm rounded-lg w-full ${
-                            isViewMode
-                              ? "bg-gray-100 cursor-not-allowed"
-                              : "cursor-pointer focus-within:border-black focus-within:shadow-md"
-                          }`}
-                          // className="border border-gray-400 p-3 text-sm rounded-lg w-full cursor-pointer focus-within:border-black focus-within:shadow-md"
+                          onClick={() => setOpenCalendar(true)}
+                          className="border border-gray-400 p-3 text-sm rounded-lg w-full cursor-pointer focus-within:border-black focus-within:shadow-md"
                         >
                           {range[0].startDate && range[0].endDate ? (
                             <span className="text-gray-800">
@@ -581,7 +354,7 @@ const Events = () => {
                             ></div> */}
 
                             {/* Calendar Box */}
-                            <div className="absolute z-50 -left-11 sm:right-0 top-2 sm:top-[68px] bg-white shadow-custom rounded-xl p-4 w-auto scale-[0.75] sm:scale-100">
+                            <div className="absolute z-50 -left-11 sm:left-0 top-2 sm:top-[68px] bg-white shadow-custom rounded-xl p-4 w-auto scale-[0.75] sm:scale-100">
                               {/* Header */}
                               <div className="flex justify-between items-center mb-3">
                                 <p className="font-semibold text-gray-800">
@@ -637,7 +410,7 @@ const Events = () => {
                         )}
                       </div>
 
-                      {/* Display Date stores in db as date column  */}
+                      {/* Display Date */}
                       <div className="flex flex-col w-full">
                         <label
                           for="input"
@@ -646,12 +419,8 @@ const Events = () => {
                           Display Date (Text)
                         </label>
                         <input
-                          name="date"
-                          value={formData.date}
-                          onChange={handleChange}
                           placeholder="20th to 25th July 2026 / 9th June 2026"
                           required
-                          disabled={isViewMode}
                           className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                         />
                       </div>
@@ -661,13 +430,7 @@ const Events = () => {
                         <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                           Destination
                         </label>
-                        <select
-                          name="destination"
-                          value={formData.destination}
-                          onChange={handleChange}
-                          disabled={isViewMode}
-                          className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                        >
+                        <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
                           <option value="">Select</option>
                           <option value="Australia">Australia</option>
                           <option value="Canada">Canada</option>
@@ -679,7 +442,7 @@ const Events = () => {
                           <option value="Dubai">Dubai</option>
                           <option value="Europe">Europe</option>
                           <option value="Ireland">Ireland</option>
-                          <option value="Global">Global</option>
+                          <option value="Ireland">Global</option>
                         </select>
                       </div>
 
@@ -688,31 +451,11 @@ const Events = () => {
                         <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                           City
                         </label>
-                        <select
-                          name="city"
-                          value={formData.city}
-                          disabled={isViewMode}
-                          onChange={handleChange}
-                          className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                        >
+                        <select className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md">
                           <option value="">Select</option>
-                          <option value="Ahmedabad">Ahmedabad</option>
-                          <option value="Anand">Anand</option>
-                          <option value="Chandigarh">Chandigarh</option>
-                          <option value="Delhi">Delhi</option>
-                          <option value="Gandhinagar">Gandhinagar</option>
-                          <option value="Indore">Indore</option>
-                          <option value="Jaipur">Jaipur</option>
-                          <option value="Jamnagar">Jamnagar</option>
-                          <option value="Junagadh">Junagadh</option>
-                          <option value="Morbi">Morbi</option>
-                          <option value="Pune">Pune</option>
-                          <option value="Rajkot">Rajkot</option>
-                          <option value="Surat">Surat</option>
-                          <option value="Vadodara">Vadodara</option>
-                          <option value="Kathmandu Nepal">
-                            Kathmandu Nepal
-                          </option>
+                          <option value="">City 1</option>
+                          <option value="">City 2</option>
+                          <option value="">City 3</option>
                         </select>
                       </div>
 
@@ -745,11 +488,8 @@ const Events = () => {
 
                         {/* Upload Box / Image Preview */}
                         <div
-                          onClick={() => !isViewMode && handleClick()}
-                          className={`border-indigo-200 border-2  border-dashed p-3 rounded-lg w-full min-h-80 flex items-center justify-center
-  ${isViewMode ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"}`}
-                          // onClick={handleClick}
-                          // className="border-indigo-200 border-2 border-dashed p-3 rounded-lg w-full min-h-80 flex items-center justify-center cursor-pointer overflow-hidden hover:border-indigo-800 transition"
+                          onClick={handleClick}
+                          className="border-indigo-200 border-2 border-dashed p-3 rounded-lg w-full min-h-80 flex items-center justify-center cursor-pointer overflow-hidden hover:border-indigo-800 transition"
                         >
                           {!preview ? (
                             <span className="text-gray-400 text-sm">
@@ -774,24 +514,9 @@ const Events = () => {
                         Cancel
                       </button>
 
-                      {!isViewMode && (
-                        <button
-                          onClick={handleSubmit}
-                          disabled={isSaving}
-                          className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
-                        >
-                          {isSaving ? (
-                            <>
-                              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                              {isEditMode ? "Updating" : "Saving..."}
-                            </>
-                          ) : isEditMode ? (
-                            "Update"
-                          ) : (
-                            "Save"
-                          )}
-                        </button>
-                      )}
+                      <button className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
+                        Save
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -838,15 +563,13 @@ const Events = () => {
                     <td className="px-4 py-3 font-semibold">{event.id}</td>
                     <td className="px-4 py-3">
                       <img
-                        src={
-                          event.imageUrl || "https://via.placeholder.com/100"
-                        }
+                        src={event.image}
                         alt={event.title}
                         className="w-16 h-16 object-cover rounded"
                       />
                     </td>
                     <td className="px-4 py-3">{event.title}</td>
-                    <td className="px-4 py-3">{event.date}</td>
+                    <td className="px-4 py-3">{event.dateShown}</td>
                     {/* <td className="px-4 py-3">{event.dates.join(", ")}</td> */}
                     <td className="px-4 py-3">{event.destination}</td>
                     <td className="px-4 py-3">{event.city}</td>
@@ -856,7 +579,7 @@ const Events = () => {
                       <div className="flex justify-center">
                         <button
                           onClick={() => {
-                            handleView(event);
+                            setIsOpen_popupForm(true);
                           }}
                           className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
                         >
@@ -864,26 +587,15 @@ const Events = () => {
                         </button>
                         <>
                           <button
-                            // onClick={() => {
-                            //   setIsOpen_popupForm(true);
-                            // }}
                             onClick={() => {
-                              handleEdit(event);
+                              setIsOpen_popupForm(true);
                             }}
                             className="px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
                           >
                             <FaEdit size={14} />
                           </button>
-                          <button
-                            onClick={() => handleDelete(event.id)}
-                            disabled={deletingId === event.id}
-                            className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
-                          >
-                            {deletingId === event.id ? (
-                              <span className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin inline-block"></span>
-                            ) : (
-                              <MdDelete size={15} />
-                            )}
+                          <button className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all">
+                            <MdDelete size={15} />
                           </button>
                         </>
                       </div>
@@ -966,4 +678,4 @@ const Events = () => {
   );
 };
 
-export default Events;
+export default Test;

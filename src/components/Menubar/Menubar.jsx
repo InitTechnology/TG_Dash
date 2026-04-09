@@ -13,19 +13,25 @@ import {
 } from "react-icons/fa";
 import { RiLogoutCircleRLine } from "react-icons/ri";
 import { HiMiniBuildingLibrary } from "react-icons/hi2";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUserTie } from "react-icons/fa";
 import { BsCalendar2EventFill } from "react-icons/bs";
-// import { CgTemplate } from "react-icons/cg";
+import { CgTemplate } from "react-icons/cg";
+import { useEffect } from "react";
 // import { HiDocumentCheck } from "react-icons/hi2";
 
 const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
+  const navigate = useNavigate();
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user"));
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = "/SignIn";
+    navigate("/");
   };
+
+  useEffect(() => {
+    localStorage.setItem("menubarOpen", JSON.stringify(isOpen));
+  }, [isOpen]);
 
   // const menuItems = [
   //   { icon: <FaHome />, text: "Dashboard", to: "/Dashboard" },
@@ -71,12 +77,11 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       text: "User\u00A0Management",
       to: "/UserManagement",
     },
-    // {
-    //   icon: <CgTemplate />,
-    //   text: "Banner\u00A0Elementor",
-    //   to: "/",
-    // },
-
+    {
+      icon: <CgTemplate />,
+      text: "Banner\u00A0Elementor",
+      to: "/BannerElementor",
+    },
     { icon: <RiLogoutCircleRLine />, text: "Logout", action: handleLogout },
   ];
   const handleItemClick = () => {

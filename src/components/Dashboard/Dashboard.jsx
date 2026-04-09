@@ -11,7 +11,17 @@ import { MdHistory } from "react-icons/md";
 const Dashboard = () => {
   /* ---------------- UI STATE ---------------- */
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+
   const [showPopup_filter, setShowPopup_filter] = useState(false);
   const [todayBookings, setTodayBookings] = useState(0);
   const [recentConsultations, setRecentConsultations] = useState([]);

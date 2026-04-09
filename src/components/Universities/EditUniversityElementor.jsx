@@ -37,7 +37,16 @@ const EditUniversityElementor = () => {
   const [internationalStudents, setInternationalStudents] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
   const [editingIndices, setEditingIndices] = useState(new Set());
   const [totalCourses, setTotalCourses] = useState(0);
   const flagUrls = useMemo(
