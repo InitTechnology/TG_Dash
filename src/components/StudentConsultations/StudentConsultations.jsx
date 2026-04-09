@@ -36,6 +36,7 @@ const StudentConsultations = () => {
   const [worldData, setWorldData] = useState([]);
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
+  const [officeFilter, setOfficeFilter] = useState("");
   useEffect(() => {
     fetch("/world.json") // or import worldData from "../assets/world.json"
       .then((res) => res.json())
@@ -351,7 +352,34 @@ const StudentConsultations = () => {
   };
 
   const stages = Object.keys(stageColors);
+  const normalizeDate = (dateStr) => {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+  const filteredBookings = bookings.filter((b) => {
+    const query = searchQuery.toLowerCase();
 
+    const matchesSearch =
+      (b.bookingId && b.bookingId.toString().toLowerCase().includes(query)) ||
+      `${b.firstName} ${b.lastName}`.toLowerCase().includes(query) ||
+      (b.destination && b.destination.toLowerCase().includes(query));
+
+    let matchesDate = true;
+    const checkinDate = normalizeDate(b.checkin);
+    const fromDate = normalizeDate(dateFilter.from);
+    const toDate = normalizeDate(dateFilter.to);
+
+    if (fromDate) matchesDate = matchesDate && checkinDate >= fromDate;
+    if (toDate) matchesDate = matchesDate && checkinDate <= toDate;
+
+    const matchesStage = !activeStage_stage || b.stage === activeStage_stage;
+
+    const matchesOffice = !officeFilter || b.nearestOffice === officeFilter;
+
+    return matchesSearch && matchesDate && matchesStage && matchesOffice;
+  });
   const rowsPerPage_booking = 20;
   const [currentPage_booking, setCurrentPage_booking] = useState(1);
   //   const [selectedRows_booking, setSelectedRows_booking] = useState([]);
@@ -360,12 +388,14 @@ const StudentConsultations = () => {
   const indexOfFirstTable_booking =
     indexOfLastTable_booking - rowsPerPage_booking;
 
-  const current_booking = bookings.slice(
+  const current_booking = filteredBookings.slice(
     indexOfFirstTable_booking,
     indexOfLastTable_booking,
   );
-  const totalPages_booking = Math.ceil(bookings.length / rowsPerPage_booking);
-
+  // const totalPages_booking = Math.ceil(bookings.length / rowsPerPage_booking);
+  const totalPages_booking = Math.ceil(
+    filteredBookings.length / rowsPerPage_booking,
+  );
   const handlePageChange_booking = (pageNumber_booking) => {
     setCurrentPage_booking(pageNumber_booking);
     // setSelectedRows_booking([]);
@@ -492,40 +522,33 @@ const StudentConsultations = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const normalizeDate = (dateStr) => {
-    if (!dateStr) return null;
-    const d = new Date(dateStr);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
+  // const filteredBookings = current_booking.filter((b) => {
+  //   const query = searchQuery.toLowerCase();
 
-  const filteredBookings = current_booking.filter((b) => {
-    const query = searchQuery.toLowerCase();
+  //   //  text-based search (Booking ID, Name, Destination)
+  //   const matchesSearch =
+  //     (b.bookingId && b.bookingId.toString().toLowerCase().includes(query)) ||
+  //     `${b.firstName} ${b.lastName}`.toLowerCase().includes(query) ||
+  //     (b.destination && b.destination.toLowerCase().includes(query));
 
-    //  text-based search (Booking ID, Name, Destination)
-    const matchesSearch =
-      (b.bookingId && b.bookingId.toString().toLowerCase().includes(query)) ||
-      `${b.firstName} ${b.lastName}`.toLowerCase().includes(query) ||
-      (b.destination && b.destination.toLowerCase().includes(query));
+  //   //  check-in date filter only
+  //   let matchesDate = true;
+  //   const checkinDate = normalizeDate(b.checkin);
+  //   const fromDate = normalizeDate(dateFilter.from);
+  //   const toDate = normalizeDate(dateFilter.to);
 
-    //  check-in date filter only
-    let matchesDate = true;
-    const checkinDate = normalizeDate(b.checkin);
-    const fromDate = normalizeDate(dateFilter.from);
-    const toDate = normalizeDate(dateFilter.to);
+  //   if (fromDate) {
+  //     matchesDate = matchesDate && checkinDate >= fromDate;
+  //   }
+  //   if (toDate) {
+  //     matchesDate = matchesDate && checkinDate <= toDate;
+  //   }
 
-    if (fromDate) {
-      matchesDate = matchesDate && checkinDate >= fromDate;
-    }
-    if (toDate) {
-      matchesDate = matchesDate && checkinDate <= toDate;
-    }
+  //   // Stage filter
+  //   const matchesStage = !activeStage_stage || b.stage === activeStage_stage;
 
-    // Stage filter
-    const matchesStage = !activeStage_stage || b.stage === activeStage_stage;
-
-    return matchesSearch && matchesDate && matchesStage;
-  });
+  //   return matchesSearch && matchesDate && matchesStage;
+  // });
 
   // const today = new Date();
 
@@ -953,23 +976,28 @@ const StudentConsultations = () => {
         {/* Button */}
         <div className="mt-8">
           <div className="flex gap-4 w-full justify-between">
-            <select class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer">
+            <select
+              value={officeFilter}
+              onChange={(e) => setOfficeFilter(e.target.value)}
+              class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer"
+            >
               <option value="">Filter office</option>
-              <option value="">Ahmedabad</option>
-              <option value="">Anand</option>
-              <option value="">Chandigarh</option>
-              <option value="">Delhi</option>
-              <option value="">Gandhinagar</option>
-              <option value="">Indore</option>
-              <option value="">Jaipur</option>
-              <option value="">Jamnagar</option>
-              <option value="">Junagadh</option>
-              <option value="">Morbi</option>
-              <option value="">Pune</option>
-              <option value="">Rajkot</option>
-              <option value="">Surat</option>
-              <option value="">Vadodara</option>
-              <option value="">Kathmandu Nepal</option>
+              <option value="Ahmedabad">Ahmedabad</option>
+              <option value="Anand">Anand</option>
+              <option value="Chandigarh">Chandigarh</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Gandhinagar">Gandhinagar</option>
+              <option value="Indore">Indore</option>
+              <option value="Jaipur">Jaipur</option>
+              <option value="Jamnagar">Jamnagar</option>
+              <option value="Junagadh">Junagadh</option>
+              <option value="Morbi">Morbi</option>
+              <option value="Pune">Pune</option>
+              <option value="Rajkot">Rajkot</option>
+              <option value="Surat">Surat</option>
+              <option value="Vadodara">Vadodara</option>
+              <option value="Kochi">Kochi</option>
+              <option value="Kathmandu Nepal">Kathmandu Nepal</option>
             </select>
 
             <button
@@ -1126,8 +1154,8 @@ const StudentConsultations = () => {
                         <option value="Letter Acceptance">
                           Letter Acceptance
                         </option>
-                        <option value="Confirmation of Admission">
-                          Confirmation of Admission
+                        <option value="Admission Confirmation">
+                          Admission Confirmation
                         </option>
                         <option value="Deposit Payment">Deposit Payment</option>
                         <option value="Visa Docs Required">
@@ -1983,7 +2011,7 @@ const StudentConsultations = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredBookings.map((b) => (
+                      {current_booking.map((b) => (
                         <tr
                           key={b.id}
                           className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"

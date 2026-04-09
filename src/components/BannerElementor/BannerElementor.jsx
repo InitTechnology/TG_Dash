@@ -6,6 +6,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
 import Menubar from "../Menubar/Menubar";
 import { Outlet } from "react-router-dom";
+import { MdDelete } from "react-icons/md";
 
 const BannerElementor = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -63,13 +64,6 @@ const BannerElementor = () => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
-
-  //   const handleImage = (e) => {
-  //     const file = e.target.files[0];
-  //     if (file) {
-  //       setForm({ ...form, image: URL.createObjectURL(file) });
-  //     }
-  //   };
 
   //  image validation function
   const handleImageChange = (e, key, requiredWidth, requiredHeight) => {
@@ -175,106 +169,6 @@ const BannerElementor = () => {
     }));
   };
 
-  //  validation before saving
-  // const handleSave = async () => {
-  //   // ===== VALIDATION (keep as it is) =====
-  //   if (selectedLayout === "layout1") {
-  //     if (!form.img1 || !form.img2 || !form.img3) {
-  //       alert("All 3 images are required");
-  //       return;
-  //     }
-  //   }
-
-  //   if (selectedLayout === "layout2") {
-  //     if (!form.image || !form.heading || !form.subheading) {
-  //       alert("Image and all fields are required");
-  //       return;
-  //     }
-  //     if (!form.bg_color) {
-  //       alert("Background color is required");
-  //       return;
-  //     }
-  //   }
-
-  //   if (selectedLayout === "layout3") {
-  //     if (!form.image || !form.heading || !form.subheading) {
-  //       alert("Image, heading and subheading are required");
-  //       return;
-  //     }
-  //     if (!form.bg_color) {
-  //       alert("Background color is required");
-  //       return;
-  //     }
-  //   }
-
-  //   if (selectedLayout === "layout4") {
-  //     if (!form.heading) {
-  //       alert("Main heading is required");
-  //       return;
-  //     }
-
-  //     for (let i = 1; i <= 4; i++) {
-  //       if (!form[`card${i}_title`] || !form[`card${i}_desc`]) {
-  //         alert(`Card ${i}: title and description are required`);
-  //         return;
-  //       }
-  //     }
-
-  //     if (!form.bg_img && !form.bg_color) {
-  //       alert("Either background image or background color is required");
-  //       return;
-  //     }
-  //   }
-
-  //   // ===== CREATE FORMDATA =====
-  //   const formData = new FormData();
-
-  //   formData.append("layout_type", selectedLayout);
-
-  //   Object.keys(form).forEach((key) => {
-  //     // ❌ skip preview fields
-  //     if (key.includes("_preview")) return;
-
-  //     formData.append(key, form[key]);
-  //   });
-
-  //   try {
-  //     const res = await fetch(
-  //       "https://transglobeedu.com/web-backend/createBanner",
-  //       {
-  //         method: "POST",
-  //         body: formData,
-  //       },
-  //     );
-
-  //     const data = await res.json();
-
-  //     if (!data.success) {
-  //       alert("Failed to save");
-  //       return;
-  //     }
-
-  //     // ===== UPDATE UI (same as before) =====
-  //     const updated = [...banners];
-
-  //     updated[activeIndex] = {
-  //       id: Date.now(),
-  //       layout: selectedLayout,
-  //       data: form,
-  //     };
-
-  //     setBanners(updated);
-
-  //     // reset
-  //     setForm({});
-  //     setSelectedLayout(null);
-  //     setActiveIndex(null);
-  //     setShowFormPopup(false);
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("Server error");
-  //   }
-  // };
   const handleSave = async () => {
     // ===== VALIDATION (keep as it is) =====
     if (selectedLayout === "layout1") {
@@ -391,24 +285,6 @@ const BannerElementor = () => {
     }
   };
 
-  // const handleResetLayout = () => {
-  //   const confirmReset = window.confirm(
-  //     "Are you sure you want to change layout? Changes in this slide will be lost.",
-  //   );
-
-  //   if (!confirmReset) return;
-
-  //   const updated = [...banners];
-  //   updated[activeIndex] = null; // remove current banner
-
-  //   setBanners(updated);
-
-  //   // Reset everything
-  //   setForm({});
-  //   setSelectedLayout(null);
-  //   setActiveIndex(null);
-  //   setShowFormPopup(false);
-  // };
   const handleResetLayout = async () => {
     const confirmReset = window.confirm(
       "Change layout? This will delete the current banner permanently.",
@@ -452,6 +328,20 @@ const BannerElementor = () => {
     setActiveIndex(null);
     setShowFormPopup(false);
   };
+
+  const handleDeleteBanner = (index) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this banner?",
+    );
+    if (!confirmDelete) return;
+
+    setBanners((prev) => {
+      const updated = [...prev];
+      updated.splice(index, 1); // remove
+      return updated;
+    });
+  };
+
   const responsive = {
     all: {
       breakpoint: { max: 4000, min: 0 },
@@ -629,8 +519,31 @@ const BannerElementor = () => {
   };
 
   // Always 5 slots
-  const slots = [...banners];
-  while (slots.length < 15) slots.push(null);
+  // const slots = [...banners];
+  // while (slots.length < 15) slots.push(null);
+
+  const maxBanners = 15;
+
+  const remainingSlots = maxBanners - banners.filter((b) => b !== null).length;
+
+  const slots = Array.from({ length: remainingSlots }, () => null);
+
+  const filledBanners = banners.filter((b) => b !== null);
+
+  const handleReorder = (currentIndex, newPosition) => {
+    const updated = [...filledBanners];
+
+    // remove current item
+    const [movedItem] = updated.splice(currentIndex, 1);
+
+    // inserting at new position (index = position - 1)
+    updated.splice(newPosition - 1, 0, movedItem);
+
+    // merge back with empty slots logic
+    const merged = [...updated];
+
+    setBanners(merged);
+  };
 
   const renderLayoutPreview = (layout) => {
     // small skeleton blocks
@@ -781,6 +694,69 @@ const BannerElementor = () => {
             isSidebarOpen ? "lg:max-w-[72vw]" : "lg:max-w-[90vw]"
           }`}
         >
+          {/* BANNER PREVIEW CAROUSEL */}
+          {filledBanners.length > 0 && (
+            <div className="mb-6 border rounded-xl p-2 bg-white shadow-sm">
+              <p className="text-center text-sm font-semibold text-gray-600 mb-2">
+                Banner Preview
+              </p>
+
+              <Carousel
+                responsive={responsive}
+                customLeftArrow={<CustomLeftArrow />}
+                customRightArrow={<CustomRightArrow />}
+                infinite
+                showDots
+                autoPlay={true}
+                shouldResetAutoplay={false}
+                pauseOnHover={true}
+                autoPlaySpeed={3000}
+              >
+                {filledBanners.map((banner, index) => (
+                  <div
+                    key={index}
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group"
+                    onClick={() => {
+                      setActiveIndex(index);
+                      setSelectedLayout(banner.layout);
+                      setForm(banner.data);
+                      setShowFormPopup(true);
+                    }}
+                  >
+                    {renderLayout(banner)}
+
+                    {/* POSITION DROPDOWN */}
+                    <select
+                      value={index + 1}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        handleReorder(index, Number(e.target.value));
+                      }}
+                      className="absolute bottom-3 left-3 z-30 bg-black text-white text-sm px-2 py-1 rounded outline-none cursor-pointer"
+                    >
+                      {Array.from({ length: filledBanners.length }, (_, i) => (
+                        <option key={i} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent edit popup
+                        handleDeleteBanner(index);
+                      }}
+                      className="absolute bottom-3 right-3 z-30 bg-black hover:bg-red-600 text-white p-1.5 rounded-full shadow-md transition"
+                    >
+                      <MdDelete size={18} />
+                    </button>
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+          )}
+
           {/* <div className="mt-5"> */}
           <Carousel
             responsive={responsive}
@@ -790,8 +766,8 @@ const BannerElementor = () => {
             showDots
           >
             {slots.map((banner, index) => (
-              <div key={index} className="p-2">
-                {banner ? (
+              <div key={index} className="p-0">
+                {/* {banner ? (
                   <div
                     onClick={() => {
                       setActiveIndex(index);
@@ -803,27 +779,33 @@ const BannerElementor = () => {
                   >
                     {renderLayout(banner)}
                   </div>
-                ) : (
-                  // 🔥 EMPTY SLOT → SHOW 2x2 GRID
-                  <div className="h-[80vh] max-h-[1000px] border-2 border-dashed rounded-lg p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {["layout1", "layout2", "layout3", "layout4"].map(
-                      (layout) => (
-                        <div
-                          key={layout}
-                          onClick={() => {
-                            setActiveIndex(index);
-                            setSelectedLayout(layout);
-                            setForm({});
-                            setShowFormPopup(true);
-                          }}
-                          className="flex items-center justify-center border rounded cursor-pointer hover:bg-gray-100 text-xs text-center"
-                        >
-                          {renderLayoutPreview(layout)}
-                        </div>
-                      ),
-                    )}
-                  </div>
-                )}
+                ) : ( */}
+
+                {/* // EMPTY SLOT → SHOW 2x2 GRID */}
+                <div className="h-[80vh] max-h-[1000px] border-2 border-dashed rounded-lg p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {["layout1", "layout2", "layout3", "layout4"].map(
+                    (layout) => (
+                      <div
+                        key={layout}
+                        onClick={() => {
+                          if (banners.filter((b) => b !== null).length >= 15) {
+                            alert("Maximum 15 banners allowed");
+                            return;
+                          }
+
+                          setActiveIndex(index);
+                          setSelectedLayout(layout);
+                          setForm({});
+                          setShowFormPopup(true);
+                        }}
+                        className="flex items-center justify-center border rounded cursor-pointer hover:bg-gray-100 text-xs text-center"
+                      >
+                        {renderLayoutPreview(layout)}
+                      </div>
+                    ),
+                  )}
+                </div>
+                {/* )} */}
               </div>
             ))}
           </Carousel>
@@ -1328,16 +1310,6 @@ const BannerElementor = () => {
               </div>
             </div>
           )}
-
-          <div className="grid grid-cols-2 gap-3 mt-8 justify-self-center">
-            {/* <button className="w-36 px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
-              Cancel
-            </button>
-
-            <button className="w-36 px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
-              Save
-            </button> */}
-          </div>
         </div>
       </main>
     </div>

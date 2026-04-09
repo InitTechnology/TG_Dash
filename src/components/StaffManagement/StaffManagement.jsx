@@ -184,7 +184,7 @@ const StaffManagement = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const rowsPerPage_userManagement = 5;
+  const rowsPerPage_userManagement = 10;
   const [currentPage_userManagement, setCurrentPage_userManagement] =
     useState(1);
 
@@ -261,6 +261,31 @@ const StaffManagement = () => {
   //     setIsOpen_popupForm(false);
   //   };
 
+  const loggedInUserRaw = localStorage.getItem("user");
+  const loggedInUser = loggedInUserRaw ? JSON.parse(loggedInUserRaw) : null;
+
+  const isSuperAdmin =
+    loggedInUser?.role?.toLowerCase().trim() === "super admin";
+  console.log("Logged user:", loggedInUser);
+  console.log("Role:", loggedInUser?.role);
+  console.log("Is Super Admin:", isSuperAdmin);
+  const handleToggleApprove = async (id) => {
+    console.log("Toggling user:", id);
+    try {
+      await axios.put(
+        `https://transglobeedu.com/web-backend/staff/${id}/toggle-approve`,
+      );
+
+      setStaff((prev) =>
+        prev.map((user) =>
+          user.id === id ? { ...user, isApproved: !user.isApproved } : user,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update approval");
+    }
+  };
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -620,6 +645,7 @@ const StaffManagement = () => {
                       <th className="p-4 w-1/10">Phone No.</th>
                       <th className="p-4 w-1/10">Role</th>
                       <th className="p-4">Office</th>
+                      <th className="p-4">Approve</th>
                       <th className="p-4 w-1/10 text-center">Actions</th>
                     </tr>
                   </thead>
@@ -640,6 +666,19 @@ const StaffManagement = () => {
                         <td className="px-4 py-3">{staff.phone}</td>
                         <td className="px-4 py-3">{staff.role}</td>
                         <td className="px-4 py-3">{staff.office}</td>
+                        <td className="px-4 py-3">
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              className="sr-only peer"
+                              checked={staff.isApproved}
+                              disabled={!isSuperAdmin}
+                              onChange={() => handleToggleApprove(staff.id)}
+                            />
+                            <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-[#acace7] transition-all"></div>
+                            <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5"></div>
+                          </label>
+                        </td>
 
                         {/* Actions */}
                         <td>
