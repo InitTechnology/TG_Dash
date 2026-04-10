@@ -44,7 +44,14 @@ const Login = () => {
 
         localStorage.setItem("user", JSON.stringify(data.user));
         toast.success("Login successful!");
-        setTimeout(() => navigate("/Dashboard"), 800);
+
+        setTimeout(() => {
+          if (data.user.role === "Content Manager") {
+            navigate("/Events");
+          } else {
+            navigate("/Dashboard");
+          }
+        }, 800);
       } else {
         toast.error(data.message || "Login failed"); // ✅ was alert()
       }
@@ -338,6 +345,7 @@ const Login = () => {
                   <option value="Office Owner">Office Owner</option>
                   <option value="Application Admin">Application Admin</option>
                   <option value="Manager">Manager</option>
+                  <option value="Content Manager">Content Manager</option>
                   <option value="Senior Counsellor ">Senior Counsellor </option>
                   <option value="Counsellor">Counsellor</option>
                   <option value="Student Outreach Executive">

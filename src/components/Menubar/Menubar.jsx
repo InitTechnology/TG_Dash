@@ -50,7 +50,7 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
   //   { icon: <FaTags />, text: "Discounts", to: "/Discounts" },
   //   { icon: <RiLogoutCircleRLine />, text: "Logout", action: handleLogout },
   // ];
-  const menuItems = [
+  const allMenuItems = [
     { icon: <FaHome />, text: "Dashboard", to: "/Dashboard" },
     {
       icon: <FaBook />,
@@ -84,6 +84,28 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
     },
     { icon: <RiLogoutCircleRLine />, text: "Logout", action: handleLogout },
   ];
+  // Filter menu items based on user role
+  const getFilteredMenuItems = () => {
+    if (!user) return allMenuItems;
+
+    const userRole = user.role;
+
+    // For Content Manager, only show Events and BannerElementor + Logout
+    if (userRole === "Content Manager") {
+      return allMenuItems.filter(
+        (item) =>
+          item.text === "Events" ||
+          item.text === "Banner\u00A0Elementor" ||
+          item.text === "Logout",
+      );
+    }
+
+    // For other roles, show all menu items
+    return allMenuItems;
+  };
+
+  const menuItems = getFilteredMenuItems();
+
   const handleItemClick = () => {
     if (isMobile) {
       setIsOpen(false);

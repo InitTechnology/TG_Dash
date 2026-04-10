@@ -493,6 +493,10 @@ const StaffManagement = () => {
                             Application Admin
                           </option>
                           <option value="Manager">Manager</option>
+                          <option value="Content Manager">
+                            Content Manager
+                          </option>
+
                           <option value="Senior Counsellor">
                             Senior Counsellor
                           </option>
