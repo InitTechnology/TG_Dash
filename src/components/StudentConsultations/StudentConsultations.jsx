@@ -358,6 +358,7 @@ const StudentConsultations = () => {
     d.setHours(0, 0, 0, 0);
     return d;
   };
+
   const filteredBookings = bookings.filter((b) => {
     const query = searchQuery.toLowerCase();
 
@@ -380,6 +381,7 @@ const StudentConsultations = () => {
 
     return matchesSearch && matchesDate && matchesStage && matchesOffice;
   });
+
   const rowsPerPage_booking = 20;
   const [currentPage_booking, setCurrentPage_booking] = useState(1);
   //   const [selectedRows_booking, setSelectedRows_booking] = useState([]);
@@ -899,7 +901,7 @@ const StudentConsultations = () => {
 
         {/* Boxes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-center gap-5 text-gray-700 font-semibold mt-5">
-          <div className="flex items-center justify-between gap-5 border border-yellow-300 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
               <p>Pending</p>
               <p className="mt-2 text-lg text-black">
@@ -910,11 +912,11 @@ const StudentConsultations = () => {
             </div>
 
             <div>
-              <MdOutlinePendingActions className="bg-yellow-400 text-3xl text-white p-1.5 rounded-md" />
+              <MdOutlinePendingActions className="bg-indigo-900 text-white text-3xl p-1.5 rounded-md" />
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 border border-green-300 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
               <p>Approved</p>
               <p className="mt-2 text-lg text-black">
@@ -925,11 +927,11 @@ const StudentConsultations = () => {
             </div>
 
             <div>
-              <GiCheckMark className="bg-green-500 text-3xl text-white p-1.5 rounded-md" />
+              <GiCheckMark className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 border border-sky-300 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
               <p>Converted</p>
               <p className="mt-2 text-lg text-black">
@@ -940,11 +942,11 @@ const StudentConsultations = () => {
             </div>
 
             <div>
-              <FaRegHandshake className="bg-sky-500 text-3xl text-white p-1.5 rounded-md" />
+              <FaRegHandshake className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 border border-orange-300 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
               <p>Declined</p>
               <p className="mt-2 text-lg text-black">
@@ -954,11 +956,11 @@ const StudentConsultations = () => {
             </div>
 
             <div>
-              <TiCancelOutline className="bg-orange-500 text-3xl text-white p-1 rounded-md" />
+              <TiCancelOutline className="bg-indigo-900 text-3xl text-white p-1 rounded-md" />
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-5 border border-red-300 py-2 px-4 rounded-lg h-full">
+          <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
               <p>Cancelled</p>
               <p className="mt-2 text-lg text-black">
@@ -968,7 +970,7 @@ const StudentConsultations = () => {
             </div>
 
             <div>
-              <ImCross className="bg-red-500 text-3xl text-white p-2 rounded-md" />
+              <ImCross className="bg-indigo-900 text-3xl text-white p-2 rounded-md" />
             </div>
           </div>
         </div>
@@ -1950,16 +1952,53 @@ const StudentConsultations = () => {
                     prev === stage ? null : stage,
                   )
                 }
-                className={`relative cursor-pointer min-w-[220px] pl-6 py-3 text-xs font-medium flex items-center justify-center whitespace-nowrap transition-all duration-200 shadow-newcustom ${stageColors[stage]} ${isActive_stage ? "ring-2 ring-black z-20" : "z-0"}`}
+                // className={`relative cursor-pointer min-w-[110px] pl-2 py-1.5 text-[10px] font-medium flex items-center justify-center whitespace-nowrap transition-all duration-200 shadow-newcustom ${stageColors[stage]} ${isActive_stage ? "ring-2 ring-black z-20" : "z-0"}`}
+                className={`relative cursor-pointer ${
+                  [
+                    "New Lead",
+                    "Prospect",
+                    "Coaching Only",
+                    "Future Lead",
+                    "Verified Lead",
+                    "Lead Lost",
+                    "Offer Letter",
+                  ].includes(stage)
+                    ? "min-w-[100px]"
+                    : "min-w-[118px]"
+                } pl-2 py-1 text-[10px] font-medium flex items-center justify-center whitespace-nowrap transition-all duration-200 shadow-newcustom ${
+                  stageColors[stage]
+                } ${isActive_stage ? "ring-2 ring-black z-20" : "z-0"}`}
                 style={{
                   clipPath:
                     "polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 20% 50%)",
-                  marginLeft: index_stage === 0 ? "0px" : "-50px",
+                  marginLeft: index_stage === 0 ? "0px" : "-23px",
                 }}
               >
-                {stage}
+                {/* {stage} */}
+                <span className="flex flex-col leading-tight text-center">
+                  {(() => {
+                    const words = stage.split(" ");
+
+                    if (words.length <= 1) {
+                      return <span>{stage}</span>;
+                    }
+
+                    const mid = Math.ceil(words.length / 2);
+
+                    const firstLine = words.slice(0, mid).join(" ");
+                    const secondLine = words.slice(mid).join(" ");
+
+                    return (
+                      <>
+                        <span>{firstLine}</span>
+                        <span>{secondLine}</span>
+                      </>
+                    );
+                  })()}
+                </span>
+
                 {isActive_stage && (
-                  <Check className="w-[14px] h-[14px] ml-1 -mr-3 border border-current rounded-full p-[1px]" />
+                  <Check className="w-[13px] h-[13px] ml-1 -mr-2 border border-current rounded-full p-[1px]" />
                 )}
               </div>
             );

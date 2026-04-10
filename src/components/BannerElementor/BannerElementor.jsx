@@ -329,19 +329,53 @@ const BannerElementor = () => {
     setShowFormPopup(false);
   };
 
-  const handleDeleteBanner = (index) => {
+  // const handleDeleteBanner = (index) => {
+  //   const confirmDelete = window.confirm(
+  //     "Are you sure you want to delete this banner?",
+  //   );
+  //   if (!confirmDelete) return;
+
+  //   setBanners((prev) => {
+  //     const updated = [...prev];
+  //     updated.splice(index, 1); // remove
+  //     return updated;
+  //   });
+  // };
+  const handleDeleteBanner = async (index) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this banner?",
     );
     if (!confirmDelete) return;
 
-    setBanners((prev) => {
-      const updated = [...prev];
-      updated.splice(index, 1); // remove
-      return updated;
-    });
-  };
+    const banner = filledBanners[index];
 
+    if (banner && banner.id) {
+      try {
+        const res = await fetch(
+          "https://transglobeedu.com/web-backend/deleteBanner",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              layout_id: banner.id,
+              layout_type: banner.layout,
+            }),
+          },
+        );
+        const data = await res.json();
+        if (!data.success) {
+          alert("Failed to delete banner");
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Server error during delete");
+        return;
+      }
+    }
+
+    setBanners((prev) => prev.filter((b) => b !== null && b.id !== banner.id));
+  };
   const responsive = {
     all: {
       breakpoint: { max: 4000, min: 0 },
@@ -530,21 +564,40 @@ const BannerElementor = () => {
 
   const filledBanners = banners.filter((b) => b !== null);
 
-  const handleReorder = (currentIndex, newPosition) => {
+  // const handleReorder = (currentIndex, newPosition) => {
+  //   const updated = [...filledBanners];
+
+  //   // remove current item
+  //   const [movedItem] = updated.splice(currentIndex, 1);
+
+  //   // inserting at new position (index = position - 1)
+  //   updated.splice(newPosition - 1, 0, movedItem);
+
+  //   // merge back with empty slots logic
+  //   const merged = [...updated];
+
+  //   setBanners(merged);
+  // };
+  const handleReorder = async (currentIndex, newPosition) => {
     const updated = [...filledBanners];
-
-    // remove current item
     const [movedItem] = updated.splice(currentIndex, 1);
-
-    // inserting at new position (index = position - 1)
     updated.splice(newPosition - 1, 0, movedItem);
 
-    // merge back with empty slots logic
-    const merged = [...updated];
+    // Optimistic UI update
+    setBanners(updated);
 
-    setBanners(merged);
+    // Persist new order to DB
+    try {
+      const orderedIds = updated.map((b) => b.id);
+      await fetch("https://transglobeedu.com/web-backend/reorderBanner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderedIds }),
+      });
+    } catch (err) {
+      console.error("Failed to save order:", err);
+    }
   };
-
   const renderLayoutPreview = (layout) => {
     // small skeleton blocks
     const box = "bg-gray-300 rounded";
@@ -697,7 +750,7 @@ const BannerElementor = () => {
           {/* BANNER PREVIEW CAROUSEL */}
           {filledBanners.length > 0 && (
             <div className="mb-6 border rounded-xl p-2 bg-white shadow-sm">
-              <p className="text-center text-sm font-semibold text-gray-600 mb-2">
+              <p className="text-center font-semibold text-gray-500 mb-2">
                 Banner Preview
               </p>
 
@@ -757,17 +810,20 @@ const BannerElementor = () => {
             </div>
           )}
 
-          {/* <div className="mt-5"> */}
-          <Carousel
-            responsive={responsive}
-            customLeftArrow={<CustomLeftArrow />}
-            customRightArrow={<CustomRightArrow />}
-            infinite={false}
-            showDots
-          >
-            {slots.map((banner, index) => (
-              <div key={index} className="p-0">
-                {/* {banner ? (
+          <div className="mt-5">
+            <p className="text-center font-semibold text-gray-600 mb-2">
+              Add New Banner
+            </p>
+            <Carousel
+              responsive={responsive}
+              customLeftArrow={<CustomLeftArrow />}
+              customRightArrow={<CustomRightArrow />}
+              infinite={false}
+              showDots
+            >
+              {slots.map((banner, index) => (
+                <div key={index} className="p-0">
+                  {/* {banner ? (
                   <div
                     onClick={() => {
                       setActiveIndex(index);
@@ -781,34 +837,37 @@ const BannerElementor = () => {
                   </div>
                 ) : ( */}
 
-                {/* // EMPTY SLOT → SHOW 2x2 GRID */}
-                <div className="h-[80vh] max-h-[1000px] border-2 border-dashed rounded-lg p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {["layout1", "layout2", "layout3", "layout4"].map(
-                    (layout) => (
-                      <div
-                        key={layout}
-                        onClick={() => {
-                          if (banners.filter((b) => b !== null).length >= 15) {
-                            alert("Maximum 15 banners allowed");
-                            return;
-                          }
+                  {/* // EMPTY SLOT → SHOW 2x2 GRID */}
+                  <div className="h-[80vh] max-h-[1000px] border-2 border-dashed rounded-lg p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {["layout1", "layout2", "layout3", "layout4"].map(
+                      (layout) => (
+                        <div
+                          key={layout}
+                          onClick={() => {
+                            if (
+                              banners.filter((b) => b !== null).length >= 15
+                            ) {
+                              alert("Maximum 15 banners allowed");
+                              return;
+                            }
 
-                          setActiveIndex(index);
-                          setSelectedLayout(layout);
-                          setForm({});
-                          setShowFormPopup(true);
-                        }}
-                        className="flex items-center justify-center border rounded cursor-pointer hover:bg-gray-100 text-xs text-center"
-                      >
-                        {renderLayoutPreview(layout)}
-                      </div>
-                    ),
-                  )}
+                            setActiveIndex(index);
+                            setSelectedLayout(layout);
+                            setForm({});
+                            setShowFormPopup(true);
+                          }}
+                          className="flex items-center justify-center border rounded cursor-pointer hover:bg-gray-100 text-xs text-center"
+                        >
+                          {renderLayoutPreview(layout)}
+                        </div>
+                      ),
+                    )}
+                  </div>
+                  {/* )} */}
                 </div>
-                {/* )} */}
-              </div>
-            ))}
-          </Carousel>
+              ))}
+            </Carousel>
+          </div>
 
           {/* SINGLE POPUP */}
           {showFormPopup && (
