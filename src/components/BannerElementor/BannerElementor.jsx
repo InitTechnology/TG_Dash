@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { RiGalleryFill } from "react-icons/ri";
@@ -7,8 +7,12 @@ import { IoIosArrowBack } from "react-icons/io";
 import Menubar from "../Menubar/Menubar";
 import { Outlet } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BannerElementor = () => {
+  <ToastContainer position="top-right" autoClose={3000} />;
+  const fileInputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
@@ -20,7 +24,7 @@ const BannerElementor = () => {
 
     return window.innerWidth >= 1024;
   });
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
@@ -258,7 +262,7 @@ const BannerElementor = () => {
         return;
       }
     }
-
+    setLoading(true);
     // ===== CREATE FORMDATA =====
     const formData = new FormData();
     formData.append("layout_type", selectedLayout);
@@ -268,20 +272,38 @@ const BannerElementor = () => {
     const isEdit = !!(existingBanner && existingBanner.id);
     if (isEdit) formData.append("layout_id", existingBanner.id);
 
+    // Object.keys(form).forEach((key) => {
+    //   if (key.includes("_preview")) return;
+    //   if (form[key] instanceof File) {
+    //     formData.append(key, form[key]);
+    //   } else if (
+    //     typeof form[key] === "string" &&
+    //     form[key].startsWith("http")
+    //   ) {
+    //     // existing CDN URL — skip, backend keeps it
+    //   } else {
+    //     formData.append(key, form[key]);
+    //   }
+    // });
     Object.keys(form).forEach((key) => {
       if (key.includes("_preview")) return;
+
+      if (key === "remove_bg_img") {
+        formData.append("remove_bg_img", form[key]);
+        return;
+      }
+
       if (form[key] instanceof File) {
         formData.append(key, form[key]);
       } else if (
         typeof form[key] === "string" &&
         form[key].startsWith("http")
       ) {
-        // existing CDN URL — skip, backend keeps it
-      } else {
+        // skip
+      } else if (form[key] !== null) {
         formData.append(key, form[key]);
       }
     });
-
     const endpoint = isEdit
       ? "https://transglobeedu.com/web-backend/updateBanner"
       : "https://transglobeedu.com/web-backend/createBanner";
@@ -312,6 +334,9 @@ const BannerElementor = () => {
         }));
         setBanners(normalized);
       }
+      toast.success(
+        isEdit ? "Banner updated successfully" : "Banner added successfully",
+      );
 
       setForm({});
       setSelectedLayout(null);
@@ -321,6 +346,9 @@ const BannerElementor = () => {
     } catch (err) {
       console.error(err);
       alert("Server error");
+    } finally {
+      // 🔥 THIS IS THE FIX
+      setLoading(false);
     }
   };
 
@@ -1413,11 +1441,11 @@ const BannerElementor = () => {
                       <input
                         type="file"
                         accept="image/webp"
+                        ref={fileInputRef}
                         onChange={(e) => {
                           handleBgImageChange(e);
-                          e.target.value = "";
                         }}
-                        className="mb-2"
+                        className="mb-2 text-transparent"
                       />
 
                       {(form.bg_img_preview || form.bg_img) && (
@@ -1430,34 +1458,49 @@ const BannerElementor = () => {
 
                           <button
                             type="button"
+                            // onClick={() => {
+                            //   // memory cleanup
+                            //   if (form.bg_img_preview) {
+                            //     URL.revokeObjectURL(form.bg_img_preview);
+                            //   }
+
+                            //   // removing from form
+                            //   setForm((prev) => ({
+                            //     ...prev,
+                            //     bg_img_preview: null,
+                            //   }));
+
+                            //   // removing from banners preview
+                            //   setBanners((prev) => {
+                            //     const updated = [...prev];
+
+                            //     if (updated[activeIndex]) {
+                            //       updated[activeIndex] = {
+                            //         ...updated[activeIndex],
+                            //         data: {
+                            //           ...updated[activeIndex].data,
+                            //           bg_img: null,
+                            //         },
+                            //       };
+                            //     }
+
+                            //     return updated;
+                            //   });
+                            // }}
                             onClick={() => {
-                              // memory cleanup
                               if (form.bg_img_preview) {
                                 URL.revokeObjectURL(form.bg_img_preview);
                               }
 
-                              // removing from form
                               setForm((prev) => ({
                                 ...prev,
+                                bg_img: null,
                                 bg_img_preview: null,
+                                remove_bg_img: "1", // ✅ IMPORTANT
                               }));
-
-                              // removing from banners preview
-                              setBanners((prev) => {
-                                const updated = [...prev];
-
-                                if (updated[activeIndex]) {
-                                  updated[activeIndex] = {
-                                    ...updated[activeIndex],
-                                    data: {
-                                      ...updated[activeIndex].data,
-                                      bg_img: null,
-                                    },
-                                  };
-                                }
-
-                                return updated;
-                              });
+                              if (fileInputRef.current) {
+                                fileInputRef.current.value = "";
+                              }
                             }}
                             className="absolute -bottom-5 left-1/2 -translate-x-1/2 bg-red-500 text-white px-2 py-1 text-xs rounded"
                           >
@@ -1526,12 +1569,21 @@ const BannerElementor = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={handleSave}
+                      disabled={loading}
                       className="text-sm sm:text-base bg-indigo-900 hover:scale-95 text-white px-5 py-2 rounded-lg transition-all duration-200 ease-linear"
                     >
-                      Save
+                      {loading ? (
+                        <div className="flex items-center gap-1">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Saving...
+                        </div>
+                      ) : (
+                        "Save"
+                      )}
                     </button>
                     <button
                       onClick={() => setShowFormPopup(false)}
+                      disabled={loading}
                       className="text-sm sm:text-base border hover:bg-gray-100 hover:scale-95 px-4 py-2 rounded-lg transition-all duration-200 ease-linear"
                     >
                       Cancel
