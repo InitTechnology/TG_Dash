@@ -74,35 +74,67 @@ const BannerElementor = () => {
     setForm({ ...form, [name]: value });
   };
   //  image validation function
-  const handleImageChange = (e, key, requiredWidth, requiredHeight) => {
+  // const handleImageChange = (e, key, requiredWidth, requiredHeight) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   if (file.type !== "image/webp") {
+  //     alert("Only WEBP images are allowed");
+  //     e.target.value = "";
+  //     return;
+  //   }
+
+  //   const img = new Image();
+  //   const objectUrl = URL.createObjectURL(file);
+
+  //   img.onload = () => {
+  //     const { width, height } = img;
+
+  //     if (width !== requiredWidth || height !== requiredHeight) {
+  //       alert(
+  //         `Invalid size for ${key}. Required: ${requiredHeight}h × ${requiredWidth}w`,
+  //       );
+  //       URL.revokeObjectURL(objectUrl);
+  //       e.target.value = "";
+  //       return;
+  //     }
+
+  //     setForm((prev) => ({
+  //       ...prev,
+  //       [key]: file,
+  //       [`${key}_preview`]: objectUrl,
+  //     }));
+  //   };
+
+  //   img.src = objectUrl;
+  // };
+
+  const handleImageChange = (e, field, aspectRatio) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    if (file.type !== "image/webp") {
-      alert("Only WEBP images are allowed");
-      e.target.value = "";
-      return;
-    }
 
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
 
     img.onload = () => {
-      const { width, height } = img;
+      const width = img.width;
+      const height = img.height;
 
-      if (width !== requiredWidth || height !== requiredHeight) {
-        alert(
-          `Invalid size for ${key}. Required: ${requiredHeight}h × ${requiredWidth}w`,
-        );
-        URL.revokeObjectURL(objectUrl);
-        e.target.value = "";
+      const actualRatio = width / height;
+
+      // small tolerance
+      const tolerance = 0.05;
+
+      if (Math.abs(actualRatio - aspectRatio) > tolerance) {
+        alert(`Image must have aspect ratio ${aspectRatio.toFixed(2)}`);
         return;
       }
 
+      // valid image
       setForm((prev) => ({
         ...prev,
-        [key]: file,
-        [`${key}_preview`]: objectUrl,
+        [field]: file,
+        [`${field}_preview`]: objectUrl,
       }));
     };
 
@@ -400,28 +432,28 @@ const BannerElementor = () => {
     if (layout === "layout1") {
       return (
         <div
-          className="p-2"
+          className="min-h-[550px] h-[80vh] max-h-[1000px]"
           style={{ backgroundColor: data.bg_color || "transparent" }}
         >
           {/* Mobile (default) */}
           <img
             src={data.img1_preview || data.img1}
             alt="img1"
-            className="w-full h-[80vh] max-h-[1000px] object-contain rounded-lg block sm:hidden"
+            className="w-full h-full rounded-lg block sm:hidden"
           />
 
           {/* Small screens (sm → lg) */}
           <img
             src={data.img2_preview || data.img2}
             alt="img2"
-            className="w-full h-[80vh] max-h-[1000px] object-contain rounded-lg hidden sm:block lg:hidden"
+            className="w-full h-full rounded-lg hidden sm:block lg:hidden"
           />
 
           {/* Large screens (lg and above) */}
           <img
             src={data.img3_preview || data.img3}
             alt="img3"
-            className="w-full h-[80vh] max-h-[1000px] object-contain rounded-lg hidden lg:block"
+            className="w-full h-full rounded-lg hidden lg:block"
           />
         </div>
       );
@@ -430,26 +462,26 @@ const BannerElementor = () => {
     if (layout === "layout2") {
       return (
         <div
-          className="flex flex-col justify-center items-center h-[80vh] max-h-[1000px] p-8"
+          className="flex flex-col justify-center items-center min-h-[550px] h-[80vh] max-h-[1000px] p-4 sm:p-8"
           style={{ backgroundColor: data.bg_color || "transparent" }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center w-full">
             <div>
               <h1
-                className="font-bold text-3xl md:text-4xl 2xl:text-6xl"
+                className="font-bold text-2xl sm:text-3xl md:text-4xl 2xl:text-6xl"
                 style={{ color: data.main_text_color || "#000" }}
               >
                 {data.heading}
               </h1>
               <p
-                className="text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-3"
+                className="text-base sm:text-base md:text-lg xl:text-xl 2xl:text-2xl mt-3"
                 style={{ color: data.content_text_color || "#333" }}
               >
                 {data.subheading}
               </p>
               {data.subheading2 && (
                 <p
-                  className="text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-2"
+                  className="hidden sm:block font-medium text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-5"
                   style={{ color: data.content_text_color || "#333" }}
                 >
                   {data.subheading2}
@@ -460,7 +492,7 @@ const BannerElementor = () => {
             <img
               src={data.image_preview || data.image}
               alt="Img"
-              className="w-full h-full max-h-[35vh] md:max-h-[55vh] object-contain"
+              className="w-full h-full max-h-[25vh] sm:max-h-[35vh] md:max-h-[55vh] object-contain"
             />
           </div>
 
@@ -469,10 +501,10 @@ const BannerElementor = () => {
             {[1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="backdrop-blur-sm rounded-xl p-3 text-center"
+                className="backdrop-blur-sm rounded-xl p-2 text-center"
                 style={{ color: data.main_text_color || "#000" }}
               >
-                <h2 className="font-semibold text-lg md:text-xl xl:text-2xl 2xl:text-3xl mb-1">
+                <h2 className="font-semibold text-xl md:text-2xl lg:text-3xl 2xl:text-4xl mb-1">
                   {data[`title${item}`] || "Title"}
                 </h2>
                 <p
@@ -491,25 +523,27 @@ const BannerElementor = () => {
     if (layout === "layout3") {
       return (
         <div
-          className="flex flex-col justify-center items-center h-[80vh] max-h-[1000px] p-8"
+          className="flex flex-col justify-center items-center min-h-[550px] h-[80vh] max-h-[1000px] p-4 sm:p-8"
           style={{ backgroundColor: data.bg_color || "transparent" }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <img
-              src={data.image_preview || data.image}
-              alt="Img"
-              className="w-full h-full object-contain"
-            />
+            <div className="order-2 md:order-1">
+              <img
+                src={data.image_preview || data.image}
+                alt="Img"
+                className="w-full h-full max-h-[25vh] sm:max-h-[35vh] md:max-h-[60vh] object-contain"
+              />
+            </div>
 
-            <div className="text-center">
+            <div className="text-center order-1 md:order-2">
               <h1
-                className="font-bold text-3xl md:text-4xl 2xl:text-6xl"
+                className="font-bold text-2xl sm:text-3xl md:text-4xl 2xl:text-6xl"
                 style={{ color: data.main_text_color || "#000" }}
               >
                 {data.heading}
               </h1>
               <p
-                className="text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-3"
+                className="text-lg md:text-xl xl:text-2xl 2xl:text-3xl mt-5"
                 style={{ color: data.content_text_color || "#333" }}
               >
                 {data.subheading}
@@ -530,7 +564,7 @@ const BannerElementor = () => {
 
       return (
         <div
-          className="relative flex flex-col justify-center items-center h-[80vh] max-h-[1000px] overflow-hidden"
+          className="relative flex flex-col justify-center items-center min-h-[550px] h-[80vh] max-h-[1000px] overflow-hidden"
           style={{ backgroundColor: data.bg_color || "transparent" }}
         >
           {/* Background Image */}
@@ -544,31 +578,31 @@ const BannerElementor = () => {
 
           {/* Overlay */}
           <div
-            className={`absolute inset-0 p-8 flex flex-col justify-center ${
+            className={`absolute inset-0 p-4 sm:p-8 flex flex-col justify-center ${
               data.bg_img ? "bg-black/60" : ""
             }`}
           >
             {/* Heading */}
             <h1
-              className="font-bold text-3xl md:text-4xl 2xl:text-6xl text-center mb-8 rounded-xl backdrop-blur-sm p-3"
+              className="font-bold text-center text-2xl sm:text-3xl md:text-4xl 2xl:text-6xl"
               style={{ color: mainColor }}
             >
               {data.heading}
             </h1>
 
             {/* Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 sm:gap-4 mt-8">
               {[1, 2, 3, 4].map((item) => (
                 <div
                   key={item}
-                  className="backdrop-blur-sm rounded-xl p-3 text-center"
+                  className="rounded-xl p-2 text-center"
                   style={{ color: contentColor }}
                 >
-                  <h2 className="font-semibold text-lg md:text-xl xl:text-2xl 2xl:text-3xl mb-1">
+                  <h2 className="font-semibold text-lg md:text-xl xl:text-2xl 2xl:text-3xl">
                     {data[`card${item}_title`] || "Title"}
                   </h2>
                   <p
-                    className="md:text-lg xl:text-xl 2xl:text-2xl"
+                    className="text-xs md:text-sm xl:text-base 2xl:text-lg"
                     style={{ color: contentColor }}
                   >
                     {data[`card${item}_desc`] || "Description"}
@@ -818,7 +852,7 @@ const BannerElementor = () => {
                 customRightArrow={<CustomRightArrow />}
                 infinite
                 showDots
-                autoPlay={true}
+                autoPlay={false}
                 shouldResetAutoplay={false}
                 pauseOnHover={true}
                 autoPlaySpeed={3000}
@@ -897,7 +931,7 @@ const BannerElementor = () => {
                 ) : ( */}
 
                   {/* // EMPTY SLOT → SHOW 2x2 GRID */}
-                  <div className="h-[80vh] max-h-[1000px] border-2 border-dashed rounded-lg p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="min-h-[550px] h-[80vh] max-h-[1000px] border-2 border-dashed rounded-lg p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {["layout1", "layout2", "layout3", "layout4"].map(
                       (layout) => (
                         <div
@@ -949,14 +983,14 @@ const BannerElementor = () => {
                         {/* Image 1 */}
                         <div className="border-2 border-dashed border-indigo-300 rounded-lg p-3 h-full">
                           <p className="text-xs font-semibold text-indigo-800 mb-2">
-                            Image 1 (650 × 350)
+                            Image 1 (ratio 4:5)
                           </p>
 
                           <input
                             type="file"
                             accept="image/webp"
                             onChange={(e) =>
-                              handleImageChange(e, "img1", 350, 650)
+                              handleImageChange(e, "img1", 4 / 5)
                             }
                             className="mb-2"
                           />
@@ -973,14 +1007,14 @@ const BannerElementor = () => {
                         {/* Image 2 */}
                         <div className="border-2 border-dashed border-indigo-300 rounded-lg p-3 h-full">
                           <p className="text-xs font-semibold text-indigo-800 mb-2">
-                            Image 2 (550 × 550)
+                            Image 2 (ratio 1:1)
                           </p>
 
                           <input
                             type="file"
                             accept="image/webp"
                             onChange={(e) =>
-                              handleImageChange(e, "img2", 550, 550)
+                              handleImageChange(e, "img2", 1 / 1)
                             }
                             className="mb-2"
                           />
@@ -998,15 +1032,13 @@ const BannerElementor = () => {
                       {/* Image 3 */}
                       <div className="border-2 border-dashed border-indigo-300 rounded-lg p-3">
                         <p className="text-xs font-semibold text-indigo-800 mb-2">
-                          Image 3 (750 × 1900)
+                          Image 3 (ratio 12:5)
                         </p>
 
                         <input
                           type="file"
                           accept="image/webp"
-                          onChange={(e) =>
-                            handleImageChange(e, "img3", 1900, 750)
-                          }
+                          onChange={(e) => handleImageChange(e, "img3", 12 / 5)}
                           className="mb-2"
                         />
 
@@ -1042,27 +1074,47 @@ const BannerElementor = () => {
                   <div className="max-h-[75vh] overflow-y-auto p-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="flex flex-col gap-3 justify-center w-full">
-                        <input
-                          name="heading"
-                          placeholder="Heading"
-                          onChange={handleChange}
-                          value={form.heading || ""}
-                          className="border p-2 rounded"
-                        />
-                        <input
-                          name="subheading"
-                          placeholder="Subheading"
-                          onChange={handleChange}
-                          value={form.subheading || ""}
-                          className="border p-2 rounded"
-                        />
-                        <input
-                          name="subheading2"
-                          placeholder="Subheading 2"
-                          onChange={handleChange}
-                          value={form.subheading2 || ""}
-                          className="border p-2 rounded"
-                        />
+                        <div className="w-full">
+                          <input
+                            name="heading"
+                            placeholder="Heading"
+                            onChange={handleChange}
+                            value={form.heading || ""}
+                            maxLength={40}
+                            className="border p-2 rounded w-full"
+                          />
+                          <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                            {(form.heading || "").length} / 40
+                          </p>
+                        </div>
+
+                        <div>
+                          <input
+                            name="subheading"
+                            placeholder="Subheading"
+                            onChange={handleChange}
+                            value={form.subheading || ""}
+                            maxLength={60}
+                            className="border p-2 rounded w-full"
+                          />
+                          <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                            {(form.subheading || "").length} / 60
+                          </p>
+                        </div>
+
+                        <div>
+                          <input
+                            name="subheading2"
+                            placeholder="Subheading 2"
+                            onChange={handleChange}
+                            value={form.subheading2 || ""}
+                            maxLength={50}
+                            className="border p-2 rounded w-full"
+                          />
+                          <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                            {(form.subheading2 || "").length} / 50
+                          </p>
+                        </div>
                       </div>
 
                       <div className="border-2 border-dashed border-indigo-300 rounded-lg p-3 h-full">
@@ -1094,14 +1146,20 @@ const BannerElementor = () => {
                       </p>
                       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         {[1, 2, 3, 4].map((i) => (
-                          <input
-                            key={i}
-                            name={`title${i}`}
-                            placeholder={`Title ${i}`}
-                            onChange={handleChange}
-                            value={form[`title${i}`] || ""}
-                            className="border p-2 rounded"
-                          />
+                          <div>
+                            <input
+                              key={i}
+                              name={`title${i}`}
+                              placeholder={`Title ${i}`}
+                              onChange={handleChange}
+                              value={form[`title${i}`] || ""}
+                              maxLength={10}
+                              className="border p-2 rounded w-full"
+                            />
+                            <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                              {(form[`title${i}`] || "").length} / 10
+                            </p>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -1113,14 +1171,21 @@ const BannerElementor = () => {
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {[1, 2, 3, 4].map((i) => (
-                          <textarea
-                            key={i}
-                            name={`desc${i}`}
-                            placeholder={`Desc ${i}`}
-                            onChange={handleChange}
-                            value={form[`desc${i}`] || ""}
-                            className="border p-2 rounded"
-                          />
+                          <div>
+                            <textarea
+                              key={i}
+                              name={`desc${i}`}
+                              placeholder={`Desc ${i}`}
+                              onChange={handleChange}
+                              value={form[`desc${i}`] || ""}
+                              maxLength={30}
+                              className="border p-2 rounded w-full"
+                            />
+
+                            <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                              {(form[`desc${i}`] || "").length} / 30
+                            </p>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -1203,21 +1268,33 @@ const BannerElementor = () => {
 
                       {/* TEXT */}
                       <div className="flex flex-col gap-3 justify-center">
-                        <input
-                          name="heading"
-                          placeholder="Heading"
-                          onChange={handleChange}
-                          value={form.heading || ""}
-                          className="border p-2 rounded"
-                        />
+                        <div>
+                          <input
+                            name="heading"
+                            placeholder="Heading"
+                            onChange={handleChange}
+                            value={form.heading || ""}
+                            maxLength={50}
+                            className="border p-2 rounded w-full"
+                          />
+                          <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                            {(form.heading || "").length} / 50
+                          </p>
+                        </div>
 
-                        <input
-                          name="subheading"
-                          placeholder="Subheading"
-                          onChange={handleChange}
-                          value={form.subheading || ""}
-                          className="border p-2 rounded"
-                        />
+                        <div>
+                          <input
+                            name="subheading"
+                            placeholder="Subheading"
+                            onChange={handleChange}
+                            value={form.subheading || ""}
+                            maxLength={170}
+                            className="border p-2 rounded w-full"
+                          />
+                          <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                            {(form.subheading || "").length} / 170
+                          </p>
+                        </div>
                       </div>
                     </div>
 
@@ -1277,8 +1354,12 @@ const BannerElementor = () => {
                         placeholder="Main Heading"
                         onChange={handleChange}
                         value={form.heading || ""}
+                        maxLength={100}
                         className="border p-2 w-full rounded"
                       />
+                      <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                        {(form.heading || "").length} / 100
+                      </p>
                     </div>
 
                     {/* ROW 2 → 4 CARDS */}
@@ -1292,21 +1373,33 @@ const BannerElementor = () => {
                             {item}
                           </p>
 
-                          <input
-                            name={`card${item}_title`}
-                            placeholder="Title"
-                            onChange={handleChange}
-                            value={form[`card${item}_title`] || ""}
-                            className="border p-2 w-full rounded mb-2"
-                          />
+                          <div className="mb-2">
+                            <input
+                              name={`card${item}_title`}
+                              placeholder="Title"
+                              onChange={handleChange}
+                              value={form[`card${item}_title`] || ""}
+                              maxLength={15}
+                              className="border p-2 w-full rounded "
+                            />
+                            <p className="text-right text-[10px] text-gray-400 mt-0.5 mb-1">
+                              {(form[`card${item}_title`] || "").length} / 15
+                            </p>
+                          </div>
 
-                          <textarea
-                            name={`card${item}_desc`}
-                            placeholder="Description"
-                            onChange={handleChange}
-                            value={form[`card${item}_desc`] || ""}
-                            className="border p-2 w-full rounded"
-                          />
+                          <div>
+                            <textarea
+                              name={`card${item}_desc`}
+                              placeholder="Description"
+                              onChange={handleChange}
+                              value={form[`card${item}_desc`] || ""}
+                              maxLength={40}
+                              className="border p-2 w-full rounded"
+                            />
+                            <p className="text-right text-[10px] text-gray-400 mt-0 mb-1">
+                              {(form[`card${item}_desc`] || "").length} / 40
+                            </p>
+                          </div>
                         </div>
                       ))}
                     </div>
