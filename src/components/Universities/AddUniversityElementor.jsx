@@ -388,7 +388,8 @@ const AddUniversityElementor = () => {
             <div className="flex gap-2 items-center mt-2">
               {/* Flag Upload */}
               <div
-                onClick={() => flagInputRef.current.click()}
+                // onClick={() => flagInputRef.current.click()}
+                onClick={() => flagInputRef.current?.click()}
                 className="h-4 w-6 border border-dashed border-[#2B2A4C] flex items-center justify-center cursor-pointer"
               >
                 {flag ? (

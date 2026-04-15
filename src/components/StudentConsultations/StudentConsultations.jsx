@@ -647,9 +647,15 @@ const StudentConsultations = () => {
         const res = await axios.get(
           "https://transglobeedu.com/web-backend/getAllUniversities",
         );
+        // const mapped = res.data.map((uni) => ({
+        //   value: uni.id.toString(),
+        //   label: uni.name,
+        // }));
         const mapped = res.data.map((uni) => ({
           value: uni.id.toString(),
-          label: uni.name,
+          label: `${uni.name}, ${uni.country}`,
+          name: uni.name,
+          country: uni.country,
         }));
         setOptions_uniPref(mapped);
       } catch (err) {
