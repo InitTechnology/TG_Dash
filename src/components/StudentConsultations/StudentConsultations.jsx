@@ -906,10 +906,10 @@ const StudentConsultations = () => {
         </div>
 
         {/* Boxes */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-center gap-5 text-gray-700 font-semibold mt-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 items-center gap-5 text-gray-700 font-semibold mt-5">
           <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Pending</p>
+              <p className="text-sm font-normal">Pending</p>
               <p className="mt-2 text-lg text-black">
                 {/* ₹{formatNumber(analytics.totalRevenue)} */}
                 {statusCounts.pending}
@@ -924,7 +924,7 @@ const StudentConsultations = () => {
 
           <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Approved</p>
+              <p className="text-sm font-normal">Approved</p>
               <p className="mt-2 text-lg text-black">
                 {statusCounts.approved}
                 {/* ₹{formatNumber(analytics.pendingPayments)}
@@ -939,7 +939,7 @@ const StudentConsultations = () => {
 
           <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Converted</p>
+              <p className="text-sm font-normal">Converted</p>
               <p className="mt-2 text-lg text-black">
                 {statusCounts.converted}
                 {/* ₹{formatNumber(analytics.profit)}
@@ -954,11 +954,8 @@ const StudentConsultations = () => {
 
           <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Declined</p>
-              <p className="mt-2 text-lg text-black">
-                {" "}
-                {statusCounts.declined}
-              </p>
+              <p className="text-sm font-normal">Declined</p>
+              <p className="mt-2 text-lg text-black">{statusCounts.declined}</p>
             </div>
 
             <div>
@@ -968,9 +965,8 @@ const StudentConsultations = () => {
 
           <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
             <div>
-              <p>Cancelled</p>
+              <p className="text-sm font-normal">Cancelled</p>
               <p className="mt-2 text-lg text-black">
-                {" "}
                 {statusCounts.cancelled}
               </p>
             </div>

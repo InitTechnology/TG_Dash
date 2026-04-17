@@ -7,7 +7,13 @@ import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import axios from "axios";
+import { LuLockKeyhole } from "react-icons/lu";
+import { LuLockKeyholeOpen } from "react-icons/lu";
+import { ImCross } from "react-icons/im";
+import { GiCheckMark } from "react-icons/gi";
+import { HiOutlineDocumentDuplicate } from "react-icons/hi";
+import { BiSolidLockOpen } from "react-icons/bi";
+import { BiSolidLock } from "react-icons/bi";
 
 const DocumentEvaluator = () => {
   const navigate = useNavigate();
@@ -24,14 +30,15 @@ const DocumentEvaluator = () => {
   });
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
 
-  const [, setStatusCounts] = useState({
-    pending: 0,
-    approved: 0,
-    converted: 0,
-    declined: 0,
-    cancelled: 0,
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
   });
 
   const studentDocs = [
@@ -44,7 +51,8 @@ const DocumentEvaluator = () => {
       destination: "Canada",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -66,7 +74,8 @@ const DocumentEvaluator = () => {
       destination: "UK",
       package: "Student Visa",
       studyLevel: "Bachelors",
-      status: "lock",
+      mode: "lock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -88,7 +97,8 @@ const DocumentEvaluator = () => {
       destination: "Australia",
       package: "PR",
       studyLevel: "Diploma",
-      status: "unlock",
+      mode: "unlock",
+      status: "Application Rejected",
       docs: {
         passport: true,
         transcripts: true,
@@ -110,7 +120,8 @@ const DocumentEvaluator = () => {
       destination: "USA",
       package: "Student Visa",
       studyLevel: "Masters",
-      status: "lock",
+      mode: "lock",
+      status: "In Process",
       docs: {
         passport: true,
         transcripts: false,
@@ -133,7 +144,8 @@ const DocumentEvaluator = () => {
       destination: "Canada",
       package: "Student Visa",
       studyLevel: "Diploma",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -155,7 +167,8 @@ const DocumentEvaluator = () => {
       destination: "UK",
       package: "PR",
       studyLevel: "Masters",
-      status: "lock",
+      mode: "lock",
+      status: "Application Rejected",
       docs: {
         passport: true,
         transcripts: true,
@@ -177,7 +190,8 @@ const DocumentEvaluator = () => {
       destination: "Australia",
       package: "Student Visa",
       studyLevel: "Bachelors",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: false,
@@ -199,7 +213,8 @@ const DocumentEvaluator = () => {
       destination: "USA",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -221,7 +236,8 @@ const DocumentEvaluator = () => {
       destination: "Canada",
       package: "Student Visa",
       studyLevel: "Diploma",
-      status: "lock",
+      mode: "lock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -243,7 +259,8 @@ const DocumentEvaluator = () => {
       destination: "UK",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -265,7 +282,8 @@ const DocumentEvaluator = () => {
       destination: "Australia",
       package: "Student Visa",
       studyLevel: "Bachelors",
-      status: "lock",
+      mode: "lock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: false,
@@ -287,7 +305,8 @@ const DocumentEvaluator = () => {
       destination: "USA",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -309,7 +328,8 @@ const DocumentEvaluator = () => {
       destination: "Canada",
       package: "Student Visa",
       studyLevel: "Diploma",
-      status: "lock",
+      mode: "lock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -331,7 +351,8 @@ const DocumentEvaluator = () => {
       destination: "UK",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -353,7 +374,8 @@ const DocumentEvaluator = () => {
       destination: "Australia",
       package: "Student Visa",
       studyLevel: "Bachelors",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -375,7 +397,8 @@ const DocumentEvaluator = () => {
       destination: "Canada",
       package: "PR",
       studyLevel: "Masters",
-      status: "lock",
+      mode: "lock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -397,7 +420,8 @@ const DocumentEvaluator = () => {
       destination: "UK",
       package: "Student Visa",
       studyLevel: "Diploma",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -419,7 +443,8 @@ const DocumentEvaluator = () => {
       destination: "USA",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -441,7 +466,8 @@ const DocumentEvaluator = () => {
       destination: "Canada",
       package: "Student Visa",
       studyLevel: "Bachelors",
-      status: "lock",
+      mode: "lock",
+      status: "Application Rejected",
       docs: {
         passport: true,
         transcripts: false,
@@ -463,7 +489,8 @@ const DocumentEvaluator = () => {
       destination: "Australia",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "In Process",
       docs: {
         passport: true,
         transcripts: true,
@@ -485,7 +512,8 @@ const DocumentEvaluator = () => {
       destination: "UK",
       package: "Student Visa",
       studyLevel: "Diploma",
-      status: "lock",
+      mode: "lock",
+      status: "In Process",
       docs: {
         passport: true,
         transcripts: true,
@@ -507,7 +535,8 @@ const DocumentEvaluator = () => {
       destination: "USA",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Application Rejected",
       docs: {
         passport: true,
         transcripts: true,
@@ -529,7 +558,8 @@ const DocumentEvaluator = () => {
       destination: "Canada",
       package: "Student Visa",
       studyLevel: "Bachelors",
-      status: "lock",
+      mode: "lock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -551,7 +581,8 @@ const DocumentEvaluator = () => {
       destination: "Australia",
       package: "PR",
       studyLevel: "Masters",
-      status: "unlock",
+      mode: "unlock",
+      status: "Admission Confirmed",
       docs: {
         passport: true,
         transcripts: true,
@@ -583,8 +614,8 @@ const DocumentEvaluator = () => {
 
   const DonutChart = ({ value, total = 9 }) => {
     const percentage = (value / total) * 100;
-    const radius = 22;
-    const stroke = 4;
+    const radius = 20;
+    const stroke = 2;
     const normalizedRadius = radius - stroke * 2;
     const circumference = normalizedRadius * 2 * Math.PI;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
@@ -661,8 +692,9 @@ const DocumentEvaluator = () => {
   }, []);
 
   const statusColors = {
-    unlock: "bg-pink-100 text-pink-500",
-    lock: "bg-sky-100 text-sky-500",
+    "Admission Confirmed": "text-green-500",
+    "Application Rejected": "text-red-400",
+    "In Process": "text-sky-400",
   };
 
   const rowsPerPage_booking = 20;
@@ -791,41 +823,6 @@ const DocumentEvaluator = () => {
   //     setDateFilter({ from, to });
   //   };
 
-  const [, setBookedByDate] = useState({});
-
-  useEffect(() => {
-    const fetchBookedDates = async () => {
-      try {
-        const res = await fetch(
-          "https://dash.zorbdddddastays.com/web-backend/getBookingsByDateProp",
-        );
-        const data = await res.json();
-        if (data.success) setBookedByDate(data.bookings);
-      } catch (err) {
-        console.error("Error fetching booked dates:", err);
-      }
-    };
-    fetchBookedDates();
-  }, []);
-
-  const getStatusCounts = async () => {
-    try {
-      const res = await axios.get(
-        "https://transglobeedu.com/web-backend/getstatus",
-      );
-
-      if (res.data.success) {
-        setStatusCounts(res.data.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch status counts:", error);
-    }
-  };
-
-  useEffect(() => {
-    getStatusCounts();
-  }, []);
-
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -903,6 +900,79 @@ const DocumentEvaluator = () => {
           </div>
         </div>
 
+        {/* Boxes */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 items-center gap-5 text-gray-700 font-semibold mt-5">
+          <div className="border border-[#E7E7F8] py-2 px-4 rounded-lg">
+            <p className="text-sm font-normal">Total Applications</p>
+
+            <div className="grid grid-cols-[auto_25px] items-center justify-between gap-5 h-full mt-2">
+              <div>
+                <p className="mt-2 text-lg text-black">9987</p>
+              </div>
+
+              <div>
+                <HiOutlineDocumentDuplicate className="bg-indigo-900 text-white text-[27px] p-1.5 rounded-md" />
+              </div>
+            </div>
+          </div>
+
+          <div className="border border-[#E7E7F8] py-2 px-4 rounded-lg">
+            <p className="text-sm font-normal">Locked Applications</p>
+
+            <div className="grid grid-cols-[auto_25px] items-center justify-between gap-5 h-full mt-2">
+              <div>
+                <p className="mt-2 text-lg text-black">78</p>
+              </div>
+
+              <div>
+                <LuLockKeyhole className="bg-indigo-900 text-[27px] text-white p-1.5 rounded-md" />
+              </div>
+            </div>
+          </div>
+
+          <div className="border border-[#E7E7F8] py-2 px-4 rounded-lg">
+            <p className="text-sm font-normal">Unlocked Applications</p>
+
+            <div className="grid grid-cols-[auto_25px] items-center justify-between gap-5 h-full mt-2">
+              <div>
+                <p className="mt-2 text-lg text-black">879</p>
+              </div>
+
+              <div>
+                <LuLockKeyholeOpen className="bg-indigo-900 text-[27px] text-white p-1.5 rounded-md" />
+              </div>
+            </div>
+          </div>
+
+          <div className="border border-[#E7E7F8] py-2 px-4 rounded-lg">
+            <p className="text-sm font-normal">Admission Confirmed</p>
+
+            <div className="grid grid-cols-[auto_25px] items-center justify-between gap-5 h-full mt-2">
+              <div>
+                <p className="mt-2 text-lg text-black">987</p>
+              </div>
+
+              <div>
+                <GiCheckMark className="bg-indigo-900 text-[27px] text-white p-1.5 rounded-md" />
+              </div>
+            </div>
+          </div>
+
+          <div className="border border-[#E7E7F8] py-2 px-4 rounded-lg">
+            <p className="text-sm font-normal">Application Rejected</p>
+
+            <div className="grid grid-cols-[auto_25px] items-center justify-between gap-5 h-full mt-2">
+              <div>
+                <p className="mt-2 text-lg text-black">987</p>
+              </div>
+
+              <div>
+                <ImCross className="bg-indigo-900 text-[27px] text-white p-2 rounded-md" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Button */}
         <div className="mt-8">
           <div className="flex gap-4 w-full justify-between">
@@ -944,16 +1014,18 @@ const DocumentEvaluator = () => {
                     <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
                       <tr>
                         <th className="p-4"> ID</th>
+                        <th className="p-4 w-20 text-center">
+                          Document Completion(%)
+                        </th>
                         <th className="p-4 w-1/10">Student Name</th>
                         <th className="p-4 w-1/10">Email</th>
                         <th className="p-4 w-1/10">Nearest Office</th>
                         <th className="p-4 w-1/10">Study Destination</th>
                         <th className="p-4 w-1/10">Study Level</th>
-                        <th className="p-4 w-20 text-center">
-                          Document Completion(%)
-                        </th>
-                        <th className="p-4 w-1/10 pl-8">Status</th>
-                        <th className="p-4 w-1/10">Actions</th>
+
+                        <th className="p-4 w-1/10 text-center">Mode</th>
+                        <th className="p-4 w-1/10 text-center">Status</th>
+                        <th className="p-4 w-1/10 text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -966,6 +1038,12 @@ const DocumentEvaluator = () => {
                           <td className="px-4 py-3 font-medium text-gray-700">
                             {b.id || "-"}
                           </td>
+
+                          {/* Donut chart */}
+                          <td className="px-4 py-3">
+                            <DonutChart value={getSubmittedDocsCount(b)} />
+                          </td>
+
                           {/* Customer Name */}
                           <td className="px-4 py-3 capitalize">
                             <Tooltip
@@ -1006,21 +1084,52 @@ const DocumentEvaluator = () => {
                           {/* Study Level */}
                           <td className="px-4 py-3">{b.studyLevel || "-"}</td>
 
-                          {/* Donut chart */}
+                          {/* Mode */}
                           <td className="px-4 py-3">
-                            <DonutChart value={getSubmittedDocsCount(b)} />
+                            <div className="flex justify-center items-center">
+                              <div
+                                className={`flex justify-center items-center rounded-full p-1.5 ${
+                                  b.mode === "lock"
+                                    ? "text-indigo-800"
+                                    : "text-indigo-200"
+                                }`}
+                              >
+                                {b.mode === "lock" ? (
+                                  <BiSolidLock size={20} />
+                                ) : (
+                                  <BiSolidLockOpen size={20} />
+                                )}
+                              </div>
+                            </div>
                           </td>
+                          {/* <td className="px-4 py-3">
+                            <div className="flex justify-center items-center">
+                              <button
+                                className={`w-20 px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
+                                  // modeColors[b.bookingStatus?.()] || ""
+                                  modeColors[b.mode] || ""
+                                }`}
+                              >
+                                {b.mode}
+                              </button>
+                            </div>
+                          </td> */}
 
                           {/* Status */}
                           <td className="px-4 py-3">
-                            <button
-                              className={`w-20 px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
-                                // statusColors[b.bookingStatus?.()] || ""
-                                statusColors[b.status] || ""
-                              }`}
-                            >
-                              {b.status}
-                            </button>
+                            <div className="flex justify-center items-center">
+                              <button
+                                className={`w-20 px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
+                                  b.mode === "lock"
+                                    ? statusColors[b.status] || ""
+                                    : "text-gray-400"
+
+                                  // statusColors[b.status] || ""
+                                }`}
+                              >
+                                {b.mode === "lock" ? b.status : "-"}
+                              </button>
+                            </div>
                           </td>
 
                           {/* Actions */}

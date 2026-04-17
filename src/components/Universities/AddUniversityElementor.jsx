@@ -32,23 +32,23 @@ const AddUniversityElementor = () => {
   const flagUrls = useMemo(
     () => ({
       Australia:
-        "https://cdn.britannica.com/78/6078-050-18D5DEFE/Flag-Australia.jpg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/aed4de7d-f3fb-49ae-b8d8-736fc3603a00/public",
       Canada:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/1200px-Flag_of_Canada_%28Pantone%29.svg.png",
-      UK: "https://cdn.britannica.com/25/4825-050-977D8C5E/Flag-United-Kingdom.jpg",
-      USA: "https://upload.wikimedia.org/wikipedia/commons/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/5a169ba3-e6f1-4abd-913e-e11988ac1c00/public",
+      UK: "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/e02420f7-1796-40b9-7986-2bf1fa2dd900/public",
+      USA: "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/827816a8-627b-4e11-bf1b-0f41b7a65c00/public",
       Germany:
-        "https://img.freepik.com/free-vector/illustration-german-flag_53876-27101.jpg?semt=ais_hybrid&w=740&q=80",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/4d712be5-7a9c-4671-58b7-6285a0959800/public",
       Dubai:
-        "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_United_Arab_Emirates.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/682681fd-5603-48bc-33a6-93b1fd4ca600/public",
       Europe:
-        "https://img.freepik.com/free-vector/illustration-european-union-flag_53876-27018.jpg?semt=ais_hybrid&w=740&q=80",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/6edd7a43-d4ca-4343-7776-4daebad92600/public",
       Ireland:
-        "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/615ae0ee-8b23-4ca6-c6b3-9607c9572400/public",
       Singapore:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Flag_of_Singapore.svg/1200px-Flag_of_Singapore.svg.png",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/8d93c1e6-cd1b-43c4-7e98-227ab7912500/public",
       "New Zealand":
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/1200px-Flag_of_New_Zealand.svg.png",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/9d4f42e5-a783-4e07-2e7c-6edd225ef000/public",
     }),
     [],
   );
@@ -419,7 +419,7 @@ const AddUniversityElementor = () => {
                   setCountry(selected);
                   setFlag(flagUrls[selected] || "");
                 }}
-                className="bg-transparent outline-none border-b border-[#2B2A4C] text-sm text-left w-24 text-[#2B2A4C]"
+                className="bg-transparent outline-none border-b border-[#2B2A4C] text-sm text-left min-w-28 text-[#2B2A4C] rounded-none"
               >
                 <option value="" disabled>
                   Country
