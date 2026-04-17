@@ -473,7 +473,7 @@ const EditUniversityElementor = () => {
                 }}
                 {...disableIfView}
                 // onChange={(e) => setCountry(e.target.value)}
-                className="bg-transparent outline-none border-b border-[#2B2A4C] text-sm text-left w-24 text-[#2B2A4C]"
+                className="bg-transparent outline-none border-b border-[#2B2A4C] text-sm text-left min-w-28 text-[#2B2A4C] rounded-none"
               >
                 <option value="" disabled>
                   Country
