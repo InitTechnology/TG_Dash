@@ -18,6 +18,9 @@ import { FaUserTie } from "react-icons/fa";
 import { BsCalendar2EventFill } from "react-icons/bs";
 import { CgTemplate } from "react-icons/cg";
 import { useEffect } from "react";
+import { LuLayoutList } from "react-icons/lu";
+import { HiOutlineDocumentText } from "react-icons/hi";
+
 // import { HiDocumentCheck } from "react-icons/hi2";
 
 const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
@@ -81,6 +84,16 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       icon: <CgTemplate />,
       text: "Banner\u00A0Elementor",
       to: "/BannerElementor",
+    },
+    {
+      icon: <LuLayoutList />,
+      text: "Office\u00A0Data",
+      to: "/office",
+    },
+    {
+      icon: <HiOutlineDocumentText />,
+      text: "Exam\u00A0Data",
+      to: "/exam",
     },
     { icon: <RiLogoutCircleRLine />, text: "Logout", action: handleLogout },
   ];
