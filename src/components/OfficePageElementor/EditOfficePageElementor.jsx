@@ -43,7 +43,7 @@ const renderHighlightedBannerTitle = (title, office) => {
 
   return title.split(regex).map((part, index) =>
     part.toLowerCase() === textToHighlight.toLowerCase() ? (
-      <span key={index} className="text-red-500">
+      <span key={index} className="text-red-700 font-normal">
         {part}
       </span>
     ) : (
@@ -59,7 +59,16 @@ const EditOfficePageElementor = () => {
   const officeId = paramOfficeId || localStorage.getItem("currentOfficeId");
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
   const [submitting, setSubmitting] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [isBannerTitleEditing, setIsBannerTitleEditing] = useState(false);
@@ -714,7 +723,7 @@ const EditOfficePageElementor = () => {
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           {/* Section 1 - banner */}
           <div
             className="relative min-h-[300px] md:min-h-[350px] lg:min-h-[400px] rounded-xl p-5 md:p-12 lg:p-20 flex flex-col justify-center transition-all duration-300 shadow-sm overflow-hidden"
@@ -1120,7 +1129,7 @@ const EditOfficePageElementor = () => {
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
                   <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300 ">
@@ -1470,7 +1479,7 @@ const EditOfficePageElementor = () => {
                 </div>
               ))}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData2.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
                   <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300">
@@ -1641,13 +1650,14 @@ const EditOfficePageElementor = () => {
 
             {/* SEO */}
             <div className="mt-8 p-8 border border-gray-300 rounded-xl">
-              <p className="text-lg font-semibold text-gray-700 mb-6">SEO</p>
-              <div className="flex flex-col lg:flex-row gap-4 mb-4">
+              <p className="text-lg font-semibold text-gray-700 mb-3">SEO</p>
+
+              <div className="space-y-3">
                 <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     SEO Title
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     value={seoData.title}
                     onChange={(e) =>
@@ -1661,7 +1671,7 @@ const EditOfficePageElementor = () => {
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     Description
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     value={seoData.description}
                     onChange={(e) =>
@@ -1671,20 +1681,20 @@ const EditOfficePageElementor = () => {
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-              </div>
-              <div className="flex flex-col w-full">
-                <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                  Keywords
-                </label>
-                <textarea
-                  rows={3}
-                  value={seoData.keywords}
-                  onChange={(e) =>
-                    setSeoData({ ...seoData, keywords: e.target.value })
-                  }
-                  placeholder="Enter keywords..."
-                  className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                />
+                <div className="flex flex-col w-full">
+                  <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
+                    Keywords
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={seoData.keywords}
+                    onChange={(e) =>
+                      setSeoData({ ...seoData, keywords: e.target.value })
+                    }
+                    placeholder="Enter keywords..."
+                    className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1890,6 +1900,24 @@ const EditOfficePageElementor = () => {
                     ))}
                   </select>
                 </div>
+
+                <div className="flex flex-col lg:col-span-3 w-full">
+                  <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
+                    Office Page URL
+                  </label>
+                  <input
+                    type="text"
+                    value={officeData.pageUrl}
+                    onChange={(e) =>
+                      setOfficeData({
+                        ...officeData,
+                        pageUrl: normalizeOfficeSlug(e.target.value),
+                      })
+                    }
+                    placeholder="e.g. study-abroad-consultants-in-surat-katargam"
+                    className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col w-full mb-4">
@@ -1908,23 +1936,26 @@ const EditOfficePageElementor = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     Phone
                   </label>
                   <input
                     type="text"
                     value={officeData.phone}
-                    maxLength={10}
+                    // maxLength={10}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, "");
-                      setOfficeData({ ...officeData, phone: value });
+                      const value = e.target.value.replace(/[^0-9, ]/g, "");
+                      setOfficeData((prev) => ({
+                        ...prev,
+                        phone: value,
+                      }));
                     }}
                     placeholder="Enter Phone No."
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     Email
                   </label>
@@ -1938,7 +1969,7 @@ const EditOfficePageElementor = () => {
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     Longitude
                   </label>
@@ -1955,7 +1986,7 @@ const EditOfficePageElementor = () => {
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     Latitude
                   </label>
@@ -1972,7 +2003,7 @@ const EditOfficePageElementor = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     Map Link
                   </label>
@@ -1986,7 +2017,7 @@ const EditOfficePageElementor = () => {
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                     Google Map Embed
                   </label>
@@ -2003,24 +2034,6 @@ const EditOfficePageElementor = () => {
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-              </div>
-
-              <div className="flex flex-col w-full mb-4">
-                <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                  Office Page URL
-                </label>
-                <input
-                  type="text"
-                  value={officeData.pageUrl}
-                  onChange={(e) =>
-                    setOfficeData({
-                      ...officeData,
-                      pageUrl: normalizeOfficeSlug(e.target.value),
-                    })
-                  }
-                  placeholder="e.g. study-abroad-consultants-in-surat-katargam"
-                  className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                />
               </div>
             </div>
 
@@ -2143,7 +2156,7 @@ const EditOfficePageElementor = () => {
                     <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
                       {trainer.specialization.map((spec, index) => (
                         <div key={index} className="flex items-center gap-2">
-                          <div className="flex flex-col w-full mb-4">
+                          <div className="flex flex-col w-full">
                             <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                               Specialization
                             </label>
@@ -2234,7 +2247,7 @@ const EditOfficePageElementor = () => {
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col w-full mb-4">
+                    <div className="flex flex-col w-full">
                       <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                         Name
                       </label>
@@ -2254,7 +2267,7 @@ const EditOfficePageElementor = () => {
                         className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                       />
                     </div>
-                    <div className="flex flex-col w-full mb-4">
+                    <div className="flex flex-col w-full">
                       <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                         Band Score
                       </label>
