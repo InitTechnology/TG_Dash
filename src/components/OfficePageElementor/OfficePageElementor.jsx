@@ -37,7 +37,7 @@ const renderHighlightedBannerTitle = (title, selectedCity) => {
     const isMatched = part.toLowerCase() === normalizedCity.toLowerCase();
 
     return isMatched ? (
-      <span key={`${part}-${index}`} className="text-red-500">
+      <span key={`${part}-${index}`} className="text-red-700 font-normal">
         {part}
       </span>
     ) : (
@@ -48,7 +48,16 @@ const renderHighlightedBannerTitle = (title, selectedCity) => {
 
 const OfficePageElementor = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
   const [, setSubmitting] = useState(false);
   const [isBannerTitleEditing, setIsBannerTitleEditing] = useState(false);
   const [countries, setCountries] = useState([]);
@@ -61,23 +70,23 @@ const OfficePageElementor = () => {
   const flagUrls = useMemo(
     () => ({
       Australia:
-        "https://cdn.britannica.com/78/6078-050-18D5DEFE/Flag-Australia.jpg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/aed4de7d-f3fb-49ae-b8d8-736fc3603a00/public",
       Canada:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/1200px-Flag_of_Canada_%28Pantone%29.svg.png",
-      UK: "https://cdn.britannica.com/25/4825-050-977D8C5E/Flag-United-Kingdom.jpg",
-      USA: "https://upload.wikimedia.org/wikipedia/commons/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/5a169ba3-e6f1-4abd-913e-e11988ac1c00/public",
+      UK: "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/e02420f7-1796-40b9-7986-2bf1fa2dd900/public",
+      USA: "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/827816a8-627b-4e11-bf1b-0f41b7a65c00/public",
       Germany:
-        "https://img.freepik.com/free-vector/illustration-german-flag_53876-27101.jpg?semt=ais_hybrid&w=740&q=80",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/4d712be5-7a9c-4671-58b7-6285a0959800/public",
       Dubai:
-        "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_United_Arab_Emirates.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/682681fd-5603-48bc-33a6-93b1fd4ca600/public",
       Europe:
-        "https://img.freepik.com/free-vector/illustration-european-union-flag_53876-27018.jpg?semt=ais_hybrid&w=740&q=80",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/6edd7a43-d4ca-4343-7776-4daebad92600/public",
       Ireland:
-        "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/615ae0ee-8b23-4ca6-c6b3-9607c9572400/public",
       Singapore:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Flag_of_Singapore.svg/1200px-Flag_of_Singapore.svg.png",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/8d93c1e6-cd1b-43c4-7e98-227ab7912500/public",
       "New Zealand":
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/1200px-Flag_of_New_Zealand.svg.png",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/9d4f42e5-a783-4e07-2e7c-6edd225ef000/public",
     }),
     [],
   );
@@ -512,7 +521,7 @@ const OfficePageElementor = () => {
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
+        <div className="mx-auto">
           {/* Section 1  banner*/}
           <div
             className="relative min-h-[300px] md:min-h-[350px] lg:min-h-[400px] rounded-xl p-5 md:p-12 lg:p-20 flex flex-col justify-center transition-all duration-300 shadow-sm overflow-hidden"
@@ -982,7 +991,7 @@ const OfficePageElementor = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
                   <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300">
@@ -1354,7 +1363,7 @@ const OfficePageElementor = () => {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData2.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
                   <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300">
@@ -1535,9 +1544,9 @@ const OfficePageElementor = () => {
 
             {/* Seo */}
             <div className="mt-8 p-8 border border-gray-300 rounded-xl">
-              <p className="text-lg font-semibold text-gray-700 mb-6">SEO</p>
+              <p className="text-lg font-semibold text-gray-700 mb-3">SEO</p>
 
-              <div className="flex flex-col lg:flex-row gap-4 mb-4">
+              <div className="space-y-3">
                 <div className="flex flex-col w-full">
                   <label
                     for="input"
@@ -1545,7 +1554,7 @@ const OfficePageElementor = () => {
                   >
                     SEO Title
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     value={seoData.title}
                     onChange={(e) =>
@@ -1562,7 +1571,7 @@ const OfficePageElementor = () => {
                   >
                     Description
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     value={seoData.description}
                     onChange={(e) =>
@@ -1572,24 +1581,23 @@ const OfficePageElementor = () => {
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-              </div>
-
-              <div className="flex flex-col w-full">
-                <label
-                  for="input"
-                  className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-                >
-                  Keywords
-                </label>
-                <textarea
-                  rows={3}
-                  value={seoData.keywords}
-                  onChange={(e) =>
-                    setSeoData({ ...seoData, keywords: e.target.value })
-                  }
-                  placeholder="Enter keywords..."
-                  className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                />
+                <div className="flex flex-col w-full">
+                  <label
+                    for="input"
+                    className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                  >
+                    Keywords
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={seoData.keywords}
+                    onChange={(e) =>
+                      setSeoData({ ...seoData, keywords: e.target.value })
+                    }
+                    placeholder="Enter keywords..."
+                    className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                  />
+                </div>
               </div>
             </div>
 
@@ -1636,7 +1644,7 @@ const OfficePageElementor = () => {
                         citySlug: normalizeOfficeSlug(e.target.value),
                       })
                     }
-                    placeholder="for e.g. ahmedabad-motera,rajkot-pushkardham,surat-katargam"
+                    placeholder="for e.g. rajkot-pushkardham"
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
@@ -1841,7 +1849,7 @@ const OfficePageElementor = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label
                     for="input"
                     className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -1851,16 +1859,18 @@ const OfficePageElementor = () => {
                   <input
                     type="text"
                     value={officeData.phone}
-                    maxLength={10}
                     onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, "");
-                      setOfficeData({ ...officeData, phone: value });
+                      const value = e.target.value.replace(/[^0-9, ]/g, "");
+                      setOfficeData((prev) => ({
+                        ...prev,
+                        phone: value,
+                      }));
                     }}
                     placeholder="Enter Phone No."
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label
                     for="input"
                     className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -1877,7 +1887,7 @@ const OfficePageElementor = () => {
                     className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                   />
                 </div>
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label
                     for="input"
                     className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -1898,7 +1908,7 @@ const OfficePageElementor = () => {
                   />
                 </div>
 
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label
                     for="input"
                     className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -1918,7 +1928,7 @@ const OfficePageElementor = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label
                     for="input"
                     className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -1936,7 +1946,7 @@ const OfficePageElementor = () => {
                   />
                 </div>
 
-                <div className="flex flex-col w-full mb-4">
+                <div className="flex flex-col w-full">
                   <label
                     for="input"
                     className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -1958,7 +1968,7 @@ const OfficePageElementor = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col w-full mb-4">
+              <div className="flex flex-col w-full">
                 <label
                   for="input"
                   className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -1974,7 +1984,7 @@ const OfficePageElementor = () => {
                       pageUrl: normalizeOfficeSlug(e.target.value),
                     })
                   }
-                  placeholder="for e.g. study-abroad-consultants-in-ahmedabad-motera,study-abroad-consultants-in-surat-katargam,study-abroad-consultants-in-rajkot-pushkardham"
+                  placeholder="for e.g. study-abroad-consultants-in-rajkot-pushkardham"
                   className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                 />
               </div>
@@ -2228,7 +2238,7 @@ const OfficePageElementor = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col w-full mb-4">
+                    <div className="flex flex-col w-full">
                       <label
                         for="input"
                         className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -2252,7 +2262,7 @@ const OfficePageElementor = () => {
                       />
                     </div>
 
-                    <div className="flex flex-col w-full mb-4">
+                    <div className="flex flex-col w-full">
                       <label
                         for="input"
                         className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"

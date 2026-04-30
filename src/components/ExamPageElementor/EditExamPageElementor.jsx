@@ -1474,7 +1474,16 @@ const EditExamPageElementor = () => {
   const navigate = useNavigate();
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+      const savedState = localStorage.getItem("menubarOpen");
+  
+      if (savedState !== null) {
+        return JSON.parse(savedState);
+      }
+  
+      return window.innerWidth >= 1024;
+    });
   const [selectedExam, setSelectedExam] = useState(EXAM_KEYS[0]);
   const [bannerTitle, setBannerTitle] = useState("");
   const [bannerBgColor, setBannerBgColor] = useState("");
