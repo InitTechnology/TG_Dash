@@ -352,7 +352,7 @@ const OfficePageElementor = () => {
   };
 
   const bannerTitleFieldClassName =
-    "font-semibold text-xl md:text-2xl lg:text-3xl 2xl:text-4xl text-[#2B2A4C] w-full bg-transparent outline-none duration-300 p-0";
+    "font-bold leading-[1.15] text-[clamp(1.6rem,4.2vw,4.5rem)] text-[#2B2A4C] w-auto bg-transparent outline-none duration-300 p-0";
   const commonPosition =
     "absolute left-5 right-5 top-5 md:left-12 md:right-12 md:top-12 lg:left-20 lg:right-20 lg:top-20";
 
@@ -569,8 +569,8 @@ const OfficePageElementor = () => {
           {/* Section 2  para*/}
           <div className="mt-6 mb-10">
             {sections.map((section, index) => (
-              <div key={section.id} className="relative group mb-10">
-                <div className="w-full border border-gray-400 rounded bg-white px-4 py-2 hover:border-black">
+              <div key={section.id} className="relative group mb-11">
+                <div className="w-full border border-gray-300 rounded bg-white px-4 py-2 hover:border-black">
                   <textarea
                     value={section.text}
                     onChange={(e) =>
@@ -583,15 +583,15 @@ const OfficePageElementor = () => {
                     }
                     rows={isMobile ? 12 : 4}
                     placeholder="Type something here..."
-                    className="w-full bg-transparent outline-none text-sm text-gray-500"
+                    className="w-full bg-transparent outline-none text-sm text-gray-700"
                   />
                 </div>
-                <div className="absolute -right-1 -bottom-8 flex items-center gap-1">
+                <div className="absolute -right-0 -bottom-8 flex items-center gap-1">
                   <button
                     onClick={() => addDynamicItem(setSections)}
                     className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                   >
-                    <FaPlus size={18} />
+                    <FaPlus size={14} />
                   </button>
                   {index !== 0 && (
                     <button
@@ -600,7 +600,7 @@ const OfficePageElementor = () => {
                       }
                       className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                     >
-                      <FaMinus size={18} />
+                      <FaMinus size={14} />
                     </button>
                   )}
                 </div>
@@ -609,7 +609,7 @@ const OfficePageElementor = () => {
           </div>
 
           {/* Section 3  flag*/}
-          <div className="mt-12 mb-20 p-10 border border-gray-400 rounded-sm bg-white relative">
+          <div className="mt-12 mb-20 p-10 border border-gray-300 rounded-sm bg-white relative">
             <div className="mb-10">
               <textarea
                 rows={1}
@@ -638,7 +638,7 @@ const OfficePageElementor = () => {
                       }
                       rows={isMobile ? 4 : 1}
                       placeholder="Description"
-                      className="w-full bg-transparent outline-none text-sm text-gray-500 resize-none"
+                      className="w-full bg-transparent outline-none text-sm text-gray-700 resize-none"
                     />
                   </div>
                   <div className="absolute -bottom-7 right-0 flex items-center gap-1">
@@ -773,6 +773,7 @@ const OfficePageElementor = () => {
                         <option value="Germany">Germany</option>
                         <option value="Dubai">Dubai</option>
                         <option value="Europe">Europe</option>
+                        <option value="Ireland">Ireland</option>
                         <option value="Singapore">Singapore</option>
                       </select>
                     </div>
@@ -787,7 +788,7 @@ const OfficePageElementor = () => {
                           "description",
                         )
                       }
-                      className="w-full text-sm text-center text-gray-500 bg-transparent outline-none border border-transparent rounded hover:border-black"
+                      className="w-full mt-5 text-sm text-center text-gray-500 bg-transparent outline-none border border-transparent rounded hover:border-gray-300"
                       rows={3}
                       placeholder="description..."
                     />
@@ -834,7 +835,7 @@ const OfficePageElementor = () => {
             {examsData.subtitle.map((sub, index) => (
               <div
                 key={sub.id}
-                className="relative mb-8 w-full border border-gray-300 rounded bg-[#F0F2F9] px-3 py-2 hover:border-black"
+                className="relative mb-8 w-full border border-gray-300 rounded bg-transparent px-3 py-2 hover:border-black"
               >
                 <textarea
                   rows={1}
@@ -847,7 +848,7 @@ const OfficePageElementor = () => {
                       e.target.value,
                     )
                   }
-                  className="w-full text-sm text-gray-500 bg-transparent outline-none"
+                  className="w-full text-sm text-gray-700 bg-transparent outline-none"
                   placeholder="Description..."
                 />
                 <div className="absolute -right-2 -bottom-7 flex gap-1">
@@ -960,7 +961,7 @@ const OfficePageElementor = () => {
                       }
                       rows={isMobile ? 8 : 2}
                       placeholder="Description..."
-                      className="w-full bg-transparent outline-none text-sm text-gray-500 resize-none"
+                      className="w-full bg-transparent outline-none text-sm text-gray-700 resize-none"
                     />
                   </div>
                   <div className="absolute -bottom-7 right-0 flex items-center gap-1">
@@ -994,7 +995,7 @@ const OfficePageElementor = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
-                  <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300">
+                  <div className="flex flex-col items-start bg-white px-5 py-4 min-h-[300px] border border-gray-300">
                     {/* Icon Upload Area */}
                     {/* <div className="w-10 h-10 bg-[#1D2145] rounded-lg flex items-center justify-center mb-4 overflow-hidden"></div> */}
                     <div>
@@ -1024,7 +1025,7 @@ const OfficePageElementor = () => {
                           "title",
                         )
                       }
-                      className="w-full text-xl font-medium text-[#1B003C] my-5 bg-transparent outline-none border-b border-transparent hover:border-gray-300 mb-3 resize-none"
+                      className="w-full font-medium text-[#1B003C] my-5 bg-transparent outline-none border-b border-transparent hover:border-gray-300 mb-3 resize-none"
                       rows={2}
                       placeholder="Heading"
                     />
@@ -1076,7 +1077,7 @@ const OfficePageElementor = () => {
           </div>
 
           {/* section 6  carousel*/}
-          <div className="mt-12 mb-20 p-8 flex flex-col lg:flex-row items-center gap-10 bg-[#E7E7F8] relative">
+          <div className="mt-12 mb-20 p-8 flex flex-col lg:flex-row items-center gap-10 bg-[#F3F2FF] relative">
             <div className="w-full lg:w-1/2">
               <textarea
                 rows={isMobile ? 5 : 3}
@@ -1105,7 +1106,7 @@ const OfficePageElementor = () => {
             </div>
             {/* Student Testimonials to show on first page */}
             <div className="w-full lg:w-1/2 flex flex-col items-end">
-              <div className="w-full overflow-hidden rounded-r-xl shadow-2xl bg-[#2D2E49] min-h-[260px] lg:min-h-[280px] relative">
+              <div className="w-full overflow-hidden rounded-r-xl bg-[#2D2E49] min-h-[260px] lg:min-h-[280px] relative">
                 <div
                   className={`flex ${
                     isTransitioning
@@ -1259,7 +1260,7 @@ const OfficePageElementor = () => {
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-4 pr-4">
+              <div className="flex gap-1 mt-4">
                 {testimonialsData.reviews.length < 10 && (
                   <button
                     onClick={() =>
@@ -1300,7 +1301,7 @@ const OfficePageElementor = () => {
           </div>
 
           {/* section 7  card 2*/}
-          <div className="mt-12 mb-20 p-10 border border-gray-400 rounded-sm bg-white relative">
+          <div className="mt-12 mb-20 p-10 border border-gray-300 rounded-sm bg-white relative">
             <div className="mb-10">
               <textarea
                 rows={1}
@@ -1330,7 +1331,7 @@ const OfficePageElementor = () => {
                       }
                       rows={isMobile ? 8 : 2}
                       placeholder="Description..."
-                      className="w-full bg-transparent outline-none text-sm text-gray-500 resize-none"
+                      className="w-full bg-transparent outline-none text-sm text-gray-700 resize-none"
                     />
                   </div>
 
@@ -1366,7 +1367,7 @@ const OfficePageElementor = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData2.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
-                  <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300">
+                  <div className="flex flex-col items-start bg-white px-5 py-4 min-h-[300px] border border-gray-300">
                     {/* <div className="w-10 h-10 bg-[#1D2145] rounded-lg flex items-center justify-center mb-4"></div> */}
                     <div>
                       {" "}
@@ -1449,7 +1450,7 @@ const OfficePageElementor = () => {
           </div>
 
           {/* section 8  faq*/}
-          <div className="mt-12 mb-20 p-8 border border-gray-300 rounded-xl bg-[#F8F9FA]">
+          <div className="mt-12 mb-20 p-8 border border-gray-300 bg-white">
             <p className="font-semibold text-xl md:text-2xl lg:text-3xl 2xl:text-4xl text-[#2B2A4C] w-full bg-transparent outline-none text-center mb-6">
               FAQs regarding Study Abroad Consultants
             </p>
@@ -1828,6 +1829,27 @@ const OfficePageElementor = () => {
                     ))}
                   </select>
                 </div>
+
+                <div className="flex flex-col lg:col-span-3 w-full">
+                  <label
+                    for="input"
+                    className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                  >
+                    Office Page URL <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={officeData.pageUrl}
+                    onChange={(e) =>
+                      setOfficeData({
+                        ...officeData,
+                        pageUrl: normalizeOfficeSlug(e.target.value),
+                      })
+                    }
+                    placeholder="for e.g. study-abroad-consultants-in-rajkot-pushkardham"
+                    className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col w-full mb-4">
@@ -1967,27 +1989,6 @@ const OfficePageElementor = () => {
                   />
                 </div>
               </div>
-
-              <div className="flex flex-col w-full">
-                <label
-                  for="input"
-                  className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-                >
-                  Office Page URL <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={officeData.pageUrl}
-                  onChange={(e) =>
-                    setOfficeData({
-                      ...officeData,
-                      pageUrl: normalizeOfficeSlug(e.target.value),
-                    })
-                  }
-                  placeholder="for e.g. study-abroad-consultants-in-rajkot-pushkardham"
-                  className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                />
-              </div>
             </div>
 
             {/* exam page */}
@@ -2000,10 +2001,250 @@ const OfficePageElementor = () => {
               <p className="font-medium text-gray-600 mb-4">Trainers</p>
 
               {examData.trainers.map((trainer) => (
-                <div key={trainer.id} className="border p-4 rounded mb-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex flex-col w-full mb-0">
+                <>
+                  <div key={trainer.id} className="border p-4 rounded mb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex flex-col w-full mb-0">
+                          <label
+                            for="input"
+                            className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                          >
+                            Name
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter name"
+                            value={trainer.name}
+                            onChange={(e) =>
+                              handleDynamicChange(
+                                setExamData,
+                                "trainers",
+                                trainer.id,
+                                e.target.value,
+                                "name",
+                              )
+                            }
+                            className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                          />
+                        </div>
+
+                        <div className="flex flex-col w-full mb-0">
+                          <label
+                            for="input"
+                            className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                          >
+                            Qualification
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter qualification"
+                            value={trainer.qualification}
+                            onChange={(e) =>
+                              handleDynamicChange(
+                                setExamData,
+                                "trainers",
+                                trainer.id,
+                                e.target.value,
+                                "qualification",
+                              )
+                            }
+                            className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                          />
+                        </div>
+                        <div className="flex flex-col w-full mb-4">
+                          <label
+                            for="input"
+                            className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                          >
+                            Experience
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter experience"
+                            value={trainer.experience}
+                            onChange={(e) =>
+                              handleDynamicChange(
+                                setExamData,
+                                "trainers",
+                                trainer.id,
+                                e.target.value,
+                                "experience",
+                              )
+                            }
+                            className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col justify-center lg:items-end">
+                        <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center ml-10">
+                          <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden lg:mr-0 mr-10">
+                            {trainer.img ? (
+                              <img
+                                src={trainer.img}
+                                alt="trainer"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-xs text-gray-400 text-center">
+                                Upload
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files[0];
+
+                                if (file) {
+                                  const preview = URL.createObjectURL(file);
+
+                                  // preview
+                                  handleDynamicChange(
+                                    setExamData,
+                                    "trainers",
+                                    trainer.id,
+                                    preview,
+                                    "img",
+                                  );
+
+                                  // actual file (THIS is what backend needs)
+                                  handleDynamicChange(
+                                    setExamData,
+                                    "trainers",
+                                    trainer.id,
+                                    file,
+                                    "file",
+                                  );
+                                }
+                              }}
+                              className="text-xs text-gray-500 
+                              file:mr-3 file:py-2 file:px-3 
+                              file:rounded-md file:border-0 
+                              file:text-xs file:font-semibold 
+                              file:bg-blue-50 file:text-indigo-900 cursor-pointer"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3">
+                      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
+                        {trainer.specialization.map((spec, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="flex flex-col w-full mb-4">
+                              <label
+                                for="input"
+                                className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                              >
+                                Specialization
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Max 3 words"
+                                value={spec}
+                                onChange={(e) =>
+                                  handleSpecializationChange(
+                                    trainer.id,
+                                    index,
+                                    e.target.value,
+                                  )
+                                }
+                                className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                              />
+                            </div>
+
+                            {index === trainer.specialization.length - 1 && (
+                              <div className="flex gap-1">
+                                {trainer.specialization.length < 10 && (
+                                  <button
+                                    onClick={() =>
+                                      addSpecialization(trainer.id)
+                                    }
+                                    className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                                  >
+                                    <FaPlus size={12} />
+                                  </button>
+                                )}
+
+                                {trainer.specialization.length > 1 && (
+                                  <button
+                                    onClick={() =>
+                                      removeSpecialization(trainer.id, index)
+                                    }
+                                    className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                                  >
+                                    <FaMinus size={12} />
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-1 mb-4">
+                    <button
+                      type="button"
+                      onClick={addTrainer}
+                      className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
+                    >
+                      <FaPlus size={14} />
+                    </button>
+
+                    {examData.trainers.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeTrainer(trainer.id)}
+                        className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
+                      >
+                        <FaMinus size={14} />
+                      </button>
+                    )}
+                  </div>
+                </>
+              ))}
+
+              {/* Student Testimonials to show on internal page/ exam */}
+              <p className="font-medium text-gray-600 mt-6 mb-4">
+                Student Testimonials
+              </p>
+              {examData.testimonials.map((item) => (
+                <>
+                  <div key={item.id} className="border p-4 rounded mb-2">
+                    <div className="flex flex-col w-full mb-4">
+                      <label
+                        for="input"
+                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
+                      >
+                        Review
+                      </label>
+                      <textarea
+                        rows={2}
+                        placeholder="Enter review"
+                        value={item.review}
+                        onChange={(e) =>
+                          handleDynamicChange(
+                            setExamData,
+                            "testimonials",
+                            item.id,
+                            e.target.value,
+                            "review",
+                          )
+                        }
+                        className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-col w-full">
                         <label
                           for="input"
                           className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
@@ -2013,12 +2254,12 @@ const OfficePageElementor = () => {
                         <input
                           type="text"
                           placeholder="Enter name"
-                          value={trainer.name}
+                          value={item.name}
                           onChange={(e) =>
                             handleDynamicChange(
                               setExamData,
-                              "trainers",
-                              trainer.id,
+                              "testimonials",
+                              item.id,
                               e.target.value,
                               "name",
                             )
@@ -2027,286 +2268,52 @@ const OfficePageElementor = () => {
                         />
                       </div>
 
-                      <div className="flex flex-col w-full mb-0">
+                      <div className="flex flex-col w-full">
                         <label
                           for="input"
                           className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
                         >
-                          Qualification
+                          Band Score
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter qualification"
-                          value={trainer.qualification}
+                          placeholder="Enter Band Score"
+                          value={item.bandScore}
                           onChange={(e) =>
                             handleDynamicChange(
                               setExamData,
-                              "trainers",
-                              trainer.id,
+                              "testimonials",
+                              item.id,
                               e.target.value,
-                              "qualification",
-                            )
-                          }
-                          className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                        />
-                      </div>
-                      <div className="flex flex-col w-full mb-4">
-                        <label
-                          for="input"
-                          className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-                        >
-                          Experience
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Enter experience"
-                          value={trainer.experience}
-                          onChange={(e) =>
-                            handleDynamicChange(
-                              setExamData,
-                              "trainers",
-                              trainer.id,
-                              e.target.value,
-                              "experience",
+                              "bandScore",
                             )
                           }
                           className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                         />
                       </div>
                     </div>
-
-                    <div className="flex flex-col justify-center lg:items-end">
-                      <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center ml-10">
-                        <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden lg:mr-0 mr-10">
-                          {trainer.img ? (
-                            <img
-                              src={trainer.img}
-                              alt="trainer"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-xs text-gray-400 text-center">
-                              Upload
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col gap-1">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files[0];
-
-                              if (file) {
-                                const preview = URL.createObjectURL(file);
-
-                                // preview
-                                handleDynamicChange(
-                                  setExamData,
-                                  "trainers",
-                                  trainer.id,
-                                  preview,
-                                  "img",
-                                );
-
-                                // actual file (THIS is what backend needs)
-                                handleDynamicChange(
-                                  setExamData,
-                                  "trainers",
-                                  trainer.id,
-                                  file,
-                                  "file",
-                                );
-                              }
-                            }}
-                            className="text-xs text-gray-500 
-                              file:mr-3 file:py-2 file:px-3 
-                              file:rounded-md file:border-0 
-                              file:text-xs file:font-semibold 
-                              file:bg-blue-50 file:text-indigo-900 cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="mt-3">
-                    <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
-                      {trainer.specialization.map((spec, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <div className="flex flex-col w-full mb-4">
-                            <label
-                              for="input"
-                              className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-                            >
-                              Specialization
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Max 3 words"
-                              value={spec}
-                              onChange={(e) =>
-                                handleSpecializationChange(
-                                  trainer.id,
-                                  index,
-                                  e.target.value,
-                                )
-                              }
-                              className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                            />
-                          </div>
-
-                          {index === trainer.specialization.length - 1 && (
-                            <div className="flex gap-1">
-                              {trainer.specialization.length < 10 && (
-                                <button
-                                  onClick={() => addSpecialization(trainer.id)}
-                                  className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                                >
-                                  <FaPlus size={12} />
-                                </button>
-                              )}
-
-                              {trainer.specialization.length > 1 && (
-                                <button
-                                  onClick={() =>
-                                    removeSpecialization(trainer.id, index)
-                                  }
-                                  className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                                >
-                                  <FaMinus size={12} />
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end gap-1 mt-2">
-                    <button
-                      type="button"
-                      onClick={addTrainer}
-                      className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                    >
-                      <FaPlus size={12} />
-                    </button>
-
-                    {examData.trainers.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeTrainer(trainer.id)}
-                        className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                      >
-                        <FaMinus size={12} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {/* Student Testimonials to show on internal page/ exam */}
-              <p className="font-medium text-gray-600 mt-6 mb-4">
-                Student Testimonials
-              </p>
-              {examData.testimonials.map((item) => (
-                <div key={item.id} className="border p-4 rounded mb-4">
-                  <div className="flex flex-col w-full mb-4">
-                    <label
-                      for="input"
-                      className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-                    >
-                      Review
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder="Enter review"
-                      value={item.review}
-                      onChange={(e) =>
-                        handleDynamicChange(
-                          setExamData,
-                          "testimonials",
-                          item.id,
-                          e.target.value,
-                          "review",
-                        )
-                      }
-                      className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col w-full">
-                      <label
-                        for="input"
-                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-                      >
-                        Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter name"
-                        value={item.name}
-                        onChange={(e) =>
-                          handleDynamicChange(
-                            setExamData,
-                            "testimonials",
-                            item.id,
-                            e.target.value,
-                            "name",
-                          )
-                        }
-                        className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                      />
-                    </div>
-
-                    <div className="flex flex-col w-full">
-                      <label
-                        for="input"
-                        className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit"
-                      >
-                        Band Score
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter Band Score"
-                        value={item.bandScore}
-                        onChange={(e) =>
-                          handleDynamicChange(
-                            setExamData,
-                            "testimonials",
-                            item.id,
-                            e.target.value,
-                            "bandScore",
-                          )
-                        }
-                        className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end gap-1">
+                  <div className="flex justify-end gap-1 mb-4">
                     <button
                       type="button"
                       onClick={addExamTestimonial}
-                      className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                      className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                     >
-                      <FaPlus size={12} />
+                      <FaPlus size={14} />
                     </button>
 
                     {examData.testimonials.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeExamTestimonial(item.id)}
-                        className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                        className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                       >
-                        <FaMinus size={12} />
+                        <FaMinus size={14} />
                       </button>
                     )}
                   </div>
-                </div>
+                </>
               ))}
             </div>
           </div>

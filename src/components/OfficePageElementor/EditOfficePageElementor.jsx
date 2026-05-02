@@ -82,23 +82,23 @@ const EditOfficePageElementor = () => {
   const flagUrls = useMemo(
     () => ({
       Australia:
-        "https://cdn.britannica.com/78/6078-050-18D5DEFE/Flag-Australia.jpg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/aed4de7d-f3fb-49ae-b8d8-736fc3603a00/public",
       Canada:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/1200px-Flag_of_Canada_%28Pantone%29.svg.png",
-      UK: "https://cdn.britannica.com/25/4825-050-977D8C5E/Flag-United-Kingdom.jpg",
-      USA: "https://upload.wikimedia.org/wikipedia/commons/9/96/Flag_of_the_United_States_%28DDD-F-416E_specifications%29.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/5a169ba3-e6f1-4abd-913e-e11988ac1c00/public",
+      UK: "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/e02420f7-1796-40b9-7986-2bf1fa2dd900/public",
+      USA: "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/827816a8-627b-4e11-bf1b-0f41b7a65c00/public",
       Germany:
-        "https://img.freepik.com/free-vector/illustration-german-flag_53876-27101.jpg?semt=ais_hybrid&w=740&q=80",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/4d712be5-7a9c-4671-58b7-6285a0959800/public",
       Dubai:
-        "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_United_Arab_Emirates.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/682681fd-5603-48bc-33a6-93b1fd4ca600/public",
       Europe:
-        "https://img.freepik.com/free-vector/illustration-european-union-flag_53876-27018.jpg?semt=ais_hybrid&w=740&q=80",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/6edd7a43-d4ca-4343-7776-4daebad92600/public",
       Ireland:
-        "https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/615ae0ee-8b23-4ca6-c6b3-9607c9572400/public",
       Singapore:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Flag_of_Singapore.svg/1200px-Flag_of_Singapore.svg.png",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/8d93c1e6-cd1b-43c4-7e98-227ab7912500/public",
       "New Zealand":
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Flag_of_New_Zealand.svg/1200px-Flag_of_New_Zealand.svg.png",
+        "https://imagedelivery.net/JqAydcRLXyliJTMOjPllJQ/9d4f42e5-a783-4e07-2e7c-6edd225ef000/public",
     }),
     [],
   );
@@ -533,7 +533,7 @@ const EditOfficePageElementor = () => {
   };
 
   const bannerTitleFieldClassName =
-    "font-semibold text-xl md:text-2xl lg:text-3xl 2xl:text-4xl text-[#2B2A4C] w-full bg-transparent outline-none duration-300 p-0";
+    "font-bold leading-[1.15] text-[clamp(1.6rem,4.2vw,4.5rem)] text-[#2B2A4C] w-auto bg-transparent outline-none duration-300 p-0";
   const commonPosition =
     "absolute left-5 right-5 top-5 md:left-12 md:right-12 md:top-12 lg:left-20 lg:right-20 lg:top-20";
 
@@ -714,12 +714,7 @@ const EditOfficePageElementor = () => {
 
         <div className="flex justify-between gap-5 items-start lg:items-center mb-8">
           <p className="font-semibold text-xl text-gray-700 ml-10 lg:ml-0">
-            Edit Office Page{" "}
-            {officeId && (
-              <span className="text-indigo-600 text-base font-normal ml-2">
-                (ID: {officeId})
-              </span>
-            )}
+            Edit Office Page
           </p>
         </div>
 
@@ -767,8 +762,8 @@ const EditOfficePageElementor = () => {
           {/* Section 2 - para */}
           <div className="mt-6 mb-10">
             {sections.map((section, index) => (
-              <div key={section.id} className="relative group mb-10">
-                <div className="w-full border border-gray-400 rounded bg-white px-4 py-2 hover:border-black">
+              <div key={section.id} className="relative group mb-11">
+                <div className="w-full border border-gray-300 rounded bg-white px-4 py-2 hover:border-black">
                   <textarea
                     value={section.text}
                     onChange={(e) =>
@@ -781,7 +776,7 @@ const EditOfficePageElementor = () => {
                     }
                     rows={isMobile ? 12 : 4}
                     placeholder="Type something here..."
-                    className="w-full bg-transparent outline-none text-sm text-gray-500"
+                    className="w-full bg-transparent outline-none text-sm text-gray-700"
                   />
                 </div>
                 <div className="absolute -right-1 -bottom-8 flex items-center gap-1">
@@ -789,7 +784,7 @@ const EditOfficePageElementor = () => {
                     onClick={() => addDynamicItem(setSections)}
                     className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                   >
-                    <FaPlus size={18} />
+                    <FaPlus size={14} />
                   </button>
                   {index !== 0 && (
                     <button
@@ -798,7 +793,7 @@ const EditOfficePageElementor = () => {
                       }
                       className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                     >
-                      <FaMinus size={18} />
+                      <FaMinus size={14} />
                     </button>
                   )}
                 </div>
@@ -807,7 +802,7 @@ const EditOfficePageElementor = () => {
           </div>
 
           {/* Section 3 - flag */}
-          <div className="mt-12 mb-20 p-10 border border-gray-400 rounded-sm bg-white relative">
+          <div className="mt-12 mb-20 p-10 border border-gray-300 rounded-sm bg-white relative">
             <div className="mb-10">
               <textarea
                 rows={1}
@@ -836,7 +831,7 @@ const EditOfficePageElementor = () => {
                       }
                       rows={isMobile ? 4 : 1}
                       placeholder="Description"
-                      className="w-full bg-transparent outline-none text-sm text-gray-500 resize-none"
+                      className="w-full bg-transparent outline-none text-sm text-gray-700 resize-none"
                     />
                   </div>
                   <div className="absolute -bottom-7 right-0 flex items-center gap-1">
@@ -914,6 +909,7 @@ const EditOfficePageElementor = () => {
                         <option value="Germany">Germany</option>
                         <option value="Dubai">Dubai</option>
                         <option value="Europe">Europe</option>
+                        <option value="Ireland">Ireland</option>
                         <option value="Singapore">Singapore</option>
                       </select>
                     </div>
@@ -928,7 +924,7 @@ const EditOfficePageElementor = () => {
                           "description",
                         )
                       }
-                      className="w-full text-sm text-center text-gray-500 bg-transparent outline-none border border-transparent rounded hover:border-black"
+                      className="w-full mt-5 text-sm text-center text-gray-500 bg-transparent outline-none border border-transparent rounded hover:border-gray-300"
                       rows={3}
                       placeholder="description..."
                     />
@@ -975,7 +971,7 @@ const EditOfficePageElementor = () => {
             {examsData.subtitle.map((sub, index) => (
               <div
                 key={sub.id}
-                className="relative mb-8 w-full border border-gray-300 rounded bg-[#F0F2F9] px-3 py-2 hover:border-black"
+                className="relative mb-8 w-full border border-gray-300 rounded bg-transparent px-3 py-2 hover:border-black"
               >
                 <textarea
                   rows={1}
@@ -988,7 +984,7 @@ const EditOfficePageElementor = () => {
                       e.target.value,
                     )
                   }
-                  className="w-full text-sm text-gray-500 bg-transparent outline-none"
+                  className="w-full text-sm text-gray-700 bg-transparent outline-none"
                   placeholder="Description..."
                 />
                 <div className="absolute -right-2 -bottom-7 flex gap-1">
@@ -1099,7 +1095,7 @@ const EditOfficePageElementor = () => {
                       }
                       rows={isMobile ? 8 : 2}
                       placeholder="Description..."
-                      className="w-full bg-transparent outline-none text-sm text-gray-500 resize-none"
+                      className="w-full bg-transparent outline-none text-sm text-gray-700 resize-none"
                     />
                   </div>
                   <div className="absolute -bottom-7 right-0 flex items-center gap-1">
@@ -1132,7 +1128,7 @@ const EditOfficePageElementor = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
-                  <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300 ">
+                  <div className="flex flex-col items-start bg-white px-5 py-4 min-h-[300px] border border-gray-300 ">
                     {/* <div className="w-10 h-10 bg-[#1D2145] rounded-lg flex items-center justify-center mb-4 overflow-hidden"></div> */}
 
                     <div>
@@ -1163,7 +1159,7 @@ const EditOfficePageElementor = () => {
                           "title",
                         )
                       }
-                      className="w-full text-xl font-medium text-[#1B003C] my-5 bg-transparent outline-none border-b border-transparent hover:border-gray-300 mb-3 resize-none"
+                      className="w-full font-medium text-[#1B003C] my-5 bg-transparent outline-none border-b border-transparent hover:border-gray-300 mb-3 resize-none"
                       rows={2}
                       placeholder="Heading"
                     />
@@ -1213,7 +1209,7 @@ const EditOfficePageElementor = () => {
           </div>
 
           {/* Section 6 - carousel */}
-          <div className="mt-12 mb-20 p-8 flex flex-col lg:flex-row items-center gap-10 bg-[#E7E7F8] relative">
+          <div className="mt-12 mb-20 p-8 flex flex-col lg:flex-row items-center gap-10 bg-[#F3F2FF] relative">
             <div className="w-full lg:w-1/2">
               <textarea
                 rows={isMobile ? 5 : 3}
@@ -1241,7 +1237,7 @@ const EditOfficePageElementor = () => {
               />
             </div>
             <div className="w-full lg:w-1/2 flex flex-col items-end">
-              <div className="w-full overflow-hidden rounded-r-xl shadow-2xl bg-[#2D2E49] min-h-[260px] lg:min-h-[280px] relative">
+              <div className="w-full overflow-hidden rounded-r-xl bg-[#2D2E49] min-h-[260px] lg:min-h-[280px] relative">
                 <div
                   className={`flex ${isTransitioning ? "transition-transform duration-500 ease-in-out" : "transition-none"}`}
                   style={{
@@ -1380,7 +1376,7 @@ const EditOfficePageElementor = () => {
                   </button>
                 </div>
               </div>
-              <div className="flex gap-3 mt-4 pr-4">
+              <div className="flex gap-1 mt-4">
                 {testimonialsData.reviews.length < 10 && (
                   <button
                     onClick={() =>
@@ -1420,7 +1416,7 @@ const EditOfficePageElementor = () => {
           </div>
 
           {/* Section 7 - card 2 */}
-          <div className="mt-12 mb-20 p-10 border border-gray-400 rounded-sm bg-white relative">
+          <div className="mt-12 mb-20 p-10 border border-gray-300 rounded-sm bg-white relative">
             <div className="mb-10">
               <textarea
                 rows={1}
@@ -1449,7 +1445,7 @@ const EditOfficePageElementor = () => {
                       }
                       rows={isMobile ? 8 : 2}
                       placeholder="Description..."
-                      className="w-full bg-transparent outline-none text-sm text-gray-500 resize-none"
+                      className="w-full bg-transparent outline-none text-sm text-gray-700 resize-none"
                     />
                   </div>
                   <div className="absolute -bottom-7 right-0 flex items-center gap-1">
@@ -1482,7 +1478,7 @@ const EditOfficePageElementor = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-8">
               {servicesData2.cards.map((card, index) => (
                 <div key={card.id} className="relative group">
-                  <div className="flex flex-col items-start bg-white p-2 min-h-[300px] border border-gray-300">
+                  <div className="flex flex-col items-start bg-white px-5 py-4 min-h-[300px] border border-gray-300">
                     {/* <div className="w-10 h-10 bg-[#1D2145] rounded-lg flex items-center justify-center mb-4"></div> */}
                     <div>
                       {" "}
@@ -1562,7 +1558,7 @@ const EditOfficePageElementor = () => {
           </div>
 
           {/* Section 8 - FAQ */}
-          <div className="mt-12 mb-20 p-8 border border-gray-300 rounded-xl bg-[#F8F9FA]">
+          <div className="mt-12 mb-20 p-8 border border-gray-300 bg-white">
             <p className="font-semibold text-xl md:text-2xl lg:text-3xl 2xl:text-4xl text-[#2B2A4C] w-full bg-transparent outline-none text-center mb-6">
               FAQs regarding Study Abroad Consultants
             </p>
@@ -2044,22 +2040,228 @@ const EditOfficePageElementor = () => {
             <div className="mt-8 p-8 border border-gray-300 rounded-xl">
               <p className="font-medium text-gray-600 mb-4">Trainers</p>
               {examData.trainers.map((trainer) => (
-                <div key={trainer.id} className="border p-4 rounded mb-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                    <div className="flex flex-col gap-3">
-                      <div className="flex flex-col w-full mb-0">
+                <>
+                  <div key={trainer.id} className="border p-4 rounded mb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex flex-col w-full mb-0">
+                          <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
+                            Name
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter name"
+                            value={trainer.name}
+                            onChange={(e) =>
+                              handleDynamicChange(
+                                setExamData,
+                                "trainers",
+                                trainer.id,
+                                e.target.value,
+                                "name",
+                              )
+                            }
+                            className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                          />
+                        </div>
+                        <div className="flex flex-col w-full mb-0">
+                          <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
+                            Qualification
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter qualification"
+                            value={trainer.qualification}
+                            onChange={(e) =>
+                              handleDynamicChange(
+                                setExamData,
+                                "trainers",
+                                trainer.id,
+                                e.target.value,
+                                "qualification",
+                              )
+                            }
+                            className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                          />
+                        </div>
+                        <div className="flex flex-col w-full mb-4">
+                          <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
+                            Experience
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Enter experience"
+                            value={trainer.experience}
+                            onChange={(e) =>
+                              handleDynamicChange(
+                                setExamData,
+                                "trainers",
+                                trainer.id,
+                                e.target.value,
+                                "experience",
+                              )
+                            }
+                            className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col justify-center lg:items-end">
+                        <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center ml-10">
+                          <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden lg:mr-0 mr-10">
+                            {trainer.img ? (
+                              <img
+                                src={trainer.img}
+                                alt="trainer"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-xs text-gray-400 text-center">
+                                Upload
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+
+                                const imageUrl = URL.createObjectURL(file);
+
+                                setExamData((prev) => ({
+                                  ...prev,
+                                  trainers: prev.trainers.map((t) =>
+                                    t.id === trainer.id
+                                      ? {
+                                          ...t,
+                                          img: imageUrl, // preview
+                                          file: file, // ✅ actual file (THIS WAS MISSING)
+                                        }
+                                      : t,
+                                  ),
+                                }));
+                              }}
+                              className="text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-indigo-900 cursor-pointer"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
+                        {trainer.specialization.map((spec, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="flex flex-col w-full">
+                              <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
+                                Specialization
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Max 3 words"
+                                value={spec}
+                                onChange={(e) =>
+                                  handleSpecializationChange(
+                                    trainer.id,
+                                    index,
+                                    e.target.value,
+                                  )
+                                }
+                                className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                              />
+                            </div>
+                            {index === trainer.specialization.length - 1 && (
+                              <div className="flex gap-1">
+                                {trainer.specialization.length < 10 && (
+                                  <button
+                                    onClick={() =>
+                                      addSpecialization(trainer.id)
+                                    }
+                                    className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                                  >
+                                    <FaPlus size={12} />
+                                  </button>
+                                )}
+                                {trainer.specialization.length > 1 && (
+                                  <button
+                                    onClick={() =>
+                                      removeSpecialization(trainer.id, index)
+                                    }
+                                    className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                                  >
+                                    <FaMinus size={12} />
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-1 mb-4">
+                    <button
+                      type="button"
+                      onClick={addTrainer}
+                      className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
+                    >
+                      <FaPlus size={14} />
+                    </button>
+                    {examData.trainers.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeTrainer(trainer.id)}
+                        className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
+                      >
+                        <FaMinus size={14} />
+                      </button>
+                    )}
+                  </div>
+                </>
+              ))}
+
+              <p className="font-medium text-gray-600 mt-6 mb-4">
+                Student Testimonials
+              </p>
+              {examData.testimonials.map((item) => (
+                <>
+                  <div key={item.id} className="border p-4 rounded mb-2">
+                    <div className="flex flex-col w-full mb-4">
+                      <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
+                        Review
+                      </label>
+                      <textarea
+                        rows={2}
+                        placeholder="Enter review"
+                        value={item.review}
+                        onChange={(e) =>
+                          handleDynamicChange(
+                            setExamData,
+                            "testimonials",
+                            item.id,
+                            e.target.value,
+                            "review",
+                          )
+                        }
+                        className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-col w-full">
                         <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
                           Name
                         </label>
                         <input
                           type="text"
                           placeholder="Enter name"
-                          value={trainer.name}
+                          value={item.name}
                           onChange={(e) =>
                             handleDynamicChange(
                               setExamData,
-                              "trainers",
-                              trainer.id,
+                              "testimonials",
+                              item.id,
                               e.target.value,
                               "name",
                             )
@@ -2067,246 +2269,48 @@ const EditOfficePageElementor = () => {
                           className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                         />
                       </div>
-                      <div className="flex flex-col w-full mb-0">
+                      <div className="flex flex-col w-full">
                         <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                          Qualification
+                          Band Score
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter qualification"
-                          value={trainer.qualification}
+                          placeholder="Enter Band Score"
+                          value={item.bandScore}
                           onChange={(e) =>
                             handleDynamicChange(
                               setExamData,
-                              "trainers",
-                              trainer.id,
+                              "testimonials",
+                              item.id,
                               e.target.value,
-                              "qualification",
-                            )
-                          }
-                          className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                        />
-                      </div>
-                      <div className="flex flex-col w-full mb-4">
-                        <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                          Experience
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Enter experience"
-                          value={trainer.experience}
-                          onChange={(e) =>
-                            handleDynamicChange(
-                              setExamData,
-                              "trainers",
-                              trainer.id,
-                              e.target.value,
-                              "experience",
+                              "bandScore",
                             )
                           }
                           className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
                         />
                       </div>
                     </div>
-                    <div className="flex flex-col justify-center lg:items-end">
-                      <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center ml-10">
-                        <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden lg:mr-0 mr-10">
-                          {trainer.img ? (
-                            <img
-                              src={trainer.img}
-                              alt="trainer"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <span className="text-xs text-gray-400 text-center">
-                              Upload
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files[0];
-                              if (!file) return;
+                  </div>
 
-                              const imageUrl = URL.createObjectURL(file);
-
-                              setExamData((prev) => ({
-                                ...prev,
-                                trainers: prev.trainers.map((t) =>
-                                  t.id === trainer.id
-                                    ? {
-                                        ...t,
-                                        img: imageUrl, // preview
-                                        file: file, // ✅ actual file (THIS WAS MISSING)
-                                      }
-                                    : t,
-                                ),
-                              }));
-                            }}
-                            className="text-xs text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-indigo-900 cursor-pointer"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3">
-                      {trainer.specialization.map((spec, index) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <div className="flex flex-col w-full">
-                            <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                              Specialization
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Max 3 words"
-                              value={spec}
-                              onChange={(e) =>
-                                handleSpecializationChange(
-                                  trainer.id,
-                                  index,
-                                  e.target.value,
-                                )
-                              }
-                              className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                            />
-                          </div>
-                          {index === trainer.specialization.length - 1 && (
-                            <div className="flex gap-1">
-                              {trainer.specialization.length < 10 && (
-                                <button
-                                  onClick={() => addSpecialization(trainer.id)}
-                                  className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                                >
-                                  <FaPlus size={12} />
-                                </button>
-                              )}
-                              {trainer.specialization.length > 1 && (
-                                <button
-                                  onClick={() =>
-                                    removeSpecialization(trainer.id, index)
-                                  }
-                                  className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                                >
-                                  <FaMinus size={12} />
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-1 mt-2">
-                    <button
-                      type="button"
-                      onClick={addTrainer}
-                      className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                    >
-                      <FaPlus size={12} />
-                    </button>
-                    {examData.trainers.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeTrainer(trainer.id)}
-                        className="border border-indigo-900 text-indigo-900 rounded-full p-1"
-                      >
-                        <FaMinus size={12} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              <p className="font-medium text-gray-600 mt-6 mb-4">
-                Student Testimonials
-              </p>
-              {examData.testimonials.map((item) => (
-                <div key={item.id} className="border p-4 rounded mb-4">
-                  <div className="flex flex-col w-full mb-4">
-                    <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                      Review
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder="Enter review"
-                      value={item.review}
-                      onChange={(e) =>
-                        handleDynamicChange(
-                          setExamData,
-                          "testimonials",
-                          item.id,
-                          e.target.value,
-                          "review",
-                        )
-                      }
-                      className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col w-full">
-                      <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                        Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter name"
-                        value={item.name}
-                        onChange={(e) =>
-                          handleDynamicChange(
-                            setExamData,
-                            "testimonials",
-                            item.id,
-                            e.target.value,
-                            "name",
-                          )
-                        }
-                        className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                      />
-                    </div>
-                    <div className="flex flex-col w-full">
-                      <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-[#F8F9FA] w-fit">
-                        Band Score
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter Band Score"
-                        value={item.bandScore}
-                        onChange={(e) =>
-                          handleDynamicChange(
-                            setExamData,
-                            "testimonials",
-                            item.id,
-                            e.target.value,
-                            "bandScore",
-                          )
-                        }
-                        className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-1">
+                  <div className="flex justify-end gap-1 mb-4">
                     <button
                       type="button"
                       onClick={addExamTestimonial}
-                      className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                      className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                     >
-                      <FaPlus size={12} />
+                      <FaPlus size={14} />
                     </button>
                     {examData.testimonials.length > 1 && (
                       <button
                         type="button"
                         onClick={() => removeExamTestimonial(item.id)}
-                        className="border border-indigo-900 text-indigo-900 rounded-full p-1"
+                        className="border border-indigo-900 rounded-full p-1 bg-indigo-900 text-white"
                       >
-                        <FaMinus size={12} />
+                        <FaMinus size={14} />
                       </button>
                     )}
                   </div>
-                </div>
+                </>
               ))}
             </div>
           </div>

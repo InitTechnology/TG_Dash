@@ -2147,20 +2147,6 @@ const ExamPageElementor = () => {
             Save
           </button>
         </div>
-        <div className="mx-5 mt-8 mb-10 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="mb-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
-              Live Payload
-            </p>
-            <p className="mt-1 text-sm text-gray-500">
-              This updates automatically from the current banner and all
-              designs.
-            </p>
-          </div>
-          <pre className="max-h-[500px] overflow-auto rounded-xl bg-gray-900 p-4 text-xs leading-6 text-green-200">
-            {JSON.stringify(livePayload, null, 2)}
-          </pre>
-        </div>
       </main>
     </div>
   );

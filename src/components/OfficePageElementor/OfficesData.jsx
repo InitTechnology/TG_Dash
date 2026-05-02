@@ -19,6 +19,7 @@ const OfficesData = () => {
   const [deletePopup, setDeletePopup] = useState({
     open: false,
     officeId: null,
+    officeName: "",
   });
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -199,7 +200,7 @@ const OfficesData = () => {
       console.error("Delete error:", err);
       alert("Something went wrong");
     } finally {
-      setDeletePopup({ open: false, officeId: null });
+      setDeletePopup({ open: false, officeId: null, officeName: "" });
     }
   };
 
@@ -542,6 +543,7 @@ const OfficesData = () => {
                                   setDeletePopup({
                                     open: true,
                                     officeId: b.id,
+                                    officeName: b.branchName,
                                   })
                                 }
                                 className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
@@ -628,23 +630,38 @@ const OfficesData = () => {
               {/* Overlay */}
               <div
                 className="fixed inset-0 bg-black bg-opacity-40 z-40"
-                onClick={() => setDeletePopup({ open: false, officeId: null })}
+                onClick={() =>
+                  setDeletePopup({
+                    open: false,
+                    officeId: null,
+                    officeName: "",
+                  })
+                }
               />
 
               {/* Popup box */}
-              <div className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg w-[90%] max-w-md p-6 text-center">
+              <div className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-lg w-[90%] max-w-lg p-6 text-center">
                 <h2 className="text-lg font-semibold text-gray-800 mb-3">
-                  Delete Office?
+                  Delete{" "}
+                  <span className="font-semibold text-red-500">
+                    {deletePopup.officeName}
+                  </span>{" "}
+                  Branch ?
                 </h2>
                 <p className="text-sm text-gray-500 mb-6">
-                  Are you sure you want to delete this Office? This action
-                  cannot be undone.
+                  Are you sure you want to delete this Office?
+                  <br /> This action will also delete the corresponding "Exam
+                  Pages" too.
                 </p>
 
                 <div className="flex justify-center gap-4">
                   <button
                     onClick={() =>
-                      setDeletePopup({ open: false, officeId: null })
+                      setDeletePopup({
+                        open: false,
+                        officeId: null,
+                        officeName: "",
+                      })
                     }
                     className="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
                   >

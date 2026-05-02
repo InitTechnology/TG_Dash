@@ -89,10 +89,10 @@ const IconSearch = ({
               className="relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 sm:px-6">
+              <div className="flex items-start justify-between border-b border-gray-200 px-5 py-4 sm:px-6">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    (Select Icon)
+                  <h2 className="text-lg font-semibold text-indigo-900">
+                    Select Icon
                   </h2>
                   <p className="mt-1 text-sm text-gray-500">
                     Search and choose an icon for this card.
@@ -161,7 +161,7 @@ const IconSearch = ({
                 })}
               </div>
 
-              <div className="border-t border-gray-100 px-5 py-4 sm:px-6">
+              {/* <div className="border-t border-gray-100 px-5 py-4 sm:px-6">
                 <div className="flex items-center justify-center">
                   <button
                     type="button"
@@ -173,7 +173,7 @@ const IconSearch = ({
                     Load More
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>,
           document.body,
@@ -183,14 +183,14 @@ const IconSearch = ({
   return (
     <>
       <div
-        className="flex flex-col items-center justify-center gap-3"
+        className="flex flex-col justify-start gap-2"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="flex min-h-[60px] w-full flex-col items-center justify-center text-center">
+        <div className="flex min-h-[60px] w-full">
           <div className="flex items-center justify-center">
             {SelectedIcon ? (
-              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-[#2f2c59] shadow-md">
-                <SelectedIcon size={45} className="p-1.5 text-white" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#2f2c59] shadow-md">
+                <SelectedIcon size={28} className="text-white" />
               </div>
             ) : (
               <span
@@ -213,7 +213,7 @@ const IconSearch = ({
             e.stopPropagation();
             setIsOpen(true);
           }}
-          className="shrink-0 text-sm font-medium text-blue-600"
+          className="shrink-0 text-sm font-medium text-indigo-300"
         >
           (Select Icon)
         </button>
