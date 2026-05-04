@@ -1812,7 +1812,7 @@ const ExamPageElementor = () => {
     .filter((index) => index !== -1)
     .pop();
   const bannerTitleFieldClassName =
-    "block w-full bg-transparent p-0 font-semibold text-xl leading-[1.3] text-[#2B2A4C] md:text-2xl lg:text-3xl 2xl:text-4xl";
+    "font-bold leading-[1.15] text-[clamp(1.6rem,4.2vw,4.5rem)] text-[#2B2A4C] w-auto bg-transparent outline-none duration-300 p-0";
   const livePayload = buildPayload();
 
   const handleSubmit = async () => {

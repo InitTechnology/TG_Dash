@@ -1475,15 +1475,15 @@ const EditExamPageElementor = () => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
-   const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
-      const savedState = localStorage.getItem("menubarOpen");
-  
-      if (savedState !== null) {
-        return JSON.parse(savedState);
-      }
-  
-      return window.innerWidth >= 1024;
-    });
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
   const [selectedExam, setSelectedExam] = useState(EXAM_KEYS[0]);
   const [bannerTitle, setBannerTitle] = useState("");
   const [bannerBgColor, setBannerBgColor] = useState("");
@@ -1834,7 +1834,7 @@ const EditExamPageElementor = () => {
     .filter((index) => index !== -1)
     .pop();
   const bannerTitleFieldClassName =
-    "block w-full bg-transparent p-0 font-semibold text-xl leading-[1.3] text-[#2B2A4C] md:text-2xl lg:text-3xl 2xl:text-4xl";
+    "font-bold leading-[1.15] text-[clamp(1.6rem,4.2vw,4.5rem)] text-[#2B2A4C] w-auto bg-transparent outline-none duration-300 p-0";
   const livePayload = buildPayload();
 
   const handleUpdate = async () => {
