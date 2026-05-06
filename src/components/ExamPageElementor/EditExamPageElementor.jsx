@@ -951,7 +951,7 @@ const D5 = ({ s, onChange, bgImage, isActive }) => {
         <div className="max-w-3xl mx-auto space-y-2">
           <ParasEditor
             paras={s.paras}
-            onChange={(v) => u("paras", v.slice(0, 3))}
+            onChange={(v) => u("paras", v.slice(0, 10))}
             ring="focus:ring-indigo-400"
             bg="#3a3960"
             variant="design5"
@@ -963,7 +963,7 @@ const D5 = ({ s, onChange, bgImage, isActive }) => {
         <div className="max-w-5xl mx-auto">
           <CardsEditor
             cards={s.cards}
-            onChange={(v) => u("cards", v.slice(0, 4))}
+            onChange={(v) => u("cards", v.slice(0, 8))}
             ring="focus:ring-indigo-400"
             variant="design5"
             isActive={isActive}
@@ -1246,7 +1246,7 @@ const D8 = ({ s, onChange, selectedExam, setSelectedExam, offices = [] }) => {
           <select
             value={selectedOfficeId}
             onChange={(e) => u("office", e.target.value)}
-            className="border-gray-400 bg-[#F8F9FA] text-black p-3 text-sm border rounded-lg w-full"
+            className="border-gray-400 bg-[#F8F9FA] p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
           >
             <option value="">Select office</option>
             {offices.map((office) => (
