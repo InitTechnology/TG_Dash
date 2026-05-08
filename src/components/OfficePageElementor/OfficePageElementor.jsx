@@ -789,7 +789,7 @@ const OfficePageElementor = () => {
                         )
                       }
                       className="w-full mt-5 text-sm text-center text-gray-500 bg-transparent outline-none border border-transparent rounded hover:border-gray-300"
-                      rows={3}
+                      rows={isMobile ? 6 : 6}
                       placeholder="description..."
                     />
                   </div>
@@ -829,6 +829,7 @@ const OfficePageElementor = () => {
               onChange={(e) =>
                 setExamsData({ ...examsData, title: e.target.value })
               }
+              rows={isMobile ? 2 : 1}
               className="font-semibold text-xl md:text-2xl lg:text-3xl 2xl:text-4xl text-[#2B2A4C] w-full bg-transparent outline-none mb-4 focus:border-b border-black"
               placeholder="Title..."
             />
@@ -838,7 +839,7 @@ const OfficePageElementor = () => {
                 className="relative mb-8 w-full border border-gray-300 rounded bg-transparent px-3 py-2 hover:border-black"
               >
                 <textarea
-                  rows={1}
+                  rows={isMobile ? 3 : 2}
                   value={sub.text}
                   onChange={(e) =>
                     handleDynamicChange(
@@ -1535,12 +1536,12 @@ const OfficePageElementor = () => {
             </div>
           </div>
 
-          {/* section 9  Additional Required Data*/}
+          {/* Required Data*/}
           <div className="mt-12 mb-20">
             <div className="border-t-2 border-dashed border-indigo-200 mb-16 "></div>
 
             <p className="text-2xl font-bold text-[#2D3142] mb-6 text-center">
-              Additional Required Data
+              Required Data
             </p>
 
             {/* Seo */}
@@ -2319,13 +2320,13 @@ const OfficePageElementor = () => {
           </div>
 
           {/* button */}
-          <div className="grid grid-cols-2 max-w-[310px] gap-3 mt-5 w-80 justify-self-center">
-            <button className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
+          <div className="flex gap-3 my-5 justify-center">
+            <button className="w-36 px-6 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
               Cancel
             </button>
 
             <button
-              className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+              className="w-36 px-6 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
               onClick={handleSave}
             >
               Save
