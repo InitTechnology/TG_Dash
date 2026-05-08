@@ -14,13 +14,13 @@ const normalizeOfficeSlug = (value = "") =>
     .replace(/-+/g, "-")
     .replace(/^-+/g, "");
 
-const toTitleCase = (value = "") =>
-  value
-    .toLowerCase()
-    .split(" ")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+// const toTitleCase = (value = "") =>
+//   value
+//     .toLowerCase()
+//     .split(" ")
+//     .filter(Boolean)
+//     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//     .join(" ");
 
 const renderHighlightedBannerTitle = (title, office) => {
   if (!title) return null;
@@ -829,7 +829,7 @@ const EditOfficePageElementor = () => {
                           e.target.value,
                         )
                       }
-                      rows={isMobile ? 4 : 1}
+                      rows={isMobile ? 4 : 2}
                       placeholder="Description"
                       className="w-full bg-transparent outline-none text-sm text-gray-700 resize-none"
                     />
@@ -925,7 +925,7 @@ const EditOfficePageElementor = () => {
                         )
                       }
                       className="w-full mt-5 text-sm text-center text-gray-500 bg-transparent outline-none border border-transparent rounded hover:border-gray-300"
-                      rows={3}
+                      rows={isMobile ? 6 : 6}
                       placeholder="description..."
                     />
                   </div>
@@ -965,6 +965,7 @@ const EditOfficePageElementor = () => {
               onChange={(e) =>
                 setExamsData({ ...examsData, title: e.target.value })
               }
+              rows={isMobile ? 2 : 1}
               className="font-semibold text-xl md:text-2xl lg:text-3xl 2xl:text-4xl text-[#2B2A4C] w-full bg-transparent outline-none mb-4 focus:border-b border-black"
               placeholder="Title..."
             />
@@ -974,7 +975,7 @@ const EditOfficePageElementor = () => {
                 className="relative mb-8 w-full border border-gray-300 rounded bg-transparent px-3 py-2 hover:border-black"
               >
                 <textarea
-                  rows={1}
+                  rows={isMobile ? 3 : 2}
                   value={sub.text}
                   onChange={(e) =>
                     handleDynamicChange(
@@ -2316,7 +2317,21 @@ const EditOfficePageElementor = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 max-w-[310px] gap-3 mt-5 w-80 justify-self-center">
+          <div className="flex gap-3 my-5 justify-center">
+            <button className="w-36 px-6 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm">
+              Cancel
+            </button>
+
+            <button
+              className="w-36 px-6 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+              onClick={handleSave}
+              disabled={submitting}
+            >
+              {submitting ? "Updating..." : "Update"}
+            </button>
+          </div>
+
+          {/* <div className="grid grid-cols-2 max-w-[310px] gap-3 mt-5 w-80 justify-self-center">
             <button className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 transition-all duration-700 text-sm">
               Cancel
             </button>
@@ -2327,7 +2342,7 @@ const EditOfficePageElementor = () => {
             >
               {submitting ? "Updating..." : "Update"}
             </button>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>

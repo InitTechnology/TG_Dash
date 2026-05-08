@@ -203,18 +203,19 @@ const Universities = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const rowsPerPage_booking = 20;
-  const [currentPage_booking] = useState(1);
+  // const rowsPerPage_booking = 20;
+  // const [currentPage_booking] = useState(1);
   //   const [selectedRows_booking, setSelectedRows_booking] = useState([]);
 
-  const indexOfLastTable_booking = currentPage_booking * rowsPerPage_booking;
-  const indexOfFirstTable_booking =
-    indexOfLastTable_booking - rowsPerPage_booking;
+  // const indexOfLastTable_booking = currentPage_booking * rowsPerPage_booking;
+  // const indexOfFirstTable_booking =
+  //   indexOfLastTable_booking - rowsPerPage_booking;
 
-  const current_booking = bookings.slice(
-    indexOfFirstTable_booking,
-    indexOfLastTable_booking,
-  );
+  // const current_booking = bookings.slice(
+  //   indexOfFirstTable_booking,
+  //   indexOfLastTable_booking,
+  // );
+
   // const totalPages_booking = Math.ceil(bookings.length / rowsPerPage_booking);
 
   // const handlePageChange_booking = (pageNumber_booking) => {
@@ -259,23 +260,23 @@ const Universities = () => {
   //   return pageNumbers_booking;
   // };
 
-  const [selectedRows_booking, setSelectedRows_booking] = useState([]);
+  // const [selectedRows_booking, setSelectedRows_booking] = useState([]);
 
-  const handleRowCheckboxChange_booking = (order) => {
-    setSelectedRows_booking((prevSelected) =>
-      prevSelected.includes(order)
-        ? prevSelected.filter((id) => id !== order)
-        : [...prevSelected, order],
-    );
-  };
+  // const handleRowCheckboxChange_booking = (order) => {
+  //   setSelectedRows_booking((prevSelected) =>
+  //     prevSelected.includes(order)
+  //       ? prevSelected.filter((id) => id !== order)
+  //       : [...prevSelected, order],
+  //   );
+  // };
 
-  const handleSelectAll_booking = () => {
-    if (selectedRows_booking.length === current_booking.length) {
-      setSelectedRows_booking([]);
-    } else {
-      setSelectedRows_booking(current_booking.map((booking) => booking.order));
-    }
-  };
+  // const handleSelectAll_booking = () => {
+  //   if (selectedRows_booking.length === current_booking.length) {
+  //     setSelectedRows_booking([]);
+  //   } else {
+  //     setSelectedRows_booking(current_booking.map((booking) => booking.order));
+  //   }
+  // };
 
   const [, setShowPopup_filter] = useState(false);
   const filterRef = useRef(null);
@@ -497,7 +498,7 @@ const Universities = () => {
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
                       <tr>
-                        <th className="p-4">
+                        {/* <th className="p-4">
                           <input
                             type="checkbox"
                             onChange={handleSelectAll_booking}
@@ -507,7 +508,7 @@ const Universities = () => {
                               current_booking.length > 0
                             }
                           />
-                        </th>
+                        </th> */}
                         <th className="p-4"> ID</th>
                         <th className="p-4 w-1/10">University Logo</th>
                         <th className="p-4 w-1/10">University Name</th>
@@ -526,7 +527,7 @@ const Universities = () => {
                           className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
                         >
                           {/* Checkbox */}
-                          <td className="px-4 py-3">
+                          {/* <td className="px-4 py-3">
                             <input
                               type="checkbox"
                               onChange={() =>
@@ -534,7 +535,7 @@ const Universities = () => {
                               }
                               checked={selectedRows_booking.includes(u.id)}
                             />
-                          </td>
+                          </td> */}
                           {/* Booking ID */}
                           <td className="px-4 py-3 font-semibold text-gray-700">
                             {u.id || "-"}

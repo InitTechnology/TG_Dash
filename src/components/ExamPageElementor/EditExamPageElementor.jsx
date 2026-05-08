@@ -487,46 +487,46 @@ const cleanSection = (
   return s;
 };
 
-const cloneSectionWithIds = (section) => {
-  const cleanedSection = cleanSection(section);
-  const clonedSection = { ...cleanedSection, id: uid(), isInitial: false };
-  if (clonedSection.paras)
-    clonedSection.paras = normalizeTextItems(clonedSection.paras);
-  if (clonedSection.para)
-    clonedSection.para = normalizeTextItems(clonedSection.para);
-  if (clonedSection.descriptions)
-    clonedSection.descriptions = normalizeTextItems(clonedSection.descriptions);
-  if (clonedSection.keywords)
-    clonedSection.keywords = normalizeTextItems(clonedSection.keywords);
-  if (clonedSection.cards) {
-    clonedSection.cards = clonedSection.cards.map((card) => ({
-      ...card,
-      id: uid(),
-      descriptions: normalizeTextItems(card.descriptions),
-    }));
-  }
-  if (clonedSection.points && clonedSection.points.length > 0) {
-    if (
-      typeof clonedSection.points[0] === "object" &&
-      "point" in clonedSection.points[0]
-    ) {
-      clonedSection.points = clonedSection.points.map((point) => ({
-        ...point,
-        id: uid(),
-        descriptions: normalizeTextItems(point.descriptions),
-      }));
-    } else {
-      clonedSection.points = normalizeTextItems(clonedSection.points);
-    }
-  }
-  if (clonedSection.faqs) {
-    clonedSection.faqs = clonedSection.faqs.map((faq) => ({
-      ...faq,
-      id: uid(),
-    }));
-  }
-  return clonedSection;
-};
+// const cloneSectionWithIds = (section) => {
+//   const cleanedSection = cleanSection(section);
+//   const clonedSection = { ...cleanedSection, id: uid(), isInitial: false };
+//   if (clonedSection.paras)
+//     clonedSection.paras = normalizeTextItems(clonedSection.paras);
+//   if (clonedSection.para)
+//     clonedSection.para = normalizeTextItems(clonedSection.para);
+//   if (clonedSection.descriptions)
+//     clonedSection.descriptions = normalizeTextItems(clonedSection.descriptions);
+//   if (clonedSection.keywords)
+//     clonedSection.keywords = normalizeTextItems(clonedSection.keywords);
+//   if (clonedSection.cards) {
+//     clonedSection.cards = clonedSection.cards.map((card) => ({
+//       ...card,
+//       id: uid(),
+//       descriptions: normalizeTextItems(card.descriptions),
+//     }));
+//   }
+//   if (clonedSection.points && clonedSection.points.length > 0) {
+//     if (
+//       typeof clonedSection.points[0] === "object" &&
+//       "point" in clonedSection.points[0]
+//     ) {
+//       clonedSection.points = clonedSection.points.map((point) => ({
+//         ...point,
+//         id: uid(),
+//         descriptions: normalizeTextItems(point.descriptions),
+//       }));
+//     } else {
+//       clonedSection.points = normalizeTextItems(clonedSection.points);
+//     }
+//   }
+//   if (clonedSection.faqs) {
+//     clonedSection.faqs = clonedSection.faqs.map((faq) => ({
+//       ...faq,
+//       id: uid(),
+//     }));
+//   }
+//   return clonedSection;
+// };
 
 const Inp = ({
   value,
@@ -536,7 +536,7 @@ const Inp = ({
   textColor = "text-black",
   isActive = true,
 }) => (
-  <input
+  <textarea
     type="text"
     value={value}
     onChange={(e) => onChange(e.target.value)}
@@ -568,15 +568,6 @@ const PlusMinusRow = ({ onAdd, onRemove, canRemove, variant, variantSize }) => {
   const size10 = variantSize === "size10";
   return (
     <div className="flex gap-1 shrink-0">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onAdd();
-        }}
-        className={`p-1 ${isSpecial ? "border border-white text-white" : "border border-indigo-900 text-indigo-900"} rounded-full hover:scale-95 transition-all duration-300`}
-      >
-        <FaPlus size={`${size10 ? 10 : 14}`} />
-      </button>
       {canRemove && (
         <button
           onClick={(e) => {
@@ -588,6 +579,15 @@ const PlusMinusRow = ({ onAdd, onRemove, canRemove, variant, variantSize }) => {
           <FaMinus size={`${size10 ? 10 : 14}`} />
         </button>
       )}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onAdd();
+        }}
+        className={`p-1 ${isSpecial ? "border border-white text-white" : "border border-indigo-900 text-indigo-900"} rounded-full hover:scale-95 transition-all duration-300`}
+      >
+        <FaPlus size={`${size10 ? 10 : 14}`} />
+      </button>
     </div>
   );
 };
@@ -1049,7 +1049,7 @@ const D6 = ({ s, onChange, isActive }) => {
           {s.points.map((pt, i) => (
             <div key={pt.id}>
               <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 space-y-3">
-                <div className="flex gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-[auto_250px] items-end gap-5 sm:gap-10">
                   <Inp
                     value={pt.point}
                     onChange={(v) => upd(i, "point", v)}
@@ -1062,7 +1062,7 @@ const D6 = ({ s, onChange, isActive }) => {
                     value={pt.link}
                     onChange={(e) => upd(i, "link", e.target.value)}
                     placeholder="Link URL"
-                    className={`w-40 shrink-0 border border-gray-200 rounded-md px-3 py-2 text-sm bg-white focus:outline-none ${isActive ? "focus:border-gray-300" : ""}`}
+                    className={`w-full shrink-0 border border-gray-200 rounded-md px-3 py-2 text-sm bg-white focus:outline-none ${isActive ? "focus:border-gray-300" : ""}`}
                   />
                 </div>
                 <div className="space-y-2">
@@ -1439,15 +1439,6 @@ const SectionCard = ({
       </div>
       {!isDuplicateDisabled && (
         <div className="flex items-center gap-2 justify-end">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDuplicate();
-            }}
-            className="p-2 bg-indigo-900 rounded-full text-white hover:scale-95 transition-all duration-300"
-          >
-            <FaPlus size={18} />
-          </button>
           {!s.isInitial && (
             <button
               onClick={(e) => {
@@ -1459,6 +1450,15 @@ const SectionCard = ({
               <FaMinus size={18} />
             </button>
           )}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDuplicate();
+            }}
+            className="p-2 bg-indigo-900 rounded-full text-white hover:scale-95 transition-all duration-300"
+          >
+            <FaPlus size={18} />
+          </button>
         </div>
       )}
     </>
@@ -1835,7 +1835,7 @@ const EditExamPageElementor = () => {
     .pop();
   const bannerTitleFieldClassName =
     "font-bold leading-[1.15] text-[clamp(1.6rem,4.2vw,4.5rem)] text-[#2B2A4C] w-full bg-transparent outline-none duration-300 p-0";
-  const livePayload = buildPayload();
+  // const livePayload = buildPayload();
 
   const handleUpdate = async () => {
     setSubmitting(true);
@@ -2204,16 +2204,16 @@ const EditExamPageElementor = () => {
           })}
         </div>
 
-        <div className="flex justify-center gap-4 mt-10">
+        <div className="flex justify-center gap-3 my-5">
           <button
             onClick={() => navigate(-1)}
-            className="w-40 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+            className="w-36 px-6 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleUpdate}
-            className="w-40 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+            className="w-36 px-6 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
           >
             Update
           </button>

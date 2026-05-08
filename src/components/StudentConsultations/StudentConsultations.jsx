@@ -440,23 +440,23 @@ const StudentConsultations = () => {
     return pageNumbers_booking;
   };
 
-  const [selectedRows_booking, setSelectedRows_booking] = useState([]);
+  // const [selectedRows_booking, setSelectedRows_booking] = useState([]);
 
-  const handleRowCheckboxChange_booking = (order) => {
-    setSelectedRows_booking((prevSelected) =>
-      prevSelected.includes(order)
-        ? prevSelected.filter((id) => id !== order)
-        : [...prevSelected, order],
-    );
-  };
+  // const handleRowCheckboxChange_booking = (order) => {
+  //   setSelectedRows_booking((prevSelected) =>
+  //     prevSelected.includes(order)
+  //       ? prevSelected.filter((id) => id !== order)
+  //       : [...prevSelected, order],
+  //   );
+  // };
 
-  const handleSelectAll_booking = () => {
-    if (selectedRows_booking.length === current_booking.length) {
-      setSelectedRows_booking([]);
-    } else {
-      setSelectedRows_booking(current_booking.map((booking) => booking.order));
-    }
-  };
+  // const handleSelectAll_booking = () => {
+  //   if (selectedRows_booking.length === current_booking.length) {
+  //     setSelectedRows_booking([]);
+  //   } else {
+  //     setSelectedRows_booking(current_booking.map((booking) => booking.order));
+  //   }
+  // };
 
   const [isOpen_popupForm, setIsOpen_popupForm] = useState(false);
 
@@ -1915,17 +1915,17 @@ const StudentConsultations = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 max-w-[310px] gap-3 mt-5">
+                <div className="flex items-center gap-3 mt-5">
                   <button
                     onClick={handleClosePopup}
-                    className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+                    className="w-36 px-6 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
                   >
                     Cancel
                   </button>
 
                   <button
                     onClick={handleSaveBooking}
-                    className="px-6 z-30 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
+                    className="w-36 px-6 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
                   >
                     Save
                   </button>
@@ -2027,7 +2027,7 @@ const StudentConsultations = () => {
                   <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
                       <tr>
-                        <th className="p-4">
+                        {/* <th className="p-4">
                           <input
                             type="checkbox"
                             onChange={handleSelectAll_booking}
@@ -2037,7 +2037,7 @@ const StudentConsultations = () => {
                               current_booking.length > 0
                             }
                           />
-                        </th>
+                        </th> */}
                         <th className="p-4"> ID</th>
                         <th className="p-4 w-1/10">Student Name</th>
                         <th className="p-4 w-1/10">Nearest Office</th>
@@ -2046,7 +2046,7 @@ const StudentConsultations = () => {
                         <th className="p-4 w-1/10">Mode</th>
                         <th className="p-4 w-1/10">Fund-By</th>
                         <th className="p-4 w-1/10">Study Level</th>
-                        <th className="p-4 min-w-52 text-center">Stage</th>
+                        <th className="p-4 min-w-28 text-center">Stage</th>
                         <th className="p-4 w-1/10 text-center">Status</th>
                         <th className="p-4 w-1/10">Actions</th>
                       </tr>
@@ -2058,7 +2058,7 @@ const StudentConsultations = () => {
                           className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
                         >
                           {/* Checkbox */}
-                          <td className="px-4 py-3">
+                          {/* <td className="px-4 py-5">
                             <input
                               type="checkbox"
                               onChange={() =>
@@ -2066,13 +2066,13 @@ const StudentConsultations = () => {
                               }
                               checked={selectedRows_booking.includes(b.id)}
                             />
-                          </td>
+                          </td> */}
                           {/* Booking ID */}
-                          <td className="px-4 py-3 font-semibold text-gray-700">
+                          <td className="px-4 py-5 font-semibold text-gray-700">
                             {b.id || "-"}
                           </td>
                           {/* Customer Name */}
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-5">
                             <Tooltip
                               title={`${b.firstName} ${b.lastName}`}
                               placement="left"
@@ -2082,7 +2082,7 @@ const StudentConsultations = () => {
                           </td>
 
                           {/* Property Code */}
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-5">
                             <Tooltip
                               title={`${b.nearestOffice}`}
                               placement="left"
@@ -2092,7 +2092,7 @@ const StudentConsultations = () => {
                           </td>
 
                           {/* Destination */}
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-5">
                             <Tooltip
                               title={
                                 b.package
@@ -2106,7 +2106,7 @@ const StudentConsultations = () => {
                           </td>
 
                           {/* Booking Date */}
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-5">
                             {/* <Tooltip title={b.bookingTime} placement="left">
                               {b.bookingTime
                                 ? new Date(b.bookingTime).toLocaleDateString(
@@ -2118,7 +2118,7 @@ const StudentConsultations = () => {
                           </td>
 
                           {/* Check-In */}
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-5">
                             {/* <Tooltip
                               title={
                                 b.checkin
@@ -2140,7 +2140,7 @@ const StudentConsultations = () => {
                           </td>
 
                           {/* Check-Out */}
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-5">
                             {/* <Tooltip
                               title={
                                 b.checkout
@@ -2161,10 +2161,10 @@ const StudentConsultations = () => {
                           </td>
 
                           {/* Study Level */}
-                          <td className="px-4 py-3">{b.studyLevel || "-"}</td>
+                          <td className="px-4 py-5">{b.studyLevel || "-"}</td>
 
                           {/* Stage */}
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-4 py-5 text-center">
                             {/* <div className="flex justify-between items-center"> */}
                             <button
                               className={`w-auto px-2 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
@@ -2178,10 +2178,10 @@ const StudentConsultations = () => {
                           </td>
 
                           {/* Status */}
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-4 py-5 text-center">
                             {/* <div className="flex justify-between items-center"> */}
                             <button
-                              className={`w-20 px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
+                              className={`w-[70px] px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
                                 // statusColors[b.bookingStatus?.()] || ""
                                 statusColors[b.status] || ""
                               }`}
