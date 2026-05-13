@@ -20,8 +20,7 @@ import { BsCalendar2EventFill } from "react-icons/bs";
 import { TbTemplateFilled } from "react-icons/tb";
 import { HiBuildingOffice2 } from "react-icons/hi2";
 import { HiClipboardDocumentList } from "react-icons/hi2";
-
-// import { HiDocumentCheck } from "react-icons/hi2";
+import { HiDocumentCheck } from "react-icons/hi2";
 
 const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
   const navigate = useNavigate();
@@ -61,24 +60,14 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       to: "/StudentConsultations",
     },
     {
-      icon: <BsCalendar2EventFill />,
-      text: "Events",
-      to: "/Events",
-    },
-    {
       icon: <HiMiniBuildingLibrary />,
       text: "Universities",
       to: "/Universities",
     },
-    // {
-    //   icon: <HiDocumentCheck />,
-    //   text: "Document\u00A0Evaluator",
-    //   to: "/StudentDocument",
-    // },
     {
-      icon: <FaUserTie />,
-      text: "User\u00A0Management",
-      to: "/UserManagement",
+      icon: <HiClipboardDocumentList />,
+      text: "Exam\u00A0Data",
+      to: "/exam",
     },
     {
       icon: <TbTemplateFilled />,
@@ -86,14 +75,24 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       to: "/BannerElementor",
     },
     {
+      icon: <BsCalendar2EventFill />,
+      text: "Events",
+      to: "/Events",
+    },
+    {
       icon: <HiBuildingOffice2 />,
       text: "Office\u00A0Data",
       to: "/office",
     },
     {
-      icon: <HiClipboardDocumentList />,
-      text: "Exam\u00A0Data",
-      to: "/exam",
+      icon: <FaUserTie />,
+      text: "User\u00A0Management",
+      to: "/UserManagement",
+    },
+    {
+      icon: <HiDocumentCheck />,
+      text: "Document\u00A0Evaluator",
+      to: "/DocumentEvaluator",
     },
     { icon: <RiLogoutCircleRLine />, text: "Logout", action: handleLogout },
   ];
