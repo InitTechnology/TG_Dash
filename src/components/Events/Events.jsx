@@ -1068,10 +1068,10 @@ const Events = () => {
                           className="w-36 px-6 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-indigo-800 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
                         >
                           {isSaving ? (
-                            <>
+                            <div className="flex gap-1">
                               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                               {isEditMode ? "Updating" : "Saving..."}
-                            </>
+                            </div>
                           ) : isEditMode ? (
                             "Update"
                           ) : (
