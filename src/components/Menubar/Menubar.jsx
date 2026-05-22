@@ -89,11 +89,11 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       text: "User\u00A0Management",
       to: "/UserManagement",
     },
-    {
-      icon: <HiDocumentCheck />,
-      text: "Document\u00A0Evaluator",
-      to: "/DocumentEvaluator",
-    },
+    // {
+    //   icon: <HiDocumentCheck />,
+    //   text: "Document\u00A0Evaluator",
+    //   to: "/DocumentEvaluator",
+    // },
     { icon: <RiLogoutCircleRLine />, text: "Logout", action: handleLogout },
   ];
   // Filter menu items based on user role
