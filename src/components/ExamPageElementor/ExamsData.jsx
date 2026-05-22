@@ -438,7 +438,7 @@ const ExamsData = () => {
                         <th className="p-4 w-1/10">Branch Name</th>
                         <th className="p-4 w-1/10">City</th>
                         <th className="p-4 w-1/10">Last Updated At</th>
-                        <th className="p-4 w-20 text-center">Status</th>
+                        {/* <th className="p-4 w-20 text-center">Status</th> */}
                         <th className="p-4 w-1/10 text-center">Actions</th>
                       </tr>
                     </thead>
@@ -468,11 +468,11 @@ const ExamsData = () => {
                           <td className="px-4 py-3">{b.lastUpdatedAt}</td>
 
                           {/* Status */}
-                          <td className="px-4 py-3">
+                          {/* <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-2">
                               <DonutChart value={b.progress} />
                             </div>
-                          </td>
+                          </td> */}
 
                           {/* Actions */}
                           <td>
