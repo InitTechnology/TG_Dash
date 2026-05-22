@@ -125,60 +125,60 @@ const OfficesData = () => {
 
     fetchOffices();
   }, []);
-  const DonutChart = ({ value = 0 }) => {
-    const percentage = value;
+  // const DonutChart = ({ value = 0 }) => {
+  //   const percentage = value;
 
-    const radius = 20;
-    const stroke = 2;
-    const normalizedRadius = radius - stroke * 2;
-    const circumference = normalizedRadius * 2 * Math.PI;
-    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  //   const radius = 20;
+  //   const stroke = 2;
+  //   const normalizedRadius = radius - stroke * 2;
+  //   const circumference = normalizedRadius * 2 * Math.PI;
+  //   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-    const getColor = () => {
-      if (percentage === 100) return "#4ADE80";
-      if (percentage > 50) return "#ffe947";
-      if (percentage > 15) return "#fc9947";
-      return "#EF4444";
-    };
+  //   const getColor = () => {
+  //     if (percentage === 100) return "#4ADE80";
+  //     if (percentage > 50) return "#ffe947";
+  //     if (percentage > 15) return "#fc9947";
+  //     return "#EF4444";
+  //   };
 
-    return (
-      <div className="flex items-center justify-center">
-        <svg height={radius * 2} width={radius * 2}>
-          <circle
-            stroke="#E5E7EB"
-            fill="transparent"
-            strokeWidth={stroke}
-            r={normalizedRadius}
-            cx={radius}
-            cy={radius}
-          />
+  //   return (
+  //     <div className="flex items-center justify-center">
+  //       <svg height={radius * 2} width={radius * 2}>
+  //         <circle
+  //           stroke="#E5E7EB"
+  //           fill="transparent"
+  //           strokeWidth={stroke}
+  //           r={normalizedRadius}
+  //           cx={radius}
+  //           cy={radius}
+  //         />
 
-          <circle
-            stroke={getColor()}
-            fill="transparent"
-            strokeWidth={stroke}
-            strokeDasharray={`${circumference} ${circumference}`}
-            style={{ strokeDashoffset }}
-            strokeLinecap="round"
-            r={normalizedRadius}
-            cx={radius}
-            cy={radius}
-          />
+  //         <circle
+  //           stroke={getColor()}
+  //           fill="transparent"
+  //           strokeWidth={stroke}
+  //           strokeDasharray={`${circumference} ${circumference}`}
+  //           style={{ strokeDashoffset }}
+  //           strokeLinecap="round"
+  //           r={normalizedRadius}
+  //           cx={radius}
+  //           cy={radius}
+  //         />
 
-          <text
-            x="50%"
-            y="50%"
-            dominantBaseline="middle"
-            textAnchor="middle"
-            fontSize="10"
-            fill="#2B2A4C"
-          >
-            {percentage}%
-          </text>
-        </svg>
-      </div>
-    );
-  };
+  //         <text
+  //           x="50%"
+  //           y="50%"
+  //           dominantBaseline="middle"
+  //           textAnchor="middle"
+  //           fontSize="10"
+  //           fill="#2B2A4C"
+  //         >
+  //           {percentage}%
+  //         </text>
+  //       </svg>
+  //     </div>
+  //   );
+  // };
 
   const handleDelete_officeData = async (id) => {
     if (!id) return;

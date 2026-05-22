@@ -146,13 +146,27 @@ const EventLeads = () => {
     setFormError("");
     setPanelMode("view");
   };
+  const toInputDate = (raw) => {
+    if (!raw) return "";
+    // Already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+    // Try native Date parsing (handles "May 15 2025", "15/05/2025", ISO strings, etc.)
+    const d = new Date(raw);
+    if (!isNaN(d)) {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+    return "";
+  };
 
   const openEdit = (lead) => {
     setSelectedLead(lead);
     setForm({
       eventName: lead.eventName || "",
       eventCity: lead.eventCity || "",
-      eventDate: lead.eventDate || "",
+      eventDate: toInputDate(lead.eventDate),
       studName: lead.studName || "",
       studEmail: lead.studEmail || "",
       studPhone: lead.studPhone || "",
@@ -327,7 +341,7 @@ const EventLeads = () => {
                 {panelTitle}
               </h2>
               {/* Toggle View ↔ Edit */}
-              {panelMode === "view" && (
+              {/* {panelMode === "view" && (
                 <button
                   onClick={() => openEdit(selectedLead)}
                   className="flex items-center gap-1 px-3 py-1 text-xs rounded-md bg-sky-100 text-sky-600 hover:bg-sky-200 transition-all"
@@ -342,7 +356,7 @@ const EventLeads = () => {
                 >
                   <FaEye size={11} /> View
                 </button>
-              )}
+              )} */}
             </div>
             <button
               onClick={closePanel}
@@ -362,7 +376,7 @@ const EventLeads = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 items-center">
               {/* ID (view/edit only) */}
-              {(panelMode === "view" || panelMode === "edit") && (
+              {/* {(panelMode === "view" || panelMode === "edit") && (
                 <div className="flex flex-col w-full">
                   <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
                     ID
@@ -371,7 +385,7 @@ const EventLeads = () => {
                     {selectedLead?.id}
                   </p>
                 </div>
-              )}
+              )} */}
 
               {/* Student Name */}
               <div className="flex flex-col w-full">
@@ -537,7 +551,7 @@ const EventLeads = () => {
                 <th className="p-4">Phone Number</th>
                 <th className="p-4">Event Name</th>
                 <th className="p-4">Event City</th>
-                <th className="p-4">Event Date</th>
+                {/* <th className="p-4">Event Date</th> */}
                 <th className="p-4 text-center">Actions</th>
               </tr>
             </thead>
@@ -560,13 +574,13 @@ const EventLeads = () => {
                     key={lead.id}
                     className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
                   >
-                    <td className="px-4 py-3 font-semibold">{lead.id}</td>
-                    <td className="px-4 py-3">{lead.studName}</td>
-                    <td className="px-4 py-3">{lead.studEmail}</td>
-                    <td className="px-4 py-3">{lead.studPhone || "—"}</td>
-                    <td className="px-4 py-3">{lead.eventName || "—"}</td>
-                    <td className="px-4 py-3">{lead.eventCity || "—"}</td>
-                    <td className="px-4 py-3">{lead.eventDate || "—"}</td>
+                    <td className="px-4 py-4 font-semibold">{lead.id}</td>
+                    <td className="px-4 py-4">{lead.studName}</td>
+                    <td className="px-4 py-4">{lead.studEmail}</td>
+                    <td className="px-4 py-4">{lead.studPhone || "—"}</td>
+                    <td className="px-4 py-4">{lead.eventName || "—"}</td>
+                    <td className="px-4 py-4">{lead.eventCity || "—"}</td>
+                    {/* <td className="px-4 py-4">{lead.eventDate || "—"}</td> */}
                     <td>
                       <div className="flex justify-center">
                         {/* View */}
