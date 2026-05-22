@@ -108,7 +108,9 @@ const ExamsData = () => {
   };
   useEffect(() => {
     fetchExamData();
+    // eslint-disable-next-line
   }, []);
+
   const formatDate = (date) => {
     if (!date) return "N/A";
 
@@ -432,7 +434,7 @@ const ExamsData = () => {
                     <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
                       <tr>
                         <th className="p-4"> ID</th>
-                        <th className="p-4 w-1/10">Exam</th>
+                        <th className="p-4 w-60">Exam</th>
                         <th className="p-4 w-1/10">Branch Name</th>
                         <th className="p-4 w-1/10">City</th>
                         <th className="p-4 w-1/10">Last Updated At</th>

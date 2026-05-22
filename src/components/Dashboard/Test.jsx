@@ -16,7 +16,7 @@ import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 
 const Test = () => {
-  const [events] = useState([
+  const [eventLeads] = useState([
     {
       id: 1,
       title: "Study in Canada",
@@ -47,7 +47,16 @@ const Test = () => {
   ]);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("menubarOpen");
+
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+
+    return window.innerWidth >= 1024;
+  });
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,46 +72,57 @@ const Test = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const rowsPerPage_events = 5;
-  const [currentPage_events, setCurrentPage_events] = useState(1);
+  const rowsPerPage_eventLeads = 5;
+  const [currentPage_eventLeads, setCurrentPage_eventLeads] = useState(1);
 
-  const totalPages_events = Math.ceil(events.length / rowsPerPage_events);
+  const totalPages_eventLeads = Math.ceil(
+    eventLeads.length / rowsPerPage_eventLeads,
+  );
 
-  const indexOfLast_events = currentPage_events * rowsPerPage_events;
-  const indexOfFirst_events = indexOfLast_events - rowsPerPage_events;
+  const indexOfLast_eventLeads =
+    currentPage_eventLeads * rowsPerPage_eventLeads;
+  const indexOfFirst_eventLeads =
+    indexOfLast_eventLeads - rowsPerPage_eventLeads;
 
-  const current_events = events.slice(indexOfFirst_events, indexOfLast_events);
+  const current_eventLeads = eventLeads.slice(
+    indexOfFirst_eventLeads,
+    indexOfLast_eventLeads,
+  );
 
-  const handleNextPage_events = () => {
-    if (currentPage_events < totalPages_events) {
-      setCurrentPage_events(currentPage_events + 1);
+  const handleNextPage_eventLeads = () => {
+    if (currentPage_eventLeads < totalPages_eventLeads) {
+      setCurrentPage_eventLeads(currentPage_eventLeads + 1);
     }
   };
 
-  const handlePrevPage_events = () => {
-    if (currentPage_events > 1) {
-      setCurrentPage_events(currentPage_events - 1);
+  const handlePrevPage_eventLeads = () => {
+    if (currentPage_eventLeads > 1) {
+      setCurrentPage_eventLeads(currentPage_eventLeads - 1);
     }
   };
 
-  const handlePageChange_events = (page) => {
-    setCurrentPage_events(page);
+  const handlePageChange_eventLeads = (page) => {
+    setCurrentPage_eventLeads(page);
   };
 
-  const generatePageNumbers_events = () => {
+  const generatePageNumbers_eventLeads = () => {
     const pages = [];
 
-    if (totalPages_events <= 5) {
-      for (let i = 1; i <= totalPages_events; i++) pages.push(i);
+    if (totalPages_eventLeads <= 5) {
+      for (let i = 1; i <= totalPages_eventLeads; i++) pages.push(i);
     } else {
-      if (currentPage_events > 2) pages.push(1, "…");
+      if (currentPage_eventLeads > 2) pages.push(1, "…");
 
-      for (let i = currentPage_events - 1; i <= currentPage_events + 1; i++) {
-        if (i > 0 && i <= totalPages_events) pages.push(i);
+      for (
+        let i = currentPage_eventLeads - 1;
+        i <= currentPage_eventLeads + 1;
+        i++
+      ) {
+        if (i > 0 && i <= totalPages_eventLeads) pages.push(i);
       }
 
-      if (currentPage_events < totalPages_events - 1)
-        pages.push("…", totalPages_events);
+      if (currentPage_eventLeads < totalPages_eventLeads - 1)
+        pages.push("…", totalPages_eventLeads);
     }
 
     return pages;
@@ -122,10 +142,11 @@ const Test = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const [isOpen_popupForm, setIsOpen_popupForm] = useState(false);
+  const [isOpen_popupForm_eventLeads, setIsOpen_popupForm_eventLeads] =
+    useState(false);
 
-  const handleClosePopup = () => {
-    setIsOpen_popupForm(false);
+  const handleClosePopup_eventLeads = () => {
+    setIsOpen_popupForm_eventLeads(false);
   };
 
   const [openCalendar, setOpenCalendar] = useState(false);
@@ -198,7 +219,7 @@ const Test = () => {
         <div className="flex justify-between gap-5 items-start lg:items-center">
           <div className="flex flex-col lg:flex-row gap-5 items-start lg:items-center">
             <p className="font-semibold text-xl text-gray-700 ml-10 lg:ml-0">
-              Events
+              EventLeads
             </p>
           </div>
 
@@ -249,7 +270,7 @@ const Test = () => {
             <div>
               <button
                 onClick={() => {
-                  setIsOpen_popupForm(true);
+                  setIsOpen_popupForm_eventLeads(true);
                 }}
                 className="px-6 py-2 bg-indigo-900 rounded-lg font-medium text-sm text-center text-white hover:scale-95 transition-all duration-300 ease-in-out"
               >
@@ -257,16 +278,18 @@ const Test = () => {
               </button>
 
               <div className="relative z-50">
-                {isOpen_popupForm && (
+                {isOpen_popupForm_eventLeads && (
                   <div
-                    onClick={handleClosePopup}
+                    onClick={handleClosePopup_eventLeads}
                     className="fixed inset-0 bg-black bg-opacity-30 z-40 backdrop_popupForm"
                   />
                 )}
 
                 <div
                   className={`fixed top-0 right-0 h-full w-[85%] md:w-[680px] bg-white z-50 shadow-lg transform transition-transform duration-500 ease-in-out ${
-                    isOpen_popupForm ? "translate-x-0" : "translate-x-full"
+                    isOpen_popupForm_eventLeads
+                      ? "translate-x-0"
+                      : "translate-x-full"
                   } panel_popupForm`}
                 >
                   <div className="p-4 flex justify-between items-start border-b header_popupForm">
@@ -277,7 +300,7 @@ const Test = () => {
                     </div>
 
                     <button
-                      onClick={handleClosePopup}
+                      onClick={handleClosePopup_eventLeads}
                       className="text-gray-500 hover:text-black text-xl"
                     >
                       <MdCancel />
@@ -508,7 +531,7 @@ const Test = () => {
 
                     <div className="grid grid-cols-2 max-w-[310px] gap-3 mt-5">
                       <button
-                        onClick={handleClosePopup}
+                        onClick={handleClosePopup_eventLeads}
                         className="px-6 z-30 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 after:-z-20 after:absolute after:h-1 after:w-1 after:bg-gray-700 after:left-5 overflow-hidden after:bottom-0 after:translate-y-full after:rounded-md after:hover:scale-[300] after:hover:transition-all after:hover:duration-700 after:transition-all after:duration-700 transition-all duration-700 text-sm"
                       >
                         Cancel
@@ -552,7 +575,7 @@ const Test = () => {
                 </tr>
               </thead>
               <tbody>
-                {current_events.map((event) => (
+                {current_eventLeads.map((event) => (
                   <tr
                     key={event.id}
                     className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
@@ -579,7 +602,7 @@ const Test = () => {
                       <div className="flex justify-center">
                         <button
                           onClick={() => {
-                            setIsOpen_popupForm(true);
+                            setIsOpen_popupForm_eventLeads(true);
                           }}
                           className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
                         >
@@ -588,7 +611,7 @@ const Test = () => {
                         <>
                           <button
                             onClick={() => {
-                              setIsOpen_popupForm(true);
+                              setIsOpen_popupForm_eventLeads(true);
                             }}
                             className="px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
                           >
@@ -614,12 +637,12 @@ const Test = () => {
             <span className="text-xs font-normal text-gray-500 mb-4 md:mb-0 block w-full md:inline md:w-auto">
               Showing{" "}
               <span className="font-semibold text-gray-700 dark:text-white">
-                {indexOfFirst_events + 1}-
-                {Math.min(indexOfLast_events, events.length)}
+                {indexOfFirst_eventLeads + 1}-
+                {Math.min(indexOfLast_eventLeads, eventLeads.length)}
               </span>{" "}
               of{" "}
               <span className="font-semibold text-gray-700 dark:text-white">
-                {events.length}
+                {eventLeads.length}
               </span>
             </span>
 
@@ -627,8 +650,8 @@ const Test = () => {
               {/* Prev */}
               <li>
                 <button
-                  onClick={handlePrevPage_events}
-                  disabled={currentPage_events === 1}
+                  onClick={handlePrevPage_eventLeads}
+                  disabled={currentPage_eventLeads === 1}
                   className="flex items-center justify-center px-1 h-8 ms-0 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
                 >
                   <MdKeyboardDoubleArrowLeft />
@@ -636,7 +659,7 @@ const Test = () => {
               </li>
 
               {/* Pages */}
-              {generatePageNumbers_events().map((page, index) =>
+              {generatePageNumbers_eventLeads().map((page, index) =>
                 page === "…" ? (
                   <li
                     key={index}
@@ -647,9 +670,9 @@ const Test = () => {
                 ) : (
                   <li key={index}>
                     <button
-                      onClick={() => handlePageChange_events(page)}
+                      onClick={() => handlePageChange_eventLeads(page)}
                       className={`flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 hover:bg-purple-100 hover:text-gray-700 ${
-                        currentPage_events === page
+                        currentPage_eventLeads === page
                           ? "text-purple-400 underline underline-offset-2"
                           : ""
                       }`}
@@ -663,8 +686,8 @@ const Test = () => {
               {/* Next */}
               <li>
                 <button
-                  onClick={handleNextPage_events}
-                  disabled={currentPage_events === totalPages_events}
+                  onClick={handleNextPage_eventLeads}
+                  disabled={currentPage_eventLeads === totalPages_eventLeads}
                   className="flex items-center justify-center px-1 h-8 leading-tight text-gray-500 bg-[#f7f7f7] border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
                 >
                   <MdKeyboardDoubleArrowRight />

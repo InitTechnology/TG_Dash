@@ -22,6 +22,7 @@ import EditOfficePageElementor from "./components/OfficePageElementor/EditOffice
 import EditExamPageElementor from "./components/ExamPageElementor/EditExamPageElementor";
 import ExamsData from "./components/ExamPageElementor/ExamsData";
 import OfficesData from "./components/OfficePageElementor/OfficesData";
+import Test from "./components/Dashboard/Test";
 
 axios.defaults.headers.get["Cache-Control"] = "no-cache";
 axios.defaults.headers.get["Pragma"] = "no-cache";
@@ -182,6 +183,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <OfficesData />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/test"
+              element={
+                <ProtectedRoute>
+                  <Test />
                 </ProtectedRoute>
               }
             />
