@@ -7,10 +7,9 @@ import { FaMinus, FaPlus } from "react-icons/fa6";
 import IconSearch from "./IconSearch";
 import { toast } from "react-toastify";
 import { FaExclamationTriangle } from "react-icons/fa";
-
+import { API_URL } from "../../Config";
 const EXAM_KEYS = ["ielts", "pte", "toefl", "gre", "gmat", "sat", "german"];
 const uid = () => Math.random().toString(36).substr(2, 9);
-const API_BASE = "https://transglobeedu.com/web-backend";
 
 const createTextItem = (value = "") => ({ id: uid(), value });
 const getTextValue = (item) =>
@@ -1549,7 +1548,7 @@ const ExamPageElementor = () => {
   useEffect(() => {
     const fetchOffices = async () => {
       try {
-        const response = await fetch(`${API_BASE}/branchoffices`);
+        const response = await fetch(`${API_URL}/branchoffices`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -1871,7 +1870,7 @@ const ExamPageElementor = () => {
 
       console.log("Sending payload:", JSON.stringify(requestBody, null, 2));
 
-      const res = await fetch(`${API_BASE}/exam-page/${requestBody.slug}`, {
+      const res = await fetch(`${API_URL}/exam-page/${requestBody.slug}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),

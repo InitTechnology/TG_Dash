@@ -1,34 +1,32 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Tesseract from "tesseract.js";
 import axios from "axios";
-
-const BASE = "https://transglobeedu.com/web-backend";
-// const BASE = "http://localhost:3000/api/v1";
+import { API_URL } from "../../Config";
 
 const fetchStudents = async (office = "") => {
   const url =
     office && office !== "all"
-      ? `${BASE}/students?office=${encodeURIComponent(office)}`
-      : `${BASE}/students`;
+      ? `${API_URL}/students?office=${encodeURIComponent(office)}`
+      : `${API_URL}/students`;
 
   const res = await axios.get(url);
   return res.data;
 };
 
 const fetchOffices = async () => {
-  const res = await axios.get(`${BASE}/offices`);
+  const res = await axios.get(`${API_URL}/offices`);
   return res.data;
 };
 
 const patchLock = async (studentId, locked) => {
-  const res = await axios.patch(`${BASE}/students/${studentId}/lock`, {
+  const res = await axios.patch(`${API_URL}/students/${studentId}/lock`, {
     locked,
   });
   return res.data;
 };
 
 const fetchStudentDocs = async (studentId) => {
-  const res = await axios.get(`${BASE}/documents/${studentId}`);
+  const res = await axios.get(`${API_URL}/documents/${studentId}`);
   return res.data;
 };
 
@@ -44,7 +42,7 @@ const uploadDoc = async (studentId, documentType, files, status) => {
     fd.append("files", files);
   }
 
-  const res = await axios.post(`${BASE}/upload-doc`, fd);
+  const res = await axios.post(`${API_URL}/upload-doc`, fd);
   return res.data;
 };
 const DOCUMENTS = [

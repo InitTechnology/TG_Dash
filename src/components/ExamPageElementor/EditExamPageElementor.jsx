@@ -5,10 +5,10 @@ import { FaMinus, FaPlus } from "react-icons/fa6";
 import IconSearch from "./IconSearch";
 import { toast } from "react-toastify";
 import { FaExclamationTriangle } from "react-icons/fa";
+import { API_URL } from "../../Config";
 
 const EXAM_KEYS = ["ielts", "pte", "toefl", "gre", "gmat", "sat", "german"];
 const uid = () => Math.random().toString(36).substr(2, 9);
-const API_BASE = "https://transglobeedu.com/web-backend";
 
 const createTextItem = (value = "") => ({ id: uid(), value });
 const getTextValue = (item) =>
@@ -1546,7 +1546,7 @@ const EditExamPageElementor = () => {
         setLoadError(null);
 
         const response = await fetch(
-          `${API_BASE}/exam-page/office/${officeId}/${examSlug}`,
+          `${API_URL}/exam-page/office/${officeId}/${examSlug}`,
         );
         const result = await response.json();
 
@@ -1629,7 +1629,7 @@ const EditExamPageElementor = () => {
   useEffect(() => {
     const fetchOffices = async () => {
       try {
-        const response = await fetch(`${API_BASE}/branchoffices`);
+        const response = await fetch(`${API_URL}/branchoffices`);
         const data = await response.json();
         if (!response.ok)
           throw new Error(data?.message || "Failed to fetch offices");
@@ -1904,7 +1904,7 @@ const EditExamPageElementor = () => {
       const bareKey = examSlug
         .replace(/-coaching$/, "")
         .replace(/-classes$/, "");
-      const res = await fetch(`${API_BASE}/exam-page/${bareKey}`, {
+      const res = await fetch(`${API_URL}/exam-page/${bareKey}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),

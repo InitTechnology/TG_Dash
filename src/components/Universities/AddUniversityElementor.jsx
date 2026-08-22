@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useMemo } from "react";
 import axios from "axios";
+import { API_URL } from "../../Config";
 const AddUniversityElementor = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
@@ -225,11 +226,9 @@ const AddUniversityElementor = () => {
       // courses → send as JSON string
       fd.append("courses", JSON.stringify(courses));
       // eslint-disable-next-line
-      const res = await axios.post(
-        "https://transglobeedu.com/web-backend/university/add",
-        fd,
-        { headers: { "Content-Type": "multipart/form-data" } },
-      );
+      const res = await axios.post(`${API_URL}/university/add`, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       // alert("University saved successfully!");
       // console.log(res.data);
@@ -251,15 +250,12 @@ const AddUniversityElementor = () => {
       }
       setScraping(true);
 
-      const res = await axios.post(
-        "https://transglobeedu.com/web-backend/fetch-university-courses",
-        {
-          universityName,
-          country,
-          stateValue,
-          websiteUrl,
-        },
-      );
+      const res = await axios.post(`${API_URL}/fetch-university-courses`, {
+        universityName,
+        country,
+        stateValue,
+        websiteUrl,
+      });
 
       if (!res.data.success) {
         alert("Scraping failed");

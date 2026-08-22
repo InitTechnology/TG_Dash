@@ -9,7 +9,7 @@ import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import axios from "axios";
 import { Link } from "react-router-dom";
-
+import { API_URL } from "../../Config";
 const Universities = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
@@ -134,9 +134,7 @@ const Universities = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        "https://transglobeedu.com/web-backend/getAllUniversities",
-      );
+      const res = await axios.get(`${API_URL}/getAllUniversities`);
 
       setUniversities(res.data);
     } catch (err) {
@@ -176,7 +174,7 @@ const Universities = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get("https://transglobeedu.com/web-backend/all");
+      const res = await axios.get(`${API_URL}/all`);
       console.log("Fetched bookings:", res.data.data);
 
       if (res.data.success) {
@@ -357,9 +355,7 @@ const Universities = () => {
 
   const getStatusCounts = async () => {
     try {
-      const res = await axios.get(
-        "https://transglobeedu.com/web-backend/getstatus",
-      );
+      const res = await axios.get(`${API_URL}/getstatus`);
 
       if (res.data.success) {
         setStatusCounts(res.data.data);
@@ -378,9 +374,7 @@ const Universities = () => {
       return;
 
     try {
-      const res = await axios.delete(
-        `https://transglobeedu.com/web-backend/university/${id}`,
-      );
+      const res = await axios.delete(`${API_URL}/university/${id}`);
 
       if (res.data.success) {
         setUniversities((prev) => prev.filter((u) => u.id !== id));

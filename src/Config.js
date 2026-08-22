@@ -15,3 +15,8 @@ export const iconMap = {
   ...TbIcons,
   ...PiIcons,
 };
+//NCR1 URL: https://transglobeedu.com/web-backend
+export const API_URL = "https://transglobeedu.com/web-backend";
+
+//VPS URL for later to be added
+//export const API_URL = "vps_URL" || "https://transglobeedu.com/web-backend";

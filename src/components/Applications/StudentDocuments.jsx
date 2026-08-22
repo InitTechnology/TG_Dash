@@ -7,10 +7,10 @@ import { MdEditDocument } from "react-icons/md";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { X } from "lucide-react";
 import { TbRosetteDiscountCheck } from "react-icons/tb";
+import { API_URL } from "../../Config";
 
 // ── CONFIG ─────────────────────────────────────────────────────
 const STUDENT_ID = 1; // for now static,
-const API_BASE = "https://transglobeedu.com/web-backend";
 
 // ── OCR field definitions per docType ─────────────────────────
 const DOC_FIELDS = {
@@ -112,7 +112,7 @@ const extractDocInfo = async (file, docType) => {
   formData.append("file", file);
   formData.append("docType", docType);
 
-  const res = await fetch(`${API_BASE}/ocr/extract`, {
+  const res = await fetch(`${API_URL}/ocr/extract`, {
     method: "POST",
     body: formData,
   });
@@ -169,7 +169,7 @@ const StudentDocuments = () => {
 
   // ── fetch helpers ────────────────────────────────────────────
   const fetchSummary = () =>
-    fetch(`${API_BASE}/docs/summary/${STUDENT_ID}`)
+    fetch(`${API_URL}/docs/summary/${STUDENT_ID}`)
       .then((r) => r.json())
       .then((res) => {
         if (res.success) setDocSummary(res.data);
@@ -177,7 +177,7 @@ const StudentDocuments = () => {
       .catch(console.error);
 
   const fetchDocsByType = () =>
-    fetch(`${API_BASE}/docs/${STUDENT_ID}`)
+    fetch(`${API_URL}/docs/${STUDENT_ID}`)
       .then((r) => r.json())
       .then((res) => {
         if (!res.success) return;
@@ -266,7 +266,7 @@ const StudentDocuments = () => {
     }
     uploadedFiles.forEach((f) => formData.append("files", f));
     try {
-      const res = await fetch(`${API_BASE}/docs/upload`, {
+      const res = await fetch(`${API_URL}/docs/upload`, {
         method: "POST",
         body: formData,
       });
@@ -741,7 +741,7 @@ const StudentDocuments = () => {
                   <DbDocCard
                     key={doc.id}
                     doc={doc}
-                    fileUrl={`${API_BASE}/${doc.filePath}`}
+                    fileUrl={`${API_URL}/${doc.filePath}`}
                     docType={dbPreviewDocs[0]?.docType}
                     badge={statusBadge[doc.status] || statusBadge.pending}
                   />

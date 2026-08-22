@@ -6,9 +6,8 @@ import {
 } from "react-icons/md";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete, MdCancel } from "react-icons/md";
-
+import { API_URL } from "../../Config";
 // ─── Config ───────────────────────────────────────────────────────────────────
-const API_BASE = "https://transglobeedu.com/web-backend"; // change if your base URL differs
 
 const OFFICES = [
   "Ahmedabad",
@@ -75,7 +74,7 @@ const EventLeads = () => {
       const params = filterOffice
         ? `?office=${encodeURIComponent(filterOffice)}`
         : "";
-      const res = await fetch(`${API_BASE}${params}`);
+      const res = await fetch(`${API_URL}${params}`);
       const data = await res.json();
       if (data.success) {
         setLeads(data.data);
@@ -209,8 +208,8 @@ const EventLeads = () => {
     try {
       const isEdit = panelMode === "edit";
       const url = isEdit
-        ? `${API_BASE}/${selectedLead.id}`
-        : `${API_BASE}/register-event`;
+        ? `${API_URL}/${selectedLead.id}`
+        : `${API_URL}/register-event`;
       const method = isEdit ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -237,7 +236,7 @@ const EventLeads = () => {
   const handleDeleteConfirm = async () => {
     if (!deleteId) return;
     try {
-      const res = await fetch(`${API_BASE}/${deleteId}`, { method: "DELETE" });
+      const res = await fetch(`${API_URL}/${deleteId}`, { method: "DELETE" });
       const data = await res.json();
       if (data.success) {
         setDeleteId(null);

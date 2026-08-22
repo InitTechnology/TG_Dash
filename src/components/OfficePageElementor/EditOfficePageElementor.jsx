@@ -5,7 +5,7 @@ import { TbArrowBigRightLine } from "react-icons/tb";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import Menubar from "../Menubar/Menubar";
 import IconSearch from "./IconSearch";
-
+import { API_URL } from "../../Config";
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const normalizeOfficeSlug = (value = "") =>
   value
@@ -191,9 +191,7 @@ const EditOfficePageElementor = () => {
   const fetchOfficeData = async () => {
     try {
       setLoadingData(true);
-      const response = await fetch(
-        `https://transglobeedu.com/web-backend/office-page/${officeId}`,
-      );
+      const response = await fetch(`${API_URL}/office-page/${officeId}`);
       const data = await response.json();
 
       if (!data.success) {
@@ -654,13 +652,10 @@ const EditOfficePageElementor = () => {
       }
 
       // ==================== API CALL ====================
-      const response = await fetch(
-        `https://transglobeedu.com/web-backend/office-page/${officeId}`,
-        {
-          method: "PUT",
-          body: formData, // ❗ NO headers
-        },
-      );
+      const response = await fetch(`${API_URL}/office-page/${officeId}`, {
+        method: "PUT",
+        body: formData, // ❗ NO headers
+      });
 
       const data = await response.json();
 

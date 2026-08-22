@@ -7,7 +7,7 @@ import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-
+import { API_URL } from "../../Config";
 const OfficesData = () => {
   const navigate = useNavigate();
 
@@ -86,13 +86,12 @@ const OfficesData = () => {
   //   }, 400);
   //   // eslint-disable-next-line
   // }, []);
-  const API_BASE = "https://transglobeedu.com/web-backend";
 
   useEffect(() => {
     const fetchOffices = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_BASE}/branchoffices`);
+        const response = await fetch(`${API_URL}/branchoffices`);
         const result = await response.json();
 
         if (result.success && Array.isArray(result.data)) {
@@ -184,7 +183,7 @@ const OfficesData = () => {
     if (!id) return;
 
     try {
-      const res = await fetch(`${API_BASE}/branchoffices/${id}`, {
+      const res = await fetch(`${API_URL}/branchoffices/${id}`, {
         method: "DELETE",
       });
 

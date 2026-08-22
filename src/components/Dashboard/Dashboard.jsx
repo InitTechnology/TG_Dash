@@ -7,7 +7,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { BsCalendarEvent } from "react-icons/bs";
 import { MdHistory } from "react-icons/md";
-
+import { API_URL } from "../../Config";
 const Dashboard = () => {
   /* ---------------- UI STATE ---------------- */
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -76,12 +76,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const res = await fetch(
-          "https://transglobeedu.com/web-backend/getbriefs",
-          {
-            cache: "no-store",
-          },
-        );
+        const res = await fetch(`${API_URL}/getbriefs`, {
+          cache: "no-store",
+        });
 
         const text = await res.text();
         console.log("RAW RESPONSE FROM API:", text);
