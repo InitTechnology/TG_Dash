@@ -14,6 +14,7 @@ import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_URL } from "../../Config";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -298,11 +299,9 @@ const Events = () => {
   const fetchEvents = async () => {
     try {
       setIsFetching(true);
-      const res = await axios.get(
-        "https://transglobeedu.com/web-backend/events",
-      );
+      const res = await axios.get(`${API_URL}/events`);
 
-      console.log(res.data); // ✅ correct
+      console.log(res.data);
 
       setEvents(res.data.events || []);
     } catch (err) {
@@ -346,11 +345,11 @@ const Events = () => {
         form.append("image", image);
       }
 
-      let url = "https://transglobeedu.com/web-backend/event";
+      let url = `${API_URL}/event`;
       let method = "POST";
 
       if (isEditMode) {
-        url = `https://transglobeedu.com/web-backend/event/${selectedEventId}`;
+        url = `${API_URL}/event/${selectedEventId}`;
         method = "PUT"; // or PATCH depending backend
       }
 
@@ -485,12 +484,9 @@ const Events = () => {
 
     try {
       setDeletingId(id);
-      const res = await fetch(
-        `https://transglobeedu.com/web-backend/event/${id}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const res = await fetch(`${API_URL}/event/${id}`, {
+        method: "DELETE",
+      });
 
       const data = await res.json();
 
@@ -846,6 +842,8 @@ const Events = () => {
                               "Dubai",
                               "Europe",
                               "Ireland",
+                              "Malaysia",
+                              "Switzerland",
                               "Global",
                             ].map((country) => (
                               <label
@@ -975,6 +973,7 @@ const Events = () => {
                               "Rajkot",
                               "Surat",
                               "Vadodara",
+                              "Kochi",
                               "Kathmandu Nepal",
                             ].map((city) => (
                               <label

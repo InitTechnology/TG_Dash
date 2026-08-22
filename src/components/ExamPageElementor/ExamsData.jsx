@@ -7,6 +7,7 @@ import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { API_URL } from "../../Config";
 
 const ExamsData = () => {
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ const ExamsData = () => {
     try {
       setLoading(true);
 
-      const res = await fetch("https://transglobeedu.com/web-backend/exams");
+      const res = await fetch(`${API_URL}/exams`);
       const json = await res.json();
 
       const cleaned = json.data
@@ -182,12 +183,9 @@ const ExamsData = () => {
     if (!id) return;
 
     try {
-      const res = await fetch(
-        `https://transglobeedu.com/web-backend/exams/${id}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const res = await fetch(`${API_URL}/exams/${id}`, {
+        method: "DELETE",
+      });
 
       const data = await res.json();
 

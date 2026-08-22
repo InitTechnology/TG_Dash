@@ -20,7 +20,7 @@ import { TiCancelOutline } from "react-icons/ti";
 import axios from "axios";
 import { Check } from "lucide-react";
 import EventLeads from "./EventLeads";
-
+import { API_URL } from "../../Config";
 const StudentConsultations = () => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
@@ -191,7 +191,7 @@ const StudentConsultations = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get("https://transglobeedu.com/web-backend/all");
+      const res = await axios.get(`${API_URL}/all`);
       console.log("Fetched bookings:", res.data.data);
 
       if (res.data.success) {
@@ -206,9 +206,7 @@ const StudentConsultations = () => {
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        const res = await axios.get(
-          "https://transglobeedu.com/web-backend/getAllStaff",
-        );
+        const res = await axios.get(`${API_URL}/getAllStaff`);
         if (res.data.success) {
           setStaffList(res.data.data);
         }
@@ -253,18 +251,12 @@ const StudentConsultations = () => {
       };
 
       if (formMode === "add") {
-        await axios.post(
-          "https://transglobeedu.com/web-backend/create",
-          payload,
-        );
+        await axios.post(`${API_URL}/create`, payload);
         alert("Lead added successfully!");
       }
 
       if (formMode === "edit" && editingBooking?.id) {
-        await axios.put(
-          `https://transglobeedu.com/web-backend/update/${editingBooking.id}`,
-          payload,
-        );
+        await axios.put(`${API_URL}/update/${editingBooking.id}`, payload);
         alert("Lead updated successfully!");
       }
 
@@ -282,9 +274,7 @@ const StudentConsultations = () => {
         return;
       }
 
-      await axios.delete(
-        `https://transglobeedu.com/web-backend/delete/${deletePopup.bookingId}`,
-      );
+      await axios.delete(`${API_URL}/delete/${deletePopup.bookingId}`);
 
       alert("Lead deleted successfully.");
       setDeletePopup({ open: false, bookingId: null });
@@ -610,9 +600,7 @@ const StudentConsultations = () => {
 
   const getStatusCounts = async () => {
     try {
-      const res = await axios.get(
-        "https://transglobeedu.com/web-backend/getstatus",
-      );
+      const res = await axios.get(`${API_URL}/getstatus`);
 
       if (res.data.success) {
         setStatusCounts(res.data.data);
@@ -645,9 +633,7 @@ const StudentConsultations = () => {
   useEffect(() => {
     const fetchUniversities = async () => {
       try {
-        const res = await axios.get(
-          "https://transglobeedu.com/web-backend/getAllUniversities",
-        );
+        const res = await axios.get(`${API_URL}/getAllUniversities`);
         // const mapped = res.data.map((uni) => ({
         //   value: uni.id.toString(),
         //   label: uni.name,

@@ -10,7 +10,7 @@ import { MdDelete } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
 import { toast } from "react-toastify";
 import axios from "axios";
-
+import { API_URL } from "../../Config";
 const StaffManagement = () => {
   const [staff, setStaff] = useState([]);
   const [loadingStaff, setLoadingStaff] = useState(true);
@@ -38,9 +38,7 @@ const StaffManagement = () => {
 
   const fetchStaff = async () => {
     try {
-      const res = await axios.get(
-        "https://transglobeedu.com/web-backend/getAllStaff",
-      );
+      const res = await axios.get(`${API_URL}/getAllStaff`);
       setStaff(res.data.data || []);
     } catch (err) {
       console.error(err);
@@ -99,10 +97,7 @@ const StaffManagement = () => {
       };
       console.log("Sending:", payload);
 
-      const res = await axios.post(
-        "https://transglobeedu.com/web-backend/regUser",
-        payload,
-      );
+      const res = await axios.post(`${API_URL}/regUser`, payload);
 
       console.log("Success:", res.data);
 
@@ -121,10 +116,7 @@ const StaffManagement = () => {
 
   const handleUpdateStaff = async () => {
     try {
-      const res = await axios.put(
-        `https://transglobeedu.com/web-backend/staff/${formData.id}`,
-        formData,
-      );
+      const res = await axios.put(`${API_URL}/staff/${formData.id}`, formData);
 
       if (res.data.success) {
         setStaff((prev) =>
@@ -141,7 +133,7 @@ const StaffManagement = () => {
     if (!window.confirm("Delete this user?")) return;
 
     try {
-      await axios.delete(`https://transglobeedu.com/web-backend/staff/${id}`);
+      await axios.delete(`${API_URL}/staff/${id}`);
       setStaff((prev) => prev.filter((s) => s.id !== id));
     } catch (err) {
       console.error(err);
@@ -272,9 +264,7 @@ const StaffManagement = () => {
   const handleToggleApprove = async (id) => {
     console.log("Toggling user:", id);
     try {
-      await axios.put(
-        `https://transglobeedu.com/web-backend/staff/${id}/toggle-approve`,
-      );
+      await axios.put(`${API_URL}/staff/${id}/toggle-approve`);
 
       setStaff((prev) =>
         prev.map((user) =>

@@ -9,6 +9,7 @@ import { Outlet } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { API_URL } from "../../Config";
 
 const BannerElementor = () => {
   <ToastContainer position="top-right" autoClose={3000} />;
@@ -39,7 +40,7 @@ const BannerElementor = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    fetch("https://transglobeedu.com/web-backend/getBanners")
+    fetch(`${API_URL}/getBanners`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -305,8 +306,8 @@ const BannerElementor = () => {
       }
     });
     const endpoint = isEdit
-      ? "https://transglobeedu.com/web-backend/updateBanner"
-      : "https://transglobeedu.com/web-backend/createBanner";
+      ? `${API_URL}/updateBanner`
+      : `${API_URL}/createBanner`;
 
     try {
       const res = await fetch(endpoint, { method: "POST", body: formData });
@@ -317,9 +318,9 @@ const BannerElementor = () => {
       }
 
       // Refresh banners from server to get latest state
-      const refreshed = await fetch(
-        "https://transglobeedu.com/web-backend/getBanners",
-      ).then((r) => r.json());
+      const refreshed = await fetch(`${API_URL}/getBanners`).then((r) =>
+        r.json(),
+      );
       if (refreshed.success) {
         const normalized = refreshed.banners.map((b) => ({
           ...b,
@@ -363,17 +364,14 @@ const BannerElementor = () => {
     // If it's a saved banner (has DB id), delete it from the server
     if (existingBanner && existingBanner.id) {
       try {
-        const res = await fetch(
-          "https://transglobeedu.com/web-backend/deleteBanner",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              layout_id: existingBanner.id,
-              layout_type: existingBanner.layout,
-            }),
-          },
-        );
+        const res = await fetch(`${API_URL}/deleteBanner`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            layout_id: existingBanner.id,
+            layout_type: existingBanner.layout,
+          }),
+        });
         const data = await res.json();
         if (!data.success) {
           alert("Failed to delete banner");
@@ -419,17 +417,14 @@ const BannerElementor = () => {
 
     if (banner && banner.id) {
       try {
-        const res = await fetch(
-          "https://transglobeedu.com/web-backend/deleteBanner",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              layout_id: banner.id,
-              layout_type: banner.layout,
-            }),
-          },
-        );
+        const res = await fetch(`${API_URL}/deleteBanner`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            layout_id: banner.id,
+            layout_type: banner.layout,
+          }),
+        });
         const data = await res.json();
         if (!data.success) {
           alert("Failed to delete banner");
@@ -681,7 +676,7 @@ const BannerElementor = () => {
     // Persist new order to DB
     try {
       const orderedIds = updated.map((b) => b.id);
-      await fetch("https://transglobeedu.com/web-backend/reorderBanner", {
+      await fetch(`${API_URL}/reorderBanner`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderedIds }),

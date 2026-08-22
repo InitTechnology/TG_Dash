@@ -4,6 +4,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 // import { FcGoogle } from "react-icons/fc";
+import { API_URL } from "../../Config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const res = await fetch("https://transglobeedu.com/web-backend/login", {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +127,7 @@ const Login = () => {
     console.log("REGISTER PAYLOAD:", payload);
 
     try {
-      const res = await fetch("https://transglobeedu.com/web-backend/regUser", {
+      const res = await fetch(`${API_URL}/regUser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

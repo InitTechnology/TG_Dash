@@ -13,6 +13,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
+import { API_URL } from "../../Config";
 const EditUniversityElementor = () => {
   const navigate = useNavigate(); // inside your component
   const location = useLocation();
@@ -156,7 +157,7 @@ const EditUniversityElementor = () => {
   }, [country, flagUrls]);
 
   useEffect(() => {
-    fetch(`https://transglobeedu.com/web-backend/university/${uniId}`)
+    fetch(`${API_URL}/university/${uniId}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) return;
@@ -258,13 +259,10 @@ const EditUniversityElementor = () => {
     formData.append("courses", JSON.stringify(coursesData));
 
     try {
-      const res = await fetch(
-        `https://transglobeedu.com/web-backend/university/${uniId}`,
-        {
-          method: "PUT",
-          body: formData,
-        },
-      );
+      const res = await fetch(`${API_URL}/university/${uniId}`, {
+        method: "PUT",
+        body: formData,
+      });
 
       const data = await res.json();
 
@@ -290,15 +288,12 @@ const EditUniversityElementor = () => {
 
       setScraping(true);
 
-      const res = await axios.post(
-        "https://transglobeedu.com/web-backend/fetch-university-courses",
-        {
-          universityName,
-          country,
-          stateValue: stateName,
-          websiteUrl: website,
-        },
-      );
+      const res = await axios.post(`${API_URL}/fetch-university-courses`, {
+        universityName,
+        country,
+        stateValue: stateName,
+        websiteUrl: website,
+      });
 
       if (!res.data.success) {
         alert("Scraping failed");
