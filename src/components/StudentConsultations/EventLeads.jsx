@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import "../Dashboard/Dashboard.css";
 import {
   MdKeyboardDoubleArrowLeft,
@@ -6,6 +13,7 @@ import {
 } from "react-icons/md";
 import { FaEdit, FaEye } from "react-icons/fa";
 import { MdDelete, MdCancel } from "react-icons/md";
+import { exportToCSV } from "../../exportToCSV";
 import { API_URL } from "../../Config";
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -40,7 +48,7 @@ const EMPTY_FORM = {
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
-const EventLeads = () => {
+const EventLeads = forwardRef((props, ref) => {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -125,12 +133,12 @@ const EventLeads = () => {
   };
 
   // ── Panel helpers ────────────────────────────────────────────────────────────
-  const openAdd = () => {
-    setForm(EMPTY_FORM);
-    setFormError("");
-    setPanelMode("add");
-    setSelectedLead(null);
-  };
+  // const openAdd = () => {
+  //   setForm(EMPTY_FORM);
+  //   setFormError("");
+  //   setPanelMode("add");
+  //   setSelectedLead(null);
+  // };
 
   const openView = (lead) => {
     setSelectedLead(lead);
@@ -248,7 +256,20 @@ const EventLeads = () => {
       alert("Network error. Delete failed.");
     }
   };
-
+  //--CSV--------------------
+  useImperativeHandle(ref, () => ({
+    downloadCSV: () => {
+      const dataToExport = leads.map((lead) => ({
+        ID: lead.id,
+        Name: lead.studName,
+        "Email Address": lead.studEmail,
+        "Phone Number": lead.studPhone || "-",
+        "Event Name": lead.eventName || "-",
+        "Event City": lead.eventCity || "-",
+      }));
+      exportToCSV(dataToExport, "event_leads.csv");
+    },
+  }));
   // ── Derived panel title ──────────────────────────────────────────────────────
   const panelTitle =
     panelMode === "add"
@@ -681,7 +702,7 @@ const EventLeads = () => {
       </div>
     </div>
   );
-};
+});
 
 export default EventLeads;
 // import React, { useState, useEffect, useRef } from "react";

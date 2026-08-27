@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  forwardRef,
+  // useImperativeHandle,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import Menubar from "../Menubar/Menubar";
 import { Outlet } from "react-router-dom";
 import "../Dashboard/Dashboard.css";
@@ -20,8 +26,11 @@ import { TiCancelOutline } from "react-icons/ti";
 import axios from "axios";
 import { Check } from "lucide-react";
 import EventLeads from "./EventLeads";
+import { FiDownload } from "react-icons/fi";
+import { exportToCSV } from "../../exportToCSV";
 import { API_URL } from "../../Config";
-const StudentConsultations = () => {
+
+const StudentConsultations = forwardRef((props, ref) => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
   const [leadType, setLeadType] = useState("consultation");
@@ -38,6 +47,15 @@ const StudentConsultations = () => {
   const [stateList, setStateList] = useState([]);
   const [cityList, setCityList] = useState([]);
   const [officeFilter, setOfficeFilter] = useState("");
+  // Add this after your existing hooks and state declarations
+  const loggedInUserRaw = localStorage.getItem("user");
+  const loggedInUser = loggedInUserRaw ? JSON.parse(loggedInUserRaw) : null;
+
+  const isSuperAdmin =
+    loggedInUser?.role?.toLowerCase().trim() === "super admin";
+  console.log("Logged user:", loggedInUser);
+  console.log("Role:", loggedInUser?.role);
+  console.log("Is Super Admin:", isSuperAdmin);
   useEffect(() => {
     fetch("/world.json") // or import worldData from "../assets/world.json"
       .then((res) => res.json())
@@ -697,7 +715,30 @@ const StudentConsultations = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+  //-------CSV-------------
+  const eventLeadsRef = useRef(null);
 
+  const handleDownloadCSV = () => {
+    if (leadType === "consultation") {
+      const dataToExport = filteredBookings.map((b) => ({
+        ID: b.id,
+        "Student Name": `${b.firstName} ${b.lastName}`,
+        "Nearest Office": b.nearestOffice || "-",
+        "Study Destination": b.destination || "-",
+        "Lead Date": b.createdAt
+          ? new Date(b.createdAt).toLocaleDateString("en-GB")
+          : "-",
+        Mode: b.modeOfCon || "-",
+        "Fund-By": b.fundingBy || "-",
+        "Study Level": b.studyLevel || "-",
+        Stage: b.stage || "-",
+        Status: b.status || "-",
+      }));
+      exportToCSV(dataToExport, "consultation_leads.csv");
+    } else {
+      eventLeadsRef.current?.downloadCSV();
+    }
+  };
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -732,6 +773,17 @@ const StudentConsultations = () => {
 
           <div className="flex items-center gap-1">
             <div className="flex items-center">
+              <div className="flex items-center gap-3">
+                {isSuperAdmin && (
+                  <Tooltip title="Download CSV">
+                    <FiDownload
+                      size={24}
+                      className="cursor-pointer"
+                      onClick={handleDownloadCSV}
+                    />
+                  </Tooltip>
+                )}
+              </div>
               {/* Search bar */}
               <div className="mr-2 p-2 overflow-hidden w-8 h-8 hover:w-[120px] sm:hover:w-[250px] hover:border hover:border-[#1D2826] hover:shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center hover:duration-300 duration-300">
                 {/* Search icon */}
@@ -765,138 +817,6 @@ const StudentConsultations = () => {
                   </button>
                 )}
               </div>
-
-              {/* <div className="">
-                <button class="Btn">
-                  <svg
-                    class="svgIcon"
-                    viewBox="0 0 384 512"
-                    height="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
-                  </svg>
-                  <span class="icon2"></span>
-                  <span class="tooltip text-sm">Download</span>
-                </button>
-              </div> */}
-
-              {/* <div className="flex items-center">
-                <div className="relative inline-block" ref={filterRef}>
-                  <div
-                    onClick={() => setShowPopup_filter((prev) => !prev)}
-                    className={`flex flex-col items-center gap-4 cursor-pointer select-none group scale-[0.75] py-2.5 px-2 rounded-full border-2 transition-all duration-300 ${
-                      showPopup_filter
-                        ? "border-[#1D2826]"
-                        : "border-transparent hover:border-[#1D2826]"
-                    }`}
-                  >
-                    <div className="relative w-6 h-0.5 bg-[#1D2826] rounded-full">
-                      <div
-                        className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-black bg-white transition-all duration-300"
-                        style={{
-                          left: showPopup_filter ? "100%" : "0%",
-                          transform: `translate(${
-                            showPopup_filter ? "-100%" : "0"
-                          }, -50%)`,
-                        }}
-                      ></div>
-                    </div>
-
-                    <div className="relative w-6 h-0.5 bg-[#1D2826] rounded-full -my-2.5">
-                      <div
-                        className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-black bg-white transition-all duration-300"
-                        style={{
-                          left: showPopup_filter ? "0%" : "100%",
-                          transform: `translate(${
-                            showPopup_filter ? "0" : "-100%"
-                          }, -50%)`,
-                        }}
-                      ></div>
-                    </div>
-
-                    <div className="relative w-6 h-0.5 bg-[#1D2826] rounded-full">
-                      <div
-                        className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-black bg-white transition-all duration-300"
-                        style={{
-                          left: showPopup_filter ? "100%" : "0%",
-                          transform: `translate(${
-                            showPopup_filter ? "-100%" : "0"
-                          }, -50%)`,
-                        }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {showPopup_filter && (
-                    <div className="absolute top-full mt-1 right-0 bg-white border rounded-lg shadow-custom z-10 p-4 space-y-4 w-64">
-                      <h3 className="text-sm font-semibold text-gray-700 mb-2">
-                        Filter out on Check-In Date
-                      </h3>
-                      <div className="flex justify-between gap-2">
-                        {["Today", "Week", "Month", "Year"].map((label) => (
-                          <button
-                            key={label}
-                            onClick={() => setQuickFilter(label)}
-                            className="flex-1 py-1 px-2 bg-gray-100 hover:bg-[#DAE0CE] rounded text-sm font-medium"
-                          >
-                            {label}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                          <DatePicker
-                            selected={
-                              dateFilter.from ? parseISO(dateFilter.from) : null
-                            }
-                            onChange={(date) =>
-                              setDateFilter((prev) => ({
-                                ...prev,
-                                from: date ? format(date, "yyyy-MM-dd") : "",
-                              }))
-                            }
-                            dateFormat="dd-MM-yyyy" // 👈 shows as dd-MM-yyyy
-                            placeholderText="dd-mm-yyyy"
-                            className="border text-sm rounded px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-black"
-                          />
-                          <span className="text-sm text-gray-500">-</span>
-                          <DatePicker
-                            selected={
-                              dateFilter.to ? parseISO(dateFilter.to) : null
-                            }
-                            onChange={(date) =>
-                              setDateFilter((prev) => ({
-                                ...prev,
-                                to: date ? format(date, "yyyy-MM-dd") : "",
-                              }))
-                            }
-                            dateFormat="dd-MM-yyyy"
-                            placeholderText="dd-mm-yyyy"
-                            className="border text-sm rounded px-2 py-1 w-full focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-black"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex justify-end gap-2 pt-2">
-                        <button
-                          onClick={() => setDateFilter({ from: "", to: "" })}
-                          className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded"
-                        >
-                          Reset
-                        </button>
-                        <button
-                          onClick={() => setShowPopup_filter(false)}
-                          className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
-                        >
-                          Apply
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
@@ -1286,53 +1206,7 @@ const StudentConsultations = () => {
                             <option value="Cold">Cold</option>
                           </select>
                         </div>
-                        {/* Assignee */}
-                        {/* <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                        Assignee
-                      </label>
-                      <select
-                        name="assignee"
-                        value={formData.assignee}
-                        onChange={handleChange}
-                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                      >
-                        <option value="">Select</option>
-                        <option value="admin user 1">admin user 1</option>
-                        <option value="admin user 2">admin user 2</option>
-                      </select>
-                    </div> */}
-                        {/* office */}
-                        {/* <div className="flex flex-col w-full">
-                      <label className="  text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
-                        Nearest Office
-                      </label>
-                      <select
-                        name="nearestOffice"
-                        value={formData.nearestOffice || ""}
-                        onChange={handleChange}
-                        disabled={isViewOnly}
-                        className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md"
-                      >
-                        <option value="">Select </option>
-                        <option value="Rajkot">Rajkot</option>
-                        <option value="Surat">Surat</option>
-                        <option value="Ahemdabad">Ahemdabad</option>
-                        <option value="Jamnagar">Jamnagar</option>
-                        <option value="Morbi">Morbi</option>
-                        <option value="Junagadh">Junagadh</option>
-                        <option value="Gandhinagar">Gandhinagar</option>
-                        <option value="Anand">Anand</option>
-                        <option value="Vadodra">Vadodra</option>
-                        <option value="Indore">Indore</option>
-                        <option value="Jaipur">Jaipur</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Chandigarh">Chandigarh</option>
-                        <option value="Kathmandu, Nepal">
-                          Kathmandu, Nepal
-                        </option>
-                      </select>
-                    </div> */}
+
                         {/* office */}
                         <div className="flex flex-col w-full">
                           <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
@@ -2182,52 +2056,6 @@ const StudentConsultations = () => {
                               </td>
                               {/* Actions */}
                               <td>
-                                {/* <div className="flex">
-                          <button
-                            className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
-                            onClick={() => {
-                              setEditingBooking(b);
-                              setFormData({
-                                ...b,
-                                isPackageBooking: !!b.package, // ✅ tick checkbox if package exists
-                                bookingTime: b.bookingTime
-                                  ? new Date(b.bookingTime).toISOString()
-                                  : new Date().toISOString(),
-                              });
-                                 setFormMode("view"); 
-                              setIsViewOnly(true); // ✅ enables read-only mode
-                              setIsOpen_popupForm(true);
-                            }}
-                          >
-                            <FaEye size={15} />
-                          </button>
-                          <button
-                            className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
-                            onClick={() => {
-                              setEditingBooking(b);
-                              setFormData({
-                                ...b,
-                                isPackageBooking: !!b.package,
-                                bookingTime: b.bookingTime
-                                  ? new Date(b.bookingTime).toISOString()
-                                  : new Date().toISOString(),
-                              });
-                               setFormMode("edit");
-                              setIsViewOnly(false); // disable view-only mode
-                              setIsOpen_popupForm(true);
-                            }}
-                          >
-                            <FaEdit size={14} />
-                          </button>
-                          <button
-                            onClick={() =>
-                              setDeletePopup({ open: true, bookingId: b.id })
-                            }
-                            className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
-                          >
-                            <MdDelete size={15} />
-                          </button>
-                        </div> */}
                                 <div className="flex justify-center">
                                   {/* Everyone can view */}
                                   <button
@@ -2442,12 +2270,12 @@ const StudentConsultations = () => {
           </>
         ) : (
           <>
-            <EventLeads />
+            <EventLeads ref={eventLeadsRef} />
           </>
         )}
       </main>
     </div>
   );
-};
+});
 
 export default StudentConsultations;
