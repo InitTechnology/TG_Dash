@@ -112,6 +112,13 @@ const Menubar = ({ isOpen, setIsOpen, isMobile }) => {
       );
     }
 
+    // For Counsellor, only show Consultations + Logout
+    if (userRole?.toLowerCase().trim() === "counsellor") {
+      return allMenuItems.filter(
+        (item) => item.text === "Consultations" || item.text === "Logout",
+      );
+    }
+
     // For other roles, show all menu items
     return allMenuItems;
   };

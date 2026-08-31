@@ -26,6 +26,7 @@ import { TiCancelOutline } from "react-icons/ti";
 import axios from "axios";
 import { Check } from "lucide-react";
 import EventLeads from "./EventLeads";
+import UniExpoLeads from "./UniExpoLeads";
 import { FiDownload } from "react-icons/fi";
 import { exportToCSV } from "../../exportToCSV";
 import { API_URL } from "../../Config";
@@ -56,6 +57,29 @@ const StudentConsultations = forwardRef((props, ref) => {
   console.log("Logged user:", loggedInUser);
   console.log("Role:", loggedInUser?.role);
   console.log("Is Super Admin:", isSuperAdmin);
+  const isCounsellor =
+    loggedInUser?.role?.toLowerCase().trim() === "counsellor";
+
+  // Prefer the office stored on login; fall back to matching by email
+  // against the staff list (in case login payload is thin).
+  const myOffice =
+    loggedInUser?.office ||
+    staffList.find(
+      (s) =>
+        s.email?.toLowerCase().trim() ===
+        loggedInUser?.email?.toLowerCase().trim(),
+    )?.office ||
+    "";
+  useEffect(() => {
+    if (isCounsellor && myOffice) {
+      setOfficeFilter(myOffice);
+    }
+  }, [isCounsellor, myOffice]);
+  const matchesOfficeGroup = (bookingOffice, targetOffice) => {
+    if (!targetOffice) return true;
+    if (!bookingOffice) return false;
+    return bookingOffice.toLowerCase().startsWith(targetOffice.toLowerCase());
+  };
   useEffect(() => {
     fetch("/world.json") // or import worldData from "../assets/world.json"
       .then((res) => res.json())
@@ -386,8 +410,11 @@ const StudentConsultations = forwardRef((props, ref) => {
 
     const matchesStage = !activeStage_stage || b.stage === activeStage_stage;
 
-    const matchesOffice = !officeFilter || b.nearestOffice === officeFilter;
-
+    const matchesOffice = isCounsellor
+      ? myOffice
+        ? matchesOfficeGroup(b.nearestOffice, myOffice)
+        : false // hide everything until we've resolved their office, don't leak data
+      : matchesOfficeGroup(b.nearestOffice, officeFilter);
     return matchesSearch && matchesDate && matchesStage && matchesOffice;
   });
 
@@ -717,7 +744,7 @@ const StudentConsultations = forwardRef((props, ref) => {
   };
   //-------CSV-------------
   const eventLeadsRef = useRef(null);
-
+  const uniExpoLeadsRef = useRef(null);
   const handleDownloadCSV = () => {
     if (leadType === "consultation") {
       const dataToExport = filteredBookings.map((b) => ({
@@ -735,8 +762,10 @@ const StudentConsultations = forwardRef((props, ref) => {
         Status: b.status || "-",
       }));
       exportToCSV(dataToExport, "consultation_leads.csv");
-    } else {
+    } else if (leadType === "event") {
       eventLeadsRef.current?.downloadCSV();
+    } else if (leadType === "uniexpo") {
+      uniExpoLeadsRef.current?.downloadCSV();
     }
   };
   return (
@@ -768,6 +797,7 @@ const StudentConsultations = forwardRef((props, ref) => {
             >
               <option value="consultation">Consultation Leads</option>
               <option value="event">Event Leads</option>
+              <option value="uniexpo">Global Uni-Expo Leads</option>
             </select>
           </div>
 
@@ -900,39 +930,43 @@ const StudentConsultations = forwardRef((props, ref) => {
             {/* Button */}
             <div className="mt-8">
               <div className="flex gap-4 w-full justify-between">
-                <select
-                  value={officeFilter}
-                  onChange={(e) => setOfficeFilter(e.target.value)}
-                  class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer"
-                >
-                  <option value="">Filter office</option>
-                  <option value="Ahmedabad">Ahmedabad</option>
-                  <option value="Anand">Anand</option>
-                  <option value="Chandigarh">Chandigarh</option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Gandhinagar">Gandhinagar</option>
-                  <option value="Indore">Indore</option>
-                  <option value="Jaipur">Jaipur</option>
-                  <option value="Jamnagar">Jamnagar</option>
-                  <option value="Junagadh">Junagadh</option>
-                  <option value="Morbi">Morbi</option>
-                  <option value="Pune">Pune</option>
-                  <option value="Rajkot">Rajkot</option>
-                  <option value="Surat">Surat</option>
-                  <option value="Vadodara">Vadodara</option>
-                  <option value="Kochi">Kochi</option>
-                  <option value="Kathmandu Nepal">Kathmandu Nepal</option>
-                </select>
+                {!isCounsellor && (
+                  <select
+                    value={officeFilter}
+                    onChange={(e) => setOfficeFilter(e.target.value)}
+                    class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer"
+                  >
+                    <option value="">Filter office</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Anand">Anand</option>
+                    <option value="Chandigarh">Chandigarh</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Gandhinagar">Gandhinagar</option>
+                    <option value="Indore">Indore</option>
+                    <option value="Jaipur">Jaipur</option>
+                    <option value="Jamnagar">Jamnagar</option>
+                    <option value="Junagadh">Junagadh</option>
+                    <option value="Morbi">Morbi</option>
+                    <option value="Pune">Pune</option>
+                    <option value="Rajkot">Rajkot</option>
+                    <option value="Surat">Surat</option>
+                    <option value="Vadodara">Vadodara</option>
+                    <option value="Kochi">Kochi</option>
+                    <option value="Kathmandu Nepal">Kathmandu Nepal</option>
+                  </select>
+                )}
 
-                <button
-                  onClick={() => {
-                    setFormMode("add");
-                    setIsOpen_popupForm(true);
-                  }}
-                  className="px-6 z-30 py-2 bg-indigo-900 rounded-lg font-medium text-sm text-center text-white relative hover:scale-95 transition-all duration-300 ease-in-out"
-                >
-                  + Add Leads
-                </button>
+                {!isCounsellor && (
+                  <button
+                    onClick={() => {
+                      setFormMode("add");
+                      setIsOpen_popupForm(true);
+                    }}
+                    className="px-6 z-30 py-2 bg-indigo-900 rounded-lg font-medium text-sm text-center text-white relative hover:scale-95 transition-all duration-300 ease-in-out"
+                  >
+                    + Add Leads
+                  </button>
+                )}
               </div>
 
               <div className="relative z-50">
@@ -1133,9 +1167,7 @@ const StudentConsultations = forwardRef((props, ref) => {
                             className="border-gray-400 p-3 text-sm border rounded-lg w-full focus:outline-none placeholder:text-black/25 focus:ring-0 focus:border-black focus:shadow-md text-black"
                           />
                         </div>
-
                         {/* Assignee */}
-
                         <div className="flex flex-col w-full">
                           <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                             Assignee
@@ -1206,8 +1238,8 @@ const StudentConsultations = forwardRef((props, ref) => {
                             <option value="Cold">Cold</option>
                           </select>
                         </div>
-
                         {/* office */}
+
                         <div className="flex flex-col w-full">
                           <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                             Nearest Office
@@ -1235,7 +1267,6 @@ const StudentConsultations = forwardRef((props, ref) => {
                             ))}
                           </select>
                         </div>
-
                         {/* Specific Area — only shows if selected office has subAreas */}
                         {nearestOffice.find(
                           (o) => o.label === formData.nearestOffice,
@@ -2137,17 +2168,19 @@ const StudentConsultations = forwardRef((props, ref) => {
                                       <FaEdit size={14} />
                                     </button>
 
-                                    <button
-                                      onClick={() =>
-                                        setDeletePopup({
-                                          open: true,
-                                          bookingId: b.id,
-                                        })
-                                      }
-                                      className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
-                                    >
-                                      <MdDelete size={15} />
-                                    </button>
+                                    {!isCounsellor && (
+                                      <button
+                                        onClick={() =>
+                                          setDeletePopup({
+                                            open: true,
+                                            bookingId: b.id,
+                                          })
+                                        }
+                                        className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
+                                      >
+                                        <MdDelete size={15} />
+                                      </button>
+                                    )}
                                   </>
                                 </div>
                               </td>
@@ -2268,10 +2301,10 @@ const StudentConsultations = forwardRef((props, ref) => {
               )}
             </div>
           </>
+        ) : leadType === "event" ? (
+          <EventLeads ref={eventLeadsRef} />
         ) : (
-          <>
-            <EventLeads ref={eventLeadsRef} />
-          </>
+          <UniExpoLeads ref={uniExpoLeadsRef} />
         )}
       </main>
     </div>
