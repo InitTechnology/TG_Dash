@@ -17,7 +17,12 @@ import { MdDelete } from "react-icons/md";
 import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 import { exportToCSV } from "../../exportToCSV";
 import { API_URL } from "../../Config";
+import { MdOutlinePendingActions } from "react-icons/md";
+import { PiStudentFill } from "react-icons/pi";
 
+import { GiCheckMark } from "react-icons/gi";
+import { ImCross } from "react-icons/im";
+import { FaRegHandshake } from "react-icons/fa";
 const BASE_URL = `${API_URL}/expo-registrations`;
 
 // DOM id for the div the html5-qrcode library mounts the camera view into.
@@ -98,6 +103,7 @@ const StatusBadge = ({ status }) => {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const UniExpoLeads = forwardRef((props, ref) => {
+  const { searchQuery = "" } = props;
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -105,9 +111,52 @@ const UniExpoLeads = forwardRef((props, ref) => {
   const loggedInUser = loggedInUserRaw ? JSON.parse(loggedInUserRaw) : null;
   const isCounsellor =
     loggedInUser?.role?.toLowerCase().trim() === "counsellor";
-  const myOffice = loggedInUser?.office || "";
+  const [staffOffice, setStaffOffice] = useState(loggedInUser?.office || "");
+  const [selectedIds, setSelectedIds] = useState(new Set());
+
+  useEffect(() => {
+    if (staffOffice || !loggedInUser?.email) return; // already have it, or no user
+    const resolveOffice = async () => {
+      try {
+        const res = await fetch(`${API_URL}/getAllStaff`);
+        const data = await res.json();
+        if (data.success) {
+          const match = data.data.find(
+            (s) =>
+              s.email?.toLowerCase().trim() ===
+              loggedInUser.email?.toLowerCase().trim(),
+          );
+          if (match?.office) setStaffOffice(match.office);
+        }
+      } catch (err) {
+        console.error("Error resolving office:", err);
+      }
+    };
+    resolveOffice();
+  }, [staffOffice, loggedInUser?.email]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+  const myOffice = staffOffice;
   // Filter
   const [filterLocation, setFilterLocation] = useState("");
+  const displayedLeads = leads.filter((lead) => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return true;
+
+    const matchesName = (lead.full_name || "").toLowerCase().includes(query);
+    const matchesEmail = (lead.email || "").toLowerCase().includes(query);
+    const matchesMobile = (lead.mobile || "").toLowerCase().includes(query);
+    const matchesStatus = (lead.status || "").toLowerCase().includes(query);
+
+    return matchesName || matchesEmail || matchesMobile || matchesStatus;
+  });
+
+  const totalLeadsCount = leads.length;
+  const verifiedLeadsCount = leads.filter(
+    (l) => l.status === "verified",
+  ).length;
+  const pendingLeadsCount = leads.filter((l) => l.status === "pending").length;
 
   // Pagination
   const rowsPerPage = 20;
@@ -140,6 +189,14 @@ const UniExpoLeads = forwardRef((props, ref) => {
   const isProcessingScan = useRef(false); // guards against duplicate scans firing
 
   // ── Fetch leads ─────────────────────────────────────────────────────────────
+  // ── Fetch leads ─────────────────────────────────────────────────────────────
+  const normalizeOfficeKey = (value) =>
+    String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s*-\s*/g, "-")
+      .replace(/\s+/g, "-");
+
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -154,9 +211,9 @@ const UniExpoLeads = forwardRef((props, ref) => {
         const scoped =
           isCounsellor && myOffice
             ? rows.filter((l) =>
-                (l.expo_location || "")
-                  .toLowerCase()
-                  .includes(myOffice.toLowerCase()),
+                normalizeOfficeKey(l.expo_location).includes(
+                  normalizeOfficeKey(myOffice),
+                ),
               )
             : rows;
         setLeads(scoped);
@@ -170,6 +227,36 @@ const UniExpoLeads = forwardRef((props, ref) => {
       setLoading(false);
     }
   }, [filterLocation, isCounsellor, myOffice]);
+  // const fetchLeads = useCallback(async () => {
+  //   setLoading(true);
+  //   setError("");
+  //   try {
+  //     const params = filterLocation
+  //       ? `?expo_location=${encodeURIComponent(filterLocation)}`
+  //       : "";
+  //     const res = await fetch(`${BASE_URL}${params}`);
+  //     const data = await res.json();
+  //     if (data.success) {
+  //       const rows = data.data;
+  //       const scoped =
+  //         isCounsellor && myOffice
+  //           ? rows.filter((l) =>
+  //               (l.expo_location || "")
+  //                 .toLowerCase()
+  //                 .includes(myOffice.toLowerCase()),
+  //             )
+  //           : rows;
+  //       setLeads(scoped);
+  //       setCurrentPage(1);
+  //     } else {
+  //       setError(data.message || "Failed to fetch registrations");
+  //     }
+  //   } catch (err) {
+  //     setError("Network error. Could not fetch registrations.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [filterLocation, isCounsellor, myOffice]);
   useEffect(() => {
     if (isCounsellor && myOffice) {
       setFilterLocation(myOffice);
@@ -181,11 +268,11 @@ const UniExpoLeads = forwardRef((props, ref) => {
   }, [fetchLeads]);
 
   // ── Pagination helpers ───────────────────────────────────────────────────────
-  const totalPages = Math.ceil(leads.length / rowsPerPage);
+  // ── Pagination helpers ───────────────────────────────────────────────────────
+  const totalPages = Math.ceil(displayedLeads.length / rowsPerPage);
   const indexOfLast = currentPage * rowsPerPage;
   const indexOfFirst = indexOfLast - rowsPerPage;
-  const currentLeads = leads.slice(indexOfFirst, indexOfLast);
-
+  const currentLeads = displayedLeads.slice(indexOfFirst, indexOfLast);
   const generatePageNumbers = () => {
     const pages = [];
     if (totalPages <= 5) {
@@ -317,6 +404,38 @@ const UniExpoLeads = forwardRef((props, ref) => {
       setDeleting(false);
     }
   };
+  const toggleSelectOne = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const isAllCurrentPageSelected =
+    currentLeads.length > 0 &&
+    currentLeads.every((lead) => selectedIds.has(lead.id));
+
+  const toggleSelectAllCurrentPage = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (isAllCurrentPageSelected) {
+        // Unselect only this page's rows
+        currentLeads.forEach((lead) => next.delete(lead.id));
+      } else {
+        // Select this page's rows (keeps any selections from other pages)
+        currentLeads.forEach((lead) => next.add(lead.id));
+      }
+      return next;
+    });
+  };
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [searchQuery, filterLocation]);
 
   // ── QR ticket scan → verify ──────────────────────────────────────────────────
   // Looks up a registration by its ticket_id and, if found, sets its status to
@@ -562,7 +681,12 @@ const UniExpoLeads = forwardRef((props, ref) => {
   // ── CSV export, exposed to parent via ref ───────────────────────────────────
   useImperativeHandle(ref, () => ({
     downloadCSV: () => {
-      const dataToExport = leads.map((lead) => ({
+      const rowsToExport =
+        selectedIds.size > 0
+          ? displayedLeads.filter((lead) => selectedIds.has(lead.id))
+          : displayedLeads;
+
+      const dataToExport = rowsToExport.map((lead) => ({
         ID: lead.id,
         "Full Name": lead.full_name,
         Email: lead.email,
@@ -625,7 +749,6 @@ const UniExpoLeads = forwardRef((props, ref) => {
           </div>
         </div>
       )}
-
       {/* ── QR Scanner Modal ── */}
       {showScanner && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
@@ -694,18 +817,11 @@ const UniExpoLeads = forwardRef((props, ref) => {
           </div>
         </div>
       )}
-
       {/* ── Top Controls ── */}
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <div className="flex gap-4 w-full justify-between items-center">
           <div className="flex gap-3 items-center">
-            {/* <input
-              type="text"
-              placeholder="Filter by expo location (e.g. rajkot)"
-              value={filterLocation}
-              onChange={(e) => setFilterLocation(e.target.value)}
-              className="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 w-72"
-            /> */}
+            
             <button
               onClick={startScanner}
               title="Scan a ticket QR code to verify a student"
@@ -716,8 +832,61 @@ const UniExpoLeads = forwardRef((props, ref) => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
+      {/* Boxes */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 items-center gap-8 text-gray-700 font-semibold mt-5">
+        <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
+          <div>
+            <p className="text-sm font-normal">Total Student Leads</p>
+            <p className="mt-2 text-lg text-black">{totalLeadsCount}</p>
+          </div>
 
+          <div>
+            <PiStudentFill className="bg-indigo-900 text-white text-3xl p-1.5 rounded-md" />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
+          <div>
+            <p className="text-sm font-normal">Approved/Verified Leads</p>
+            <p className="mt-2 text-lg text-black">{verifiedLeadsCount}</p>
+          </div>
+
+          <div>
+            <GiCheckMark className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
+          <div>
+            <p className="text-sm font-normal">Pending Leads</p>
+            <p className="mt-2 text-lg text-black">{pendingLeadsCount}</p>
+          </div>
+
+          <div>
+            <MdOutlinePendingActions className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
+          </div>
+        </div>
+      </div>
+      <div className="mt-8">
+        <div className="flex gap-4 w-full justify-between items-center">
+          <div className="flex gap-3 items-center">
+            <button
+              onClick={startScanner}
+              title="Scan a ticket QR code to verify a student"
+              className="flex items-center gap-2 px-4 py-2 rounded-md bg-indigo-900 text-white text-sm font-medium hover:bg-indigo-800 hover:scale-95 transition-all duration-300"
+            >
+              <MdQrCodeScanner size={16} />
+              Scan
+            </button>
+            {selectedIds.size > 0 && (
+              <span className="text-sm text-gray-600">
+                {selectedIds.size} selected
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
       {/* ── Slide Panel ── */}
       <div className="relative z-50">
         {panelMode && (
@@ -1043,7 +1212,6 @@ const UniExpoLeads = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-
       {/* ── Table ── */}
       <div className="shadow-md rounded-lg mt-5">
         {error && (
@@ -1056,6 +1224,14 @@ const UniExpoLeads = forwardRef((props, ref) => {
           <table className="w-full text-sm text-left rtl:text-right text-gray-500">
             <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
               <tr>
+                <th className="p-4">
+                  <input
+                    type="checkbox"
+                    checked={isAllCurrentPageSelected}
+                    onChange={toggleSelectAllCurrentPage}
+                    className="cursor-pointer"
+                  />{" "}
+                </th>
                 <th className="p-4">ID</th>
                 <th className="p-4">Full Name</th>
                 <th className="p-4">Email</th>
@@ -1070,13 +1246,13 @@ const UniExpoLeads = forwardRef((props, ref) => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-8 text-gray-400">
+                  <td colSpan={10} className="text-center py-8 text-gray-400">
                     Loading…
                   </td>
                 </tr>
               ) : currentLeads.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-8 text-gray-400">
+                  <td colSpan={10} className="text-center py-8 text-gray-400">
                     No registrations found.
                   </td>
                 </tr>
@@ -1086,6 +1262,14 @@ const UniExpoLeads = forwardRef((props, ref) => {
                     key={lead.id}
                     className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
                   >
+                    <td className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(lead.id)}
+                        onChange={() => toggleSelectOne(lead.id)}
+                        className="cursor-pointer"
+                      />
+                    </td>
                     <td className="px-4 py-4 font-semibold">{lead.id}</td>
                     <td className="px-4 py-4">{lead.full_name}</td>
                     <td className="px-4 py-4">{lead.email}</td>
@@ -1152,13 +1336,14 @@ const UniExpoLeads = forwardRef((props, ref) => {
           <span className="text-xs font-normal text-gray-500 mb-4 md:mb-0 block w-full md:inline md:w-auto">
             Showing{" "}
             <span className="font-semibold text-gray-700">
-              {leads.length === 0 ? 0 : indexOfFirst + 1}–
-              {Math.min(indexOfLast, leads.length)}
+              {displayedLeads.length === 0 ? 0 : indexOfFirst + 1}–
+              {Math.min(indexOfLast, displayedLeads.length)}
             </span>{" "}
             of{" "}
-            <span className="font-semibold text-gray-700">{leads.length}</span>
+            <span className="font-semibold text-gray-700">
+              {displayedLeads.length}
+            </span>
           </span>
-
           <ul className="inline-flex -space-x-px rtl:space-x-reverse text-xs h-8">
             <li>
               <button

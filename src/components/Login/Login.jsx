@@ -377,20 +377,43 @@ const Login = () => {
                   className="bg-white/60 focus:bg-white/80 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#3b3965] focus:border-transparent"
                 >
                   <option value="">Select Office</option>
-                  <option value="Ahmedabad">Ahmedabad</option>
+
+                  <option value="Ahmedabad-Bodakdev">Ahmedabad-Bodakdev</option>
+                  <option value="Ahmedabad-Motera">Ahmedabad-Motera</option>
+                  <option value="Ahmedabad-Nikol">Ahmedabad-Nikol</option>
+
                   <option value="Anand">Anand</option>
+
                   <option value="Chandigarh">Chandigarh</option>
+
                   <option value="Delhi">Delhi</option>
+
                   <option value="Gandhinagar">Gandhinagar</option>
+
                   <option value="Indore">Indore</option>
+
                   <option value="Jaipur">Jaipur</option>
+                  <option value="Kochi">Kochi</option>
+
                   <option value="Jamnagar">Jamnagar</option>
+
                   <option value="Junagadh">Junagadh</option>
+
                   <option value="Morbi">Morbi</option>
+
                   <option value="Pune">Pune</option>
-                  <option value="Rajkot">Rajkot</option>
-                  <option value="Surat">Surat</option>
+
+                  <option value="Rajkot-HeadOffice">Rajkot-HeadOffice</option>
+                  <option value="Rajkot-CorporateOffice">
+                    Rajkot-CorporateOffice
+                  </option>
+
+                  <option value="Surat-AR Mall">Surat-AR Mall</option>
+                  <option value="Surat-Katargam">Surat-Katargam</option>
+                  <option value="Surat-Sarthana">Surat-Sarthana</option>
+
                   <option value="Vadodara">Vadodara</option>
+
                   <option value="Kathmandu Nepal">Kathmandu Nepal</option>
                 </select>
               </div>
