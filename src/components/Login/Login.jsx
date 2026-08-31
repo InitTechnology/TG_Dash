@@ -47,8 +47,12 @@ const Login = () => {
         toast.success("Login successful!");
 
         setTimeout(() => {
+          const userRole = data.user.role?.toLowerCase().trim();
+
           if (data.user.role === "Content Manager") {
             navigate("/Events");
+          } else if (userRole === "counsellor") {
+            navigate("/StudentConsultations");
           } else {
             navigate("/Dashboard");
           }
