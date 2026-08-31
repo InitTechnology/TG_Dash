@@ -34,6 +34,7 @@ import { API_URL } from "../../Config";
 const StudentConsultations = forwardRef((props, ref) => {
   // const user = JSON.parse(localStorage.getItem("user"));
   // const isAdmin = user?.role?.toLowerCase() === "admin";
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [leadType, setLeadType] = useState("consultation");
   const [loading, setLoading] = useState(true);
   const [formMode, setFormMode] = useState("add");
@@ -326,6 +327,7 @@ const StudentConsultations = forwardRef((props, ref) => {
       alert("Failed to delete booking.");
     }
   };
+
   const resetForm = () => {
     setFormData({
       country: "",
@@ -412,10 +414,13 @@ const StudentConsultations = forwardRef((props, ref) => {
 
     const matchesOffice = isCounsellor
       ? myOffice
-        ? matchesOfficeGroup(b.nearestOffice, myOffice)
-        : false // hide everything until we've resolved their office, don't leak data
-      : matchesOfficeGroup(b.nearestOffice, officeFilter);
-    return matchesSearch && matchesDate && matchesStage && matchesOffice;
+        ? matchesOfficeGroup(b.specificOffice, myOffice) ||
+          matchesOfficeGroup(b.nearestOffice, myOffice)
+        : false
+      : matchesOfficeGroup(b.specificOffice, officeFilter) ||
+        matchesOfficeGroup(b.nearestOffice, officeFilter);
+
+    return matchesSearch && matchesDate && matchesStage && matchesOffice; // ← restored
   });
 
   const rowsPerPage_booking = 20;
@@ -434,6 +439,36 @@ const StudentConsultations = forwardRef((props, ref) => {
   const totalPages_booking = Math.ceil(
     filteredBookings.length / rowsPerPage_booking,
   );
+  const toggleSelectOne = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const isAllCurrentPageSelected =
+    current_booking.length > 0 &&
+    current_booking.every((b) => selectedIds.has(b.id));
+
+  const toggleSelectAllCurrentPage = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (isAllCurrentPageSelected) {
+        current_booking.forEach((b) => next.delete(b.id));
+      } else {
+        current_booking.forEach((b) => next.add(b.id));
+      }
+      return next;
+    });
+  };
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [searchQuery, officeFilter, activeStage_stage]);
   const handlePageChange_booking = (pageNumber_booking) => {
     setCurrentPage_booking(pageNumber_booking);
     // setSelectedRows_booking([]);
@@ -658,7 +693,11 @@ const StudentConsultations = forwardRef((props, ref) => {
   useEffect(() => {
     getStatusCounts();
   }, []);
-
+  useEffect(() => {
+    if (isCounsellor && leadType === "event") {
+      setLeadType("consultation");
+    }
+  }, [isCounsellor, leadType]);
   // const options_uniPref = [
   //   { value: "uni1", label: "Uni 1" },
   //   { value: "uni2", label: "Uni 2" },
@@ -747,7 +786,12 @@ const StudentConsultations = forwardRef((props, ref) => {
   const uniExpoLeadsRef = useRef(null);
   const handleDownloadCSV = () => {
     if (leadType === "consultation") {
-      const dataToExport = filteredBookings.map((b) => ({
+      const rowsToExport =
+        selectedIds.size > 0
+          ? filteredBookings.filter((b) => selectedIds.has(b.id))
+          : filteredBookings;
+
+      const dataToExport = rowsToExport.map((b) => ({
         ID: b.id,
         "Student Name": `${b.firstName} ${b.lastName}`,
         "Nearest Office": b.nearestOffice || "-",
@@ -784,11 +828,9 @@ const StudentConsultations = forwardRef((props, ref) => {
         <Outlet />
 
         {/* Header */}
-        <div className="flex justify-between gap-5 items-start lg:items-center">
+        {/* <div className="flex justify-between gap-5 items-start lg:items-center">
           <div className="flex flex-col lg:flex-row gap-5 items-start lg:items-center">
-            {/* <p className="font-semibold text-xl text-gray-700 ml-10 lg:ml-0">
-              Consultation Leads
-            </p> */}
+        
 
             <select
               value={leadType}
@@ -796,11 +838,47 @@ const StudentConsultations = forwardRef((props, ref) => {
               className="font-semibold text-xl text-gray-700 ml-10 lg:ml-0 pr-3 bg-transparent focus:outline-none focus:border-b focus:border-[#2B2A4C]"
             >
               <option value="consultation">Consultation Leads</option>
-              <option value="event">Event Leads</option>
+              {!isCounsellor && <option value="event">Event Leads</option>}
               <option value="uniexpo">Global Uni-Expo Leads</option>
             </select>
-          </div>
+          </div> */}
+        <div className="flex justify-between gap-5 items-start lg:items-center">
+          <div className="inline-flex border border-gray-300 rounded-lg overflow-hidden text-sm font-medium shadow-sm ml-10 lg:ml-0">
+            <button
+              onClick={() => setLeadType("consultation")}
+              className={`px-4 py-2 transition-colors duration-200 focus:outline-none ${
+                leadType === "consultation"
+                  ? "bg-[#3E3E98] text-white"
+                  : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
+              }`}
+            >
+              Consultation Leads
+            </button>
 
+            {!isCounsellor && (
+              <button
+                onClick={() => setLeadType("event")}
+                className={`px-4 py-2 transition-colors duration-200 focus:outline-none border-l border-gray-300 ${
+                  leadType === "event"
+                    ? "bg-[#3E3E98] text-white"
+                    : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
+                }`}
+              >
+                Event Leads
+              </button>
+            )}
+
+            <button
+              onClick={() => setLeadType("uniexpo")}
+              className={`px-4 py-2 transition-colors duration-200 focus:outline-none border-l border-gray-300 ${
+                leadType === "uniexpo"
+                  ? "bg-[#3E3E98] text-white"
+                  : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
+              }`}
+            >
+              Global Uni-Expo Leads
+            </button>
+          </div>
           <div className="flex items-center gap-1">
             <div className="flex items-center">
               <div className="flex items-center gap-3">
@@ -937,7 +1015,11 @@ const StudentConsultations = forwardRef((props, ref) => {
                     class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer"
                   >
                     <option value="">Filter office</option>
-                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Ahmedabad-Bodakdev">
+                      Ahmedabad-Bodakdev
+                    </option>
+                    <option value="Ahmedabad-Motera">Ahmedabad-Motera</option>
+                    <option value="Ahmedabad-Nikol">Ahmedabad-Nikol</option>
                     <option value="Anand">Anand</option>
                     <option value="Chandigarh">Chandigarh</option>
                     <option value="Delhi">Delhi</option>
@@ -948,10 +1030,16 @@ const StudentConsultations = forwardRef((props, ref) => {
                     <option value="Junagadh">Junagadh</option>
                     <option value="Morbi">Morbi</option>
                     <option value="Pune">Pune</option>
-                    <option value="Rajkot">Rajkot</option>
-                    <option value="Surat">Surat</option>
+
+                    <option value="Rajkot-HeadOffice">Rajkot-HeadOffice</option>
+                    <option value="Rajkot-CorporateOffice">
+                      Rajkot-CorporateOffice
+                    </option>
+
+                    <option value="Surat-AR Mall">Surat-AR Mall</option>
+                    <option value="Surat-Katargam">Surat-Katargam</option>
+                    <option value="Surat-Sarthana">Surat-Sarthana</option>
                     <option value="Vadodara">Vadodara</option>
-                    <option value="Kochi">Kochi</option>
                     <option value="Kathmandu Nepal">Kathmandu Nepal</option>
                   </select>
                 )}
@@ -1951,17 +2039,14 @@ const StudentConsultations = forwardRef((props, ref) => {
                       <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
                           <tr>
-                            {/* <th className="p-4">
-                          <input
-                            type="checkbox"
-                            onChange={handleSelectAll_booking}
-                            checked={
-                              selectedRows_booking.length ===
-                                current_booking.length &&
-                              current_booking.length > 0
-                            }
-                          />
-                        </th> */}
+                            <th className="p-4">
+                              <input
+                                type="checkbox"
+                                checked={isAllCurrentPageSelected}
+                                onChange={toggleSelectAllCurrentPage}
+                                className="cursor-pointer"
+                              />
+                            </th>
                             <th className="p-4"> ID</th>
                             <th className="p-4 w-1/10">Student Name</th>
                             <th className="p-4 w-1/10">Nearest Office</th>
@@ -1976,216 +2061,231 @@ const StudentConsultations = forwardRef((props, ref) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {current_booking.map((b) => (
-                            <tr
-                              key={b.id}
-                              className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
-                            >
-                              {/* Checkbox */}
-                              {/* <td className="px-4 py-5">
-                            <input
-                              type="checkbox"
-                              onChange={() =>
-                                handleRowCheckboxChange_booking(b.id)
-                              }
-                              checked={selectedRows_booking.includes(b.id)}
-                            />
-                          </td> */}
-                              {/* Booking ID */}
-                              <td className="px-4 py-5 font-semibold text-gray-700">
-                                {b.id || "-"}
+                          {current_booking.length === 0 ? (
+                            <tr>
+                              <td
+                                colSpan={12}
+                                className="text-center py-10 text-gray-400"
+                              >
+                                No Student Leads
                               </td>
-                              {/* Customer Name */}
-                              <td className="px-4 py-5">
-                                <Tooltip
-                                  title={`${b.firstName} ${b.lastName}`}
-                                  placement="left"
-                                >
-                                  {b.firstName} {b.lastName}
-                                </Tooltip>
-                              </td>
+                            </tr>
+                          ) : (
+                            current_booking.map((b) => (
+                              <tr
+                                key={b.id}
+                                className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
+                              >
+                                <td className="px-4 py-5">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedIds.has(b.id)}
+                                    onChange={() => toggleSelectOne(b.id)}
+                                    className="cursor-pointer"
+                                  />
+                                </td>
+                                {/* Booking ID */}
+                                <td className="px-4 py-5 font-semibold text-gray-700">
+                                  {b.id || "-"}
+                                </td>
+                                {/* Customer Name */}
+                                <td className="px-4 py-5">
+                                  <Tooltip
+                                    title={`${b.firstName} ${b.lastName}`}
+                                    placement="left"
+                                  >
+                                    {b.firstName} {b.lastName}
+                                  </Tooltip>
+                                </td>
 
-                              {/* Property Code */}
-                              <td className="px-4 py-5">
-                                <Tooltip
-                                  title={`${b.nearestOffice}`}
-                                  placement="left"
-                                >
-                                  {b.nearestOffice || "-"}
-                                </Tooltip>
-                              </td>
+                                {/* Property Code */}
+                                <td className="px-4 py-5">
+                                  <Tooltip
+                                    title={`${b.nearestOffice}`}
+                                    placement="left"
+                                  >
+                                    {b.specificOffice || b.nearestOffice || "-"}
+                                  </Tooltip>
+                                </td>
 
-                              {/* Destination */}
-                              <td className="px-4 py-5">
-                                <Tooltip
-                                  title={
-                                    b.package
-                                      ? `${b.package}-${b.destination}`
-                                      : b.destination || "-"
-                                  }
-                                  placement="left"
-                                >
-                                  {b.destination || "-"}
-                                </Tooltip>
-                              </td>
+                                {/* Destination */}
+                                <td className="px-4 py-5">
+                                  <Tooltip
+                                    title={
+                                      b.package
+                                        ? `${b.package}-${b.destination}`
+                                        : b.destination || "-"
+                                    }
+                                    placement="left"
+                                  >
+                                    {b.destination || "-"}
+                                  </Tooltip>
+                                </td>
 
-                              {/* Booking Date */}
-                              <td className="px-4 py-5">
-                                {/* <Tooltip title={b.bookingTime} placement="left">
+                                {/* Booking Date */}
+                                <td className="px-4 py-5">
+                                  {/* <Tooltip title={b.bookingTime} placement="left">
                               {b.bookingTime
                                 ? new Date(b.bookingTime).toLocaleDateString(
                                     "en-GB",
                                   )
                                 : "-"}
                             </Tooltip> */}
-                                {new Date(b.createdAt).toLocaleDateString(
-                                  "en-GB",
-                                )}
-                              </td>
+                                  {new Date(b.createdAt).toLocaleDateString(
+                                    "en-GB",
+                                  )}
+                                </td>
 
-                              {/* Check-In */}
-                              <td className="px-4 py-5">
-                                {b.modeOfCon || "-"}
-                              </td>
+                                {/* Check-In */}
+                                <td className="px-4 py-5">
+                                  {b.modeOfCon || "-"}
+                                </td>
 
-                              {/* Check-Out */}
-                              <td className="px-4 py-5">
-                                {b.fundingBy || "-"}
-                              </td>
+                                {/* Check-Out */}
+                                <td className="px-4 py-5">
+                                  {b.fundingBy || "-"}
+                                </td>
 
-                              {/* Study Level */}
-                              <td className="px-4 py-5">
-                                {b.studyLevel || "-"}
-                              </td>
+                                {/* Study Level */}
+                                <td className="px-4 py-5">
+                                  {b.studyLevel || "-"}
+                                </td>
 
-                              {/* Stage */}
-                              <td className="px-4 py-5 text-center">
-                                {/* <div className="flex justify-between items-center"> */}
-                                <button
-                                  className={`w-auto px-2 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
-                                    // statusColors[b.bookingStatus?.()] || ""
-                                    stageColors[b.stage] || ""
-                                  }`}
-                                >
-                                  {b.stage}
-                                </button>
-                                {/* </div> */}
-                              </td>
-
-                              {/* Status */}
-                              <td className="px-4 py-5 text-center">
-                                {/* <div className="flex justify-between items-center"> */}
-                                <button
-                                  className={`w-[70px] px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
-                                    // statusColors[b.bookingStatus?.()] || ""
-                                    statusColors[b.status] || ""
-                                  }`}
-                                >
-                                  {b.status}
-                                </button>
-                                {/* </div> */}
-                              </td>
-                              {/* Actions */}
-                              <td>
-                                <div className="flex justify-center">
-                                  {/* Everyone can view */}
+                                {/* Stage */}
+                                <td className="px-4 py-5 text-center">
+                                  {/* <div className="flex justify-between items-center"> */}
                                   <button
-                                    className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
-                                    onClick={() => {
-                                      setEditingBooking(b);
-                                      setFormData({
-                                        ...b,
-                                        isPackageBooking: !!b.package,
-                                        dob: formatDateForInput(b.dob),
-                                        specificOffice: b.specificOffice || "",
-                                        bookingTime: b.bookingTime
-                                          ? new Date(
-                                              b.bookingTime,
-                                            ).toISOString()
-                                          : new Date().toISOString(),
-                                      });
-                                      setSelected_uniPref(
-                                        parsePrefUni(b.prefUni),
-                                      );
-                                      setFormMode("view");
-
-                                      restoreStateAndCity(b.country, b.state);
-                                      setIsViewOnly(true);
-                                      setIsOpen_popupForm(true);
-                                    }}
+                                    className={`w-auto px-2 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
+                                      // statusColors[b.bookingStatus?.()] || ""
+                                      stageColors[b.stage] || ""
+                                    }`}
                                   >
-                                    <FaEye size={15} />
+                                    {b.stage}
                                   </button>
+                                  {/* </div> */}
+                                </td>
 
-                                  <>
+                                {/* Status */}
+                                <td className="px-4 py-5 text-center">
+                                  {/* <div className="flex justify-between items-center"> */}
+                                  <button
+                                    className={`w-[70px] px-1 py-1 rounded text-xs font-medium capitalize scale-95 cursor-default ${
+                                      // statusColors[b.bookingStatus?.()] || ""
+                                      statusColors[b.status] || ""
+                                    }`}
+                                  >
+                                    {b.status}
+                                  </button>
+                                  {/* </div> */}
+                                </td>
+                                {/* Actions */}
+                                <td>
+                                  <div className="flex justify-center">
+                                    {/* Everyone can view */}
                                     <button
-                                      className="px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
+                                      className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
                                       onClick={() => {
                                         setEditingBooking(b);
                                         setFormData({
-                                          firstName: b.firstName || "",
-                                          lastName: b.lastName || "",
-                                          email: b.email || "",
-                                          phone: b.phone || "",
-                                          destination: b.destination || "",
-                                          startDuration: b.startDuration || "",
-                                          nearestOffice: b.nearestOffice || "",
+                                          ...b,
+                                          isPackageBooking: !!b.package,
+                                          dob: formatDateForInput(b.dob),
                                           specificOffice:
                                             b.specificOffice || "",
-                                          modeOfCon: b.modeOfCon || "",
-                                          studyLevel: b.studyLevel || "",
-                                          fundingBy: b.fundingBy || "",
-                                          status: b.status || "pending",
-                                          stage: b.stage || "New Lead",
-                                          discoverySource:
-                                            b.discoverySource || "",
-                                          rate: b.rate || "",
-                                          assignee: b.assignee || "",
-                                          dob: formatDateForInput(b.dob),
-                                          gender: b.gender || "",
-                                          currentEdu: b.currentEdu || "",
-                                          workExp: b.workExp || "",
-                                          city: b.city || "",
-                                          state: b.state || "",
-                                          country: b.country || "",
-                                          parentName: b.parentName || "",
-                                          parentPhone: b.parentPhone || "",
-                                          intakeMonth: b.intakeMonth || "",
-                                          intakeYear: b.intakeYear || "",
-                                          prefUni: b.prefUni || "",
-                                          docPass: b.docPass || "",
+                                          bookingTime: b.bookingTime
+                                            ? new Date(
+                                                b.bookingTime,
+                                              ).toISOString()
+                                            : new Date().toISOString(),
                                         });
                                         setSelected_uniPref(
                                           parsePrefUni(b.prefUni),
                                         );
-                                        setFormMode("edit");
-                                        setIsViewOnly(false);
+                                        setFormMode("view");
 
                                         restoreStateAndCity(b.country, b.state);
+                                        setIsViewOnly(true);
                                         setIsOpen_popupForm(true);
                                       }}
                                     >
-                                      <FaEdit size={14} />
+                                      <FaEye size={15} />
                                     </button>
 
-                                    {!isCounsellor && (
+                                    <>
                                       <button
-                                        onClick={() =>
-                                          setDeletePopup({
-                                            open: true,
-                                            bookingId: b.id,
-                                          })
-                                        }
-                                        className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
+                                        className="px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
+                                        onClick={() => {
+                                          setEditingBooking(b);
+                                          setFormData({
+                                            firstName: b.firstName || "",
+                                            lastName: b.lastName || "",
+                                            email: b.email || "",
+                                            phone: b.phone || "",
+                                            destination: b.destination || "",
+                                            startDuration:
+                                              b.startDuration || "",
+                                            nearestOffice:
+                                              b.nearestOffice || "",
+                                            specificOffice:
+                                              b.specificOffice || "",
+                                            modeOfCon: b.modeOfCon || "",
+                                            studyLevel: b.studyLevel || "",
+                                            fundingBy: b.fundingBy || "",
+                                            status: b.status || "pending",
+                                            stage: b.stage || "New Lead",
+                                            discoverySource:
+                                              b.discoverySource || "",
+                                            rate: b.rate || "",
+                                            assignee: b.assignee || "",
+                                            dob: formatDateForInput(b.dob),
+                                            gender: b.gender || "",
+                                            currentEdu: b.currentEdu || "",
+                                            workExp: b.workExp || "",
+                                            city: b.city || "",
+                                            state: b.state || "",
+                                            country: b.country || "",
+                                            parentName: b.parentName || "",
+                                            parentPhone: b.parentPhone || "",
+                                            intakeMonth: b.intakeMonth || "",
+                                            intakeYear: b.intakeYear || "",
+                                            prefUni: b.prefUni || "",
+                                            docPass: b.docPass || "",
+                                          });
+                                          setSelected_uniPref(
+                                            parsePrefUni(b.prefUni),
+                                          );
+                                          setFormMode("edit");
+                                          setIsViewOnly(false);
+
+                                          restoreStateAndCity(
+                                            b.country,
+                                            b.state,
+                                          );
+                                          setIsOpen_popupForm(true);
+                                        }}
                                       >
-                                        <MdDelete size={15} />
+                                        <FaEdit size={14} />
                                       </button>
-                                    )}
-                                  </>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
+
+                                      {!isCounsellor && (
+                                        <button
+                                          onClick={() =>
+                                            setDeletePopup({
+                                              open: true,
+                                              bookingId: b.id,
+                                            })
+                                          }
+                                          className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
+                                        >
+                                          <MdDelete size={15} />
+                                        </button>
+                                      )}
+                                    </>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -2302,9 +2402,9 @@ const StudentConsultations = forwardRef((props, ref) => {
             </div>
           </>
         ) : leadType === "event" ? (
-          <EventLeads ref={eventLeadsRef} />
+          <EventLeads ref={eventLeadsRef} searchQuery={searchQuery} />
         ) : (
-          <UniExpoLeads ref={uniExpoLeadsRef} />
+          <UniExpoLeads ref={uniExpoLeadsRef} searchQuery={searchQuery} />
         )}
       </main>
     </div>
