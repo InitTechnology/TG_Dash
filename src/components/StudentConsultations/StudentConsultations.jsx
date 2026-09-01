@@ -423,6 +423,13 @@ const StudentConsultations = forwardRef((props, ref) => {
     return matchesSearch && matchesDate && matchesStage && matchesOffice; // ← restored
   });
 
+  const derivedStatusCounts = {
+    pending: filteredBookings.filter((b) => b.status === "pending").length,
+    approved: filteredBookings.filter((b) => b.status === "approved").length,
+    converted: filteredBookings.filter((b) => b.status === "converted").length,
+    declined: filteredBookings.filter((b) => b.status === "declined").length,
+    cancelled: filteredBookings.filter((b) => b.status === "cancelled").length,
+  };
   const rowsPerPage_booking = 20;
   const [currentPage_booking, setCurrentPage_booking] = useState(1);
   //   const [selectedRows_booking, setSelectedRows_booking] = useState([]);
@@ -678,21 +685,21 @@ const StudentConsultations = forwardRef((props, ref) => {
     fetchBookedDates();
   }, []);
 
-  const getStatusCounts = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/getstatus`);
+  // const getStatusCounts = async () => {
+  //   try {
+  //     const res = await axios.get(`${API_URL}/getstatus`);
 
-      if (res.data.success) {
-        setStatusCounts(res.data.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch status counts:", error);
-    }
-  };
+  //     if (res.data.success) {
+  //       setStatusCounts(res.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch status counts:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    getStatusCounts();
-  }, []);
+  // useEffect(() => {
+  //   getStatusCounts();
+  // }, []);
   useEffect(() => {
     if (isCounsellor && leadType === "event") {
       setLeadType("consultation");
@@ -938,7 +945,7 @@ const StudentConsultations = forwardRef((props, ref) => {
                   <p className="text-sm font-normal">Pending</p>
                   <p className="mt-2 text-lg text-black">
                     {/* ₹{formatNumber(analytics.totalRevenue)} */}
-                    {statusCounts.pending}
+                    {derivedStatusCounts.pending}
                     {/* <sup className="text-purple-900">+55%</sup> */}
                   </p>
                 </div>
@@ -952,7 +959,7 @@ const StudentConsultations = forwardRef((props, ref) => {
                 <div>
                   <p className="text-sm font-normal">Approved</p>
                   <p className="mt-2 text-lg text-black">
-                    {statusCounts.approved}
+                    {derivedStatusCounts.approved}
                     {/* ₹{formatNumber(analytics.pendingPayments)}
                 <sup className="text-purple-900">+5%</sup> */}
                   </p>
@@ -967,7 +974,7 @@ const StudentConsultations = forwardRef((props, ref) => {
                 <div>
                   <p className="text-sm font-normal">Converted</p>
                   <p className="mt-2 text-lg text-black">
-                    {statusCounts.converted}
+                    {derivedStatusCounts.converted}
                     {/* ₹{formatNumber(analytics.profit)}
                 <sup className="text-purple-900">+8%</sup> */}
                   </p>
@@ -982,7 +989,7 @@ const StudentConsultations = forwardRef((props, ref) => {
                 <div>
                   <p className="text-sm font-normal">Declined</p>
                   <p className="mt-2 text-lg text-black">
-                    {statusCounts.declined}
+                    {derivedStatusCounts.declined}
                   </p>
                 </div>
 
@@ -995,7 +1002,7 @@ const StudentConsultations = forwardRef((props, ref) => {
                 <div>
                   <p className="text-sm font-normal">Cancelled</p>
                   <p className="mt-2 text-lg text-black">
-                    {statusCounts.cancelled}
+                    {derivedStatusCounts.cancelled}
                   </p>
                 </div>
 
@@ -2299,11 +2306,14 @@ const StudentConsultations = forwardRef((props, ref) => {
                         Showing{" "}
                         <span className="font-semibold text-gray-700 dark:text-white">
                           {indexOfFirstTable_booking + 1}-
-                          {Math.min(indexOfLastTable_booking, bookings.length)}
+                          {Math.min(
+                            indexOfLastTable_booking,
+                            filteredBookings.length,
+                          )}
                         </span>{" "}
                         of{" "}
                         <span className="font-semibold text-gray-700 dark:text-white">
-                          {bookings.length}
+                          {filteredBookings.length}
                         </span>
                       </span>
 
