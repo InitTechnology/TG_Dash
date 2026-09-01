@@ -229,34 +229,52 @@ const UniExpoLeads = forwardRef((props, ref) => {
   const isProcessingScan = useRef(false); // guards against duplicate scans firing
 
   // ── Fetch leads ─────────────────────────────────────────────────────────────
-  const normalizeOfficeKey = (value) =>
-    String(value || "")
+  // Replace the normalizeOfficeKey function with a more robust version
+  const normalizeOfficeKey = (value) => {
+    if (!value) return "";
+    return String(value)
       .trim()
       .toLowerCase()
-      .replace(/\s*-\s*/g, "-")
-      .replace(/\s+/g, "-");
+      .replace(/\s*-\s*/g, "-") // Remove spaces around dashes
+      .replace(/\s+/g, "-") // Replace remaining spaces with dashes
+      .replace(/-+/g, "-") // Remove duplicate dashes
+      .replace(/^-|-$/g, ""); // Remove leading/trailing dashes
+  };
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const params = filterLocation
+      // For counsellors, don't send location filter to API - fetch all leads
+      // and filter client-side for better matching
+      const shouldFilterByLocation = !isCounsellor && filterLocation;
+      const params = shouldFilterByLocation
         ? `?expo_location=${encodeURIComponent(filterLocation)}`
         : "";
+
       const res = await fetch(`${BASE_URL}${params}`);
       const data = await res.json();
+
       if (data.success) {
         const rows = data.data;
-        // For counsellors, filter by office
-        const scoped =
-          isCounsellor && myOffice
-            ? rows.filter((l) =>
-                normalizeOfficeKey(l.expo_location).includes(
-                  normalizeOfficeKey(myOffice),
-                ),
-              )
-            : rows;
-        setLeads(scoped);
+
+        // For counsellors, filter by office with improved matching
+        if (isCounsellor && myOffice) {
+          const normalizedMyOffice = normalizeOfficeKey(myOffice);
+          const scoped = rows.filter((l) => {
+            const normalizedLocation = normalizeOfficeKey(l.expo_location);
+            // Check if the lead's location contains the counsellor's office
+            // or vice versa (more flexible matching)
+            return (
+              normalizedLocation.includes(normalizedMyOffice) ||
+              normalizedMyOffice.includes(normalizedLocation)
+            );
+          });
+          setLeads(scoped);
+          console.log(`Counsellor ${myOffice} found ${scoped.length} leads`);
+        } else {
+          setLeads(rows);
+        }
         setCurrentPage(1);
       } else {
         setError(data.message || "Failed to fetch registrations");
@@ -270,10 +288,10 @@ const UniExpoLeads = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (isCounsellor && myOffice) {
-      setFilterLocation(myOffice);
+      console.log("Counsellor Office:", myOffice);
+      console.log("Normalized Office:", normalizeOfficeKey(myOffice));
     }
   }, [isCounsellor, myOffice]);
-
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
