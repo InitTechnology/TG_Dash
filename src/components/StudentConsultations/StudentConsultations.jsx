@@ -849,65 +849,86 @@ const StudentConsultations = forwardRef((props, ref) => {
               <option value="uniexpo">Global Uni-Expo Leads</option>
             </select>
           </div> */}
-        <div className="flex justify-between gap-5 items-start lg:items-center">
-          <div className="inline-flex border border-gray-300 rounded-lg overflow-hidden text-sm font-medium shadow-sm ml-10 lg:ml-0">
-            <button
-              onClick={() => setLeadType("consultation")}
-              className={`px-4 py-2 transition-colors duration-200 focus:outline-none ${
-                leadType === "consultation"
-                  ? "bg-[#3E3E98] text-white"
-                  : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
-              }`}
-            >
-              Consultation Leads
-            </button>
-
-            {!isCounsellor && (
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-stretch sm:items-start lg:items-center">
+          {/* Tab Buttons - Horizontal scroll on mobile */}
+          <div className="w-full sm:w-auto overflow-x-auto">
+            <div className="inline-flex border border-gray-300 rounded-lg overflow-hidden text-sm font-medium shadow-sm min-w-max">
               <button
-                onClick={() => setLeadType("event")}
-                className={`px-4 py-2 transition-colors duration-200 focus:outline-none border-l border-gray-300 ${
-                  leadType === "event"
+                onClick={() => setLeadType("consultation")}
+                className={`px-3 sm:px-4 py-2 transition-colors duration-200 focus:outline-none whitespace-nowrap text-xs sm:text-sm ${
+                  leadType === "consultation"
                     ? "bg-[#3E3E98] text-white"
                     : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
                 }`}
               >
-                Event Leads
+                Consultation Leads
               </button>
-            )}
 
-            <button
-              onClick={() => setLeadType("uniexpo")}
-              className={`px-4 py-2 transition-colors duration-200 focus:outline-none border-l border-gray-300 ${
-                leadType === "uniexpo"
-                  ? "bg-[#3E3E98] text-white"
-                  : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
-              }`}
-            >
-              Global Uni-Expo Leads
-            </button>
+              {!isCounsellor && (
+                <button
+                  onClick={() => setLeadType("event")}
+                  className={`px-3 sm:px-4 py-2 transition-colors duration-200 focus:outline-none border-l border-gray-300 whitespace-nowrap text-xs sm:text-sm ${
+                    leadType === "event"
+                      ? "bg-[#3E3E98] text-white"
+                      : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
+                  }`}
+                >
+                  Event Leads
+                </button>
+              )}
+
+              <button
+                onClick={() => setLeadType("uniexpo")}
+                className={`px-3 sm:px-4 py-2 transition-colors duration-200 focus:outline-none border-l border-gray-300 whitespace-nowrap text-xs sm:text-sm ${
+                  leadType === "uniexpo"
+                    ? "bg-[#3E3E98] text-white"
+                    : "bg-white text-gray-500 hover:bg-[#E8E8F2]"
+                }`}
+              >
+                Global Uni-Expo Leads
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="flex items-center">
-              <div className="flex items-center gap-3">
-                {isSuperAdmin && (
-                  <Tooltip title="Download CSV">
-                    <FiDownload
-                      size={24}
-                      className="cursor-pointer"
-                      onClick={handleDownloadCSV}
-                    />
-                  </Tooltip>
-                )}
+
+          {/* Right side - Search and Download */}
+          <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-1">
+              <div className="flex items-center">
+                <div className="flex items-center gap-3">
+                  {isSuperAdmin && (
+                    <Tooltip title="Download CSV">
+                      <FiDownload
+                        size={20}
+                        className="cursor-pointer hover:scale-110 transition-transform"
+                        onClick={handleDownloadCSV}
+                      />
+                    </Tooltip>
+                  )}
+                </div>
               </div>
-              {/* Search bar */}
-              <div className="mr-2 p-2 overflow-hidden w-8 h-8 hover:w-[120px] sm:hover:w-[250px] hover:border hover:border-[#1D2826] hover:shadow-[2px_2px_20px_rgba(0,0,0,0.08)] rounded-full flex group items-center hover:duration-300 duration-300">
+            </div>
+
+            {/* Search bar - Responsive */}
+            <div className="relative flex-1 sm:flex-none">
+              <div
+                className={`
+                flex items-center gap-1 
+                w-full sm:w-auto
+                px-3 py-1.5 sm:py-2
+                border border-gray-300 rounded-full
+                bg-white
+                transition-all duration-300
+                ${searchQuery ? "border-[#1D2826] shadow-[2px_2px_20px_rgba(0,0,0,0.08)]" : "hover:border-gray-400"}
+              `}
+              >
                 {/* Search icon */}
-                <div className="flex items-center justify-center fill-[#1D2826]">
+                <div className="flex items-center justify-center fill-[#1D2826] flex-shrink-0">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
+                    width="16"
+                    height="16"
+                    className="sm:w-[18px] sm:h-[18px]"
                   >
                     <path d="M18.9,16.776A10.539,10.539,0,1,0,16.776,18.9l5.1,5.1L24,21.88ZM10.5,18A7.5,7.5,0,1,1,18,10.5,7.507,7.507,0,0,1,10.5,18Z"></path>
                   </svg>
@@ -919,14 +940,14 @@ const StudentConsultations = forwardRef((props, ref) => {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border-none outline-none text-sm bg-transparent w-full font-normal px-2 focus:ring-0"
+                  className="border-none outline-none text-xs sm:text-sm bg-transparent w-full font-normal px-1 focus:ring-0 min-w-[80px] sm:min-w-[120px]"
                 />
 
                 {/* Clear button */}
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="text-gray-500 hover:text-black text-lg font-bold px-1"
+                    className="text-gray-500 hover:text-black text-base font-bold px-1 flex-shrink-0"
                   >
                     ×
                   </button>
