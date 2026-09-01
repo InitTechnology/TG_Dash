@@ -111,8 +111,19 @@ const UniExpoLeads = forwardRef((props, ref) => {
   const loggedInUser = loggedInUserRaw ? JSON.parse(loggedInUserRaw) : null;
   const isCounsellor =
     loggedInUser?.role?.toLowerCase().trim() === "counsellor";
+  const isSuperAdmin =
+    loggedInUser?.role?.toLowerCase().trim() === "super admin";
   const [staffOffice, setStaffOffice] = useState(loggedInUser?.office || "");
   const [selectedIds, setSelectedIds] = useState(new Set());
+
+  // ── New filter states for Super Admin ──────────────────────────────────────
+  const [statusFilter, setStatusFilter] = useState("");
+  const [expoLocationFilter, setExpoLocationFilter] = useState("");
+
+  // ── Get unique expo locations for filter dropdown ──────────────────────────
+  const uniqueExpoLocations = [
+    ...new Set(leads.map((lead) => lead.expo_location).filter(Boolean)),
+  ];
 
   useEffect(() => {
     if (staffOffice || !loggedInUser?.email) return; // already have it, or no user
@@ -134,22 +145,51 @@ const UniExpoLeads = forwardRef((props, ref) => {
     };
     resolveOffice();
   }, [staffOffice, loggedInUser?.email]);
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
   const myOffice = staffOffice;
+
   // Filter
   const [filterLocation, setFilterLocation] = useState("");
+
   const displayedLeads = leads.filter((lead) => {
+    // First apply search query filter
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return true;
+    if (query) {
+      const matchesName = (lead.full_name || "").toLowerCase().includes(query);
+      const matchesEmail = (lead.email || "").toLowerCase().includes(query);
+      const matchesMobile = (lead.mobile || "").toLowerCase().includes(query);
+      const matchesStatus = (lead.status || "").toLowerCase().includes(query);
+      const matchesTicketId = (lead.ticket_id || "")
+        .toLowerCase()
+        .includes(query);
+      if (
+        !(
+          matchesName ||
+          matchesEmail ||
+          matchesMobile ||
+          matchesStatus ||
+          matchesTicketId
+        )
+      ) {
+        return false;
+      }
+    }
 
-    const matchesName = (lead.full_name || "").toLowerCase().includes(query);
-    const matchesEmail = (lead.email || "").toLowerCase().includes(query);
-    const matchesMobile = (lead.mobile || "").toLowerCase().includes(query);
-    const matchesStatus = (lead.status || "").toLowerCase().includes(query);
+    // Apply status filter (only for Super Admin)
+    if (isSuperAdmin && statusFilter) {
+      if (lead.status !== statusFilter) return false;
+    }
 
-    return matchesName || matchesEmail || matchesMobile || matchesStatus;
+    // Apply expo location filter (only for Super Admin)
+    if (isSuperAdmin && expoLocationFilter) {
+      if (lead.expo_location !== expoLocationFilter) return false;
+    }
+
+    return true;
   });
 
   const totalLeadsCount = leads.length;
@@ -189,7 +229,6 @@ const UniExpoLeads = forwardRef((props, ref) => {
   const isProcessingScan = useRef(false); // guards against duplicate scans firing
 
   // ── Fetch leads ─────────────────────────────────────────────────────────────
-  // ── Fetch leads ─────────────────────────────────────────────────────────────
   const normalizeOfficeKey = (value) =>
     String(value || "")
       .trim()
@@ -208,6 +247,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
       const data = await res.json();
       if (data.success) {
         const rows = data.data;
+        // For counsellors, filter by office
         const scoped =
           isCounsellor && myOffice
             ? rows.filter((l) =>
@@ -227,36 +267,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
       setLoading(false);
     }
   }, [filterLocation, isCounsellor, myOffice]);
-  // const fetchLeads = useCallback(async () => {
-  //   setLoading(true);
-  //   setError("");
-  //   try {
-  //     const params = filterLocation
-  //       ? `?expo_location=${encodeURIComponent(filterLocation)}`
-  //       : "";
-  //     const res = await fetch(`${BASE_URL}${params}`);
-  //     const data = await res.json();
-  //     if (data.success) {
-  //       const rows = data.data;
-  //       const scoped =
-  //         isCounsellor && myOffice
-  //           ? rows.filter((l) =>
-  //               (l.expo_location || "")
-  //                 .toLowerCase()
-  //                 .includes(myOffice.toLowerCase()),
-  //             )
-  //           : rows;
-  //       setLeads(scoped);
-  //       setCurrentPage(1);
-  //     } else {
-  //       setError(data.message || "Failed to fetch registrations");
-  //     }
-  //   } catch (err) {
-  //     setError("Network error. Could not fetch registrations.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, [filterLocation, isCounsellor, myOffice]);
+
   useEffect(() => {
     if (isCounsellor && myOffice) {
       setFilterLocation(myOffice);
@@ -267,7 +278,14 @@ const UniExpoLeads = forwardRef((props, ref) => {
     fetchLeads();
   }, [fetchLeads]);
 
-  // ── Pagination helpers ───────────────────────────────────────────────────────
+  // ── Reset filters when switching roles or when not super admin ──────────────
+  useEffect(() => {
+    if (!isSuperAdmin) {
+      setStatusFilter("");
+      setExpoLocationFilter("");
+    }
+  }, [isSuperAdmin]);
+
   // ── Pagination helpers ───────────────────────────────────────────────────────
   const totalPages = Math.ceil(displayedLeads.length / rowsPerPage);
   const indexOfLast = currentPage * rowsPerPage;
@@ -404,6 +422,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
       setDeleting(false);
     }
   };
+
   const toggleSelectOne = (id) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -433,9 +452,10 @@ const UniExpoLeads = forwardRef((props, ref) => {
       return next;
     });
   };
+
   useEffect(() => {
     setSelectedIds(new Set());
-  }, [searchQuery, filterLocation]);
+  }, [searchQuery, filterLocation, statusFilter, expoLocationFilter]);
 
   // ── QR ticket scan → verify ──────────────────────────────────────────────────
   // Looks up a registration by its ticket_id and, if found, sets its status to
@@ -719,11 +739,11 @@ const UniExpoLeads = forwardRef((props, ref) => {
       : "View Uni-Expo Registration";
 
   return (
-    <div className="">
+    <div className="px-2 sm:px-0">
       {/* ── Delete Confirmation Modal ── */}
       {deleteId && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-80 text-center">
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm text-center">
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
               Delete Registration?
             </h3>
@@ -817,30 +837,15 @@ const UniExpoLeads = forwardRef((props, ref) => {
           </div>
         </div>
       )}
+
       {/* ── Top Controls ── */}
-      {/* <div className="mt-8">
-        <div className="flex gap-4 w-full justify-between items-center">
-          <div className="flex gap-3 items-center">
-            
-            <button
-              onClick={startScanner}
-              title="Scan a ticket QR code to verify a student"
-              className="flex items-center gap-2 px-4 py-2 rounded-md bg-indigo-900 text-white text-sm font-medium hover:bg-indigo-800 hover:scale-95 transition-all duration-300"
-            >
-              <MdQrCodeScanner size={16} />
-              Scan
-            </button>
-          </div>
-        </div>
-      </div> */}
-      {/* Boxes */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 items-center gap-8 text-gray-700 font-semibold mt-5">
+      {/* Boxes - Mobile responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-gray-700 font-semibold mt-5">
         <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
           <div>
             <p className="text-sm font-normal">Total Student Leads</p>
             <p className="mt-2 text-lg text-black">{totalLeadsCount}</p>
           </div>
-
           <div>
             <PiStudentFill className="bg-indigo-900 text-white text-3xl p-1.5 rounded-md" />
           </div>
@@ -851,7 +856,6 @@ const UniExpoLeads = forwardRef((props, ref) => {
             <p className="text-sm font-normal">Approved/Verified Leads</p>
             <p className="mt-2 text-lg text-black">{verifiedLeadsCount}</p>
           </div>
-
           <div>
             <GiCheckMark className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
           </div>
@@ -862,13 +866,63 @@ const UniExpoLeads = forwardRef((props, ref) => {
             <p className="text-sm font-normal">Pending Leads</p>
             <p className="mt-2 text-lg text-black">{pendingLeadsCount}</p>
           </div>
-
           <div>
             <MdOutlinePendingActions className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
           </div>
         </div>
       </div>
-      <div className="mt-8">
+
+      {/* ── Filter Section for Super Admin - Mobile responsive ── */}
+      {isSuperAdmin && (
+        <div className="mt-5 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+              Status:
+            </label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+            >
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="verified">Verified</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+              Expo Location:
+            </label>
+            <select
+              value={expoLocationFilter}
+              onChange={(e) => setExpoLocationFilter(e.target.value)}
+              className="w-full sm:w-auto px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+            >
+              <option value="">All Locations</option>
+              {uniqueExpoLocations.map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {(statusFilter || expoLocationFilter) && (
+            <button
+              onClick={() => {
+                setStatusFilter("");
+                setExpoLocationFilter("");
+              }}
+              className="w-full sm:w-auto px-3 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all text-center"
+            >
+              Clear Filters ✕
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="mt-5">
         <div className="flex gap-4 w-full justify-between items-center">
           <div className="flex gap-3 items-center">
             <button
@@ -877,7 +931,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
               className="flex items-center gap-2 px-4 py-2 rounded-md bg-indigo-900 text-white text-sm font-medium hover:bg-indigo-800 hover:scale-95 transition-all duration-300"
             >
               <MdQrCodeScanner size={16} />
-              Scan
+              <span className="hidden sm:inline">Scan</span>
             </button>
             {selectedIds.size > 0 && (
               <span className="text-sm text-gray-600">
@@ -897,13 +951,13 @@ const UniExpoLeads = forwardRef((props, ref) => {
         )}
 
         <div
-          className={`fixed top-0 right-0 h-full w-[85%] md:w-[680px] bg-white z-50 shadow-lg transform transition-transform duration-500 ease-in-out ${
+          className={`fixed top-0 right-0 h-full w-full sm:w-[85%] md:w-[680px] bg-white z-50 shadow-lg transform transition-transform duration-500 ease-in-out ${
             panelMode ? "translate-x-0" : "translate-x-full"
           }`}
         >
           <div className="p-4 flex justify-between items-start border-b">
             <div className="flex items-center gap-3">
-              <h2 className="text-[#1D2826] text-lg font-semibold">
+              <h2 className="text-[#1D2826] text-base sm:text-lg font-semibold">
                 {panelTitle}
               </h2>
               {selectedLead && <StatusBadge status={form.status} />}
@@ -916,21 +970,21 @@ const UniExpoLeads = forwardRef((props, ref) => {
             </button>
           </div>
 
-          <div className="max-h-[90vh] overflow-y-auto p-5">
+          <div className="max-h-[90vh] overflow-y-auto p-4 sm:p-5">
             {formError && (
               <p className="mb-4 text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
                 {formError}
               </p>
             )}
 
-            {/* Read-only meta, shown for both view and edit */}
+            {/* Read-only meta, shown for both view and edit - Mobile responsive */}
             {selectedLead && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
                 <div className="border rounded-lg px-3 py-2 bg-gray-50">
                   <p className="text-[10px] text-gray-400 font-semibold">
                     SHEET SYNC
                   </p>
-                  <p className="text-xs font-medium text-gray-700">
+                  <p className="text-xs font-medium text-gray-700 truncate">
                     {selectedLead.sheet_sync_status}
                   </p>
                 </div>
@@ -938,7 +992,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
                   <p className="text-[10px] text-gray-400 font-semibold">
                     STUDENT EMAIL
                   </p>
-                  <p className="text-xs font-medium text-gray-700">
+                  <p className="text-xs font-medium text-gray-700 truncate">
                     {selectedLead.student_email_status}
                   </p>
                 </div>
@@ -946,7 +1000,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
                   <p className="text-[10px] text-gray-400 font-semibold">
                     BRANCH EMAIL
                   </p>
-                  <p className="text-xs font-medium text-gray-700">
+                  <p className="text-xs font-medium text-gray-700 truncate">
                     {selectedLead.branch_email_status}
                   </p>
                 </div>
@@ -962,7 +1016,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
                       : "-"}
                   </p>
                 </div>
-                <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                <div className="border rounded-lg px-3 py-2 bg-gray-50 sm:col-span-4">
                   <p className="text-[10px] text-gray-400 font-semibold">
                     VERIFIED AT
                   </p>
@@ -978,6 +1032,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 items-center">
+              {/* Form fields remain the same */}
               {/* Full Name */}
               <div className="flex flex-col w-full">
                 <label className="text-gray-400 text-xs font-semibold relative top-2 ml-2 px-1 bg-white w-fit">
@@ -1193,17 +1248,17 @@ const UniExpoLeads = forwardRef((props, ref) => {
 
             {/* Action buttons — edit mode only */}
             {!isReadOnly && (
-              <div className="flex items-center gap-3 mt-10">
+              <div className="flex flex-col sm:flex-row items-center gap-3 mt-10">
                 <button
                   onClick={closePanel}
-                  className="w-36 px-6 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 transition-all duration-300 text-sm"
+                  className="w-full sm:w-36 px-6 py-2 bg-gray-800 rounded-lg text-center text-white relative hover:scale-95 transition-all duration-300 text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-36 px-6 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 transition-all duration-300 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full sm:w-36 px-6 py-2 bg-indigo-900 rounded-lg text-center text-white relative hover:scale-95 transition-all duration-300 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {saving ? "Saving…" : "Save"}
                 </button>
@@ -1212,8 +1267,8 @@ const UniExpoLeads = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
-      {/* ── Table ── */}
-      <div className="shadow-md rounded-lg mt-5">
+      {/* ── Table - Mobile responsive ── */}
+      <div className="shadow-md rounded-lg mt-5 overflow-hidden">
         {error && (
           <p className="text-sm text-red-500 px-4 py-2 bg-red-50 border-b border-red-200">
             {error}
@@ -1224,23 +1279,25 @@ const UniExpoLeads = forwardRef((props, ref) => {
           <table className="w-full text-sm text-left rtl:text-right text-gray-500">
             <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
               <tr>
-                <th className="p-4">
+                <th className="p-2 sm:p-4">
                   <input
                     type="checkbox"
                     checked={isAllCurrentPageSelected}
                     onChange={toggleSelectAllCurrentPage}
                     className="cursor-pointer"
-                  />{" "}
+                  />
                 </th>
-                <th className="p-4">ID</th>
-                <th className="p-4">Full Name</th>
-                <th className="p-4">Email</th>
-                <th className="p-4">Mobile</th>
-                <th className="p-4">Expo Location</th>
-                <th className="p-4">Expo Date</th>
-                <th className="p-4">Ticket ID</th>
-                <th className="p-4 text-center">Status</th>
-                <th className="p-4 text-center">Actions</th>
+                <th className="p-2 sm:p-4">ID</th>
+                <th className="p-2 sm:p-4">Full Name</th>
+                <th className="p-2 sm:p-4 hidden sm:table-cell">Email</th>
+                <th className="p-2 sm:p-4 hidden md:table-cell">Mobile</th>
+                <th className="p-2 sm:p-4 hidden lg:table-cell">
+                  Expo Location
+                </th>
+                <th className="p-2 sm:p-4 hidden xl:table-cell">Expo Date</th>
+                <th className="p-2 sm:p-4 hidden 2xl:table-cell">Ticket ID</th>
+                <th className="p-2 sm:p-4 text-center">Status</th>
+                <th className="p-2 sm:p-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -1262,7 +1319,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
                     key={lead.id}
                     className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
                   >
-                    <td className="px-4 py-4">
+                    <td className="px-2 sm:px-4 py-2 sm:py-4">
                       <input
                         type="checkbox"
                         checked={selectedIds.has(lead.id)}
@@ -1270,16 +1327,30 @@ const UniExpoLeads = forwardRef((props, ref) => {
                         className="cursor-pointer"
                       />
                     </td>
-                    <td className="px-4 py-4 font-semibold">{lead.id}</td>
-                    <td className="px-4 py-4">{lead.full_name}</td>
-                    <td className="px-4 py-4">{lead.email}</td>
-                    <td className="px-4 py-4">{lead.mobile}</td>
-                    <td className="px-4 py-4">{lead.expo_location || "—"}</td>
-                    <td className="px-4 py-4">{lead.expo_date || "—"}</td>
-                    <td className="px-4 py-4">{lead.ticket_id || "—"}</td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 font-semibold text-xs sm:text-sm">
+                      {lead.id}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 text-xs sm:text-sm truncate max-w-[80px] sm:max-w-none">
+                      {lead.full_name}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 hidden sm:table-cell text-xs sm:text-sm truncate max-w-[100px]">
+                      {lead.email}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 hidden md:table-cell text-xs sm:text-sm">
+                      {lead.mobile}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 hidden lg:table-cell text-xs sm:text-sm">
+                      {lead.expo_location || "—"}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 hidden xl:table-cell text-xs sm:text-sm">
+                      {lead.expo_date || "—"}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 hidden 2xl:table-cell text-xs sm:text-sm">
+                      {lead.ticket_id || "—"}
+                    </td>
 
                     {/* Status column */}
-                    <td className="px-4 py-4 text-center">
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 text-center">
                       <button
                         onClick={() => handleToggleStatus(lead)}
                         disabled={togglingId === lead.id}
@@ -1294,29 +1365,29 @@ const UniExpoLeads = forwardRef((props, ref) => {
                       </button>
                     </td>
 
-                    <td>
-                      <div className="flex justify-center">
+                    <td className="px-2 sm:px-4 py-2 sm:py-4">
+                      <div className="flex justify-center gap-1 sm:gap-0">
                         <button
                           onClick={() => openView(lead)}
-                          className="px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
+                          className="px-1 sm:px-2 py-1 text-gray-400 hover:text-black hover:scale-125 transition-all"
                           title="View"
                         >
-                          <FaEye size={15} />
+                          <FaEye size={14} />
                         </button>
                         <button
                           onClick={() => openEdit(lead)}
-                          className="px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
+                          className="px-1 sm:px-2 py-1 text-gray-400 hover:text-sky-500 hover:scale-125 transition-all"
                           title="Edit"
                         >
-                          <FaEdit size={14} />
+                          <FaEdit size={13} />
                         </button>
                         {!isCounsellor && (
                           <button
                             onClick={() => setDeleteId(lead.id)}
-                            className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
+                            className="px-1 sm:px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
                             title="Delete"
                           >
-                            <MdDelete size={15} />
+                            <MdDelete size={14} />
                           </button>
                         )}
                       </div>
@@ -1328,12 +1399,12 @@ const UniExpoLeads = forwardRef((props, ref) => {
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination - Mobile responsive */}
         <nav
-          className="flex items-center flex-column flex-wrap md:flex-row justify-between rounded-b-lg px-2 py-1 bg-[#f7f7f7]"
+          className="flex flex-col sm:flex-row items-center gap-3 sm:gap-0 justify-between rounded-b-lg px-2 sm:px-4 py-2 bg-[#f7f7f7]"
           aria-label="Table navigation"
         >
-          <span className="text-xs font-normal text-gray-500 mb-4 md:mb-0 block w-full md:inline md:w-auto">
+          <span className="text-xs font-normal text-gray-500 block w-full text-center sm:text-left sm:w-auto">
             Showing{" "}
             <span className="font-semibold text-gray-700">
               {displayedLeads.length === 0 ? 0 : indexOfFirst + 1}–
@@ -1367,7 +1438,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
                 <li key={index}>
                   <button
                     onClick={() => setCurrentPage(page)}
-                    className={`flex items-center justify-center px-3 h-8 leading-tight border-gray-300 hover:bg-purple-100 hover:text-gray-700 ${
+                    className={`flex items-center justify-center px-2 sm:px-3 h-8 leading-tight border-gray-300 hover:bg-purple-100 hover:text-gray-700 ${
                       currentPage === page
                         ? "text-purple-500 underline underline-offset-2 bg-purple-50"
                         : "text-gray-500 bg-[#f7f7f7]"
@@ -1398,6 +1469,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
 });
 
 export default UniExpoLeads;
+
 // import React, {
 //   forwardRef,
 //   useImperativeHandle,
@@ -1416,9 +1488,14 @@ export default UniExpoLeads;
 // import { MdDelete } from "react-icons/md";
 // import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 // import { exportToCSV } from "../../exportToCSV";
-// import { L_API_URL } from "../../Config";
+// import { API_URL } from "../../Config";
+// import { MdOutlinePendingActions } from "react-icons/md";
+// import { PiStudentFill } from "react-icons/pi";
 
-// const BASE_URL = `${L_API_URL}/api/expo-registrations`;
+// import { GiCheckMark } from "react-icons/gi";
+// import { ImCross } from "react-icons/im";
+// import { FaRegHandshake } from "react-icons/fa";
+// const BASE_URL = `${API_URL}/expo-registrations`;
 
 // // DOM id for the div the html5-qrcode library mounts the camera view into.
 // const QR_ELEMENT_ID = "expo-ticket-qr-reader";
@@ -1452,7 +1529,30 @@ export default UniExpoLeads;
 //   branchAddress: row.branch_address || "",
 //   ticketId: row.ticket_id || "",
 //   status: row.status || "pending",
+//   verifiedAt: row.verified_at || null,
 // });
+
+// // The ticket QR encodes a full multi-line text block, e.g.:
+// //   GLOBAL UNIEXPO 2026
+// //
+// //   Student Name: ...
+// //   Phone Number: ...
+// //   Email: ...
+// //   Expo Date: ...
+// //   Expo Time: ...
+// //   Ticket ID: GUE26-CHD-23F55C17
+// //   Branch Phone: ...
+// //   Expo Location: ...
+// //
+// // This pulls just the ticket ID out of that block. Falls back to the raw
+// // scanned string if no "Ticket ID:" line is found, in case a differently
+// // formatted QR is ever scanned.
+// const extractTicketId = (scannedText) => {
+//   const match = String(scannedText || "").match(
+//     /Ticket ID:\s*([A-Za-z0-9-]+)/i,
+//   );
+//   return (match ? match[1] : scannedText || "").trim();
+// };
 
 // // ── Status badge, reused in table + view/edit panel ─────────────────────────
 // const StatusBadge = ({ status }) => {
@@ -1475,12 +1575,60 @@ export default UniExpoLeads;
 
 // // ─── Component ────────────────────────────────────────────────────────────────
 // const UniExpoLeads = forwardRef((props, ref) => {
+//   const { searchQuery = "" } = props;
 //   const [leads, setLeads] = useState([]);
 //   const [loading, setLoading] = useState(false);
 //   const [error, setError] = useState("");
+//   const loggedInUserRaw = localStorage.getItem("user");
+//   const loggedInUser = loggedInUserRaw ? JSON.parse(loggedInUserRaw) : null;
+//   const isCounsellor =
+//     loggedInUser?.role?.toLowerCase().trim() === "counsellor";
+//   const [staffOffice, setStaffOffice] = useState(loggedInUser?.office || "");
+//   const [selectedIds, setSelectedIds] = useState(new Set());
 
+//   useEffect(() => {
+//     if (staffOffice || !loggedInUser?.email) return; // already have it, or no user
+//     const resolveOffice = async () => {
+//       try {
+//         const res = await fetch(`${API_URL}/getAllStaff`);
+//         const data = await res.json();
+//         if (data.success) {
+//           const match = data.data.find(
+//             (s) =>
+//               s.email?.toLowerCase().trim() ===
+//               loggedInUser.email?.toLowerCase().trim(),
+//           );
+//           if (match?.office) setStaffOffice(match.office);
+//         }
+//       } catch (err) {
+//         console.error("Error resolving office:", err);
+//       }
+//     };
+//     resolveOffice();
+//   }, [staffOffice, loggedInUser?.email]);
+//   useEffect(() => {
+//     setCurrentPage(1);
+//   }, [searchQuery]);
+//   const myOffice = staffOffice;
 //   // Filter
 //   const [filterLocation, setFilterLocation] = useState("");
+//   const displayedLeads = leads.filter((lead) => {
+//     const query = searchQuery.toLowerCase().trim();
+//     if (!query) return true;
+
+//     const matchesName = (lead.full_name || "").toLowerCase().includes(query);
+//     const matchesEmail = (lead.email || "").toLowerCase().includes(query);
+//     const matchesMobile = (lead.mobile || "").toLowerCase().includes(query);
+//     const matchesStatus = (lead.status || "").toLowerCase().includes(query);
+
+//     return matchesName || matchesEmail || matchesMobile || matchesStatus;
+//   });
+
+//   const totalLeadsCount = leads.length;
+//   const verifiedLeadsCount = leads.filter(
+//     (l) => l.status === "verified",
+//   ).length;
+//   const pendingLeadsCount = leads.filter((l) => l.status === "pending").length;
 
 //   // Pagination
 //   const rowsPerPage = 20;
@@ -1513,6 +1661,14 @@ export default UniExpoLeads;
 //   const isProcessingScan = useRef(false); // guards against duplicate scans firing
 
 //   // ── Fetch leads ─────────────────────────────────────────────────────────────
+//   // ── Fetch leads ─────────────────────────────────────────────────────────────
+//   const normalizeOfficeKey = (value) =>
+//     String(value || "")
+//       .trim()
+//       .toLowerCase()
+//       .replace(/\s*-\s*/g, "-")
+//       .replace(/\s+/g, "-");
+
 //   const fetchLeads = useCallback(async () => {
 //     setLoading(true);
 //     setError("");
@@ -1523,7 +1679,16 @@ export default UniExpoLeads;
 //       const res = await fetch(`${BASE_URL}${params}`);
 //       const data = await res.json();
 //       if (data.success) {
-//         setLeads(data.data);
+//         const rows = data.data;
+//         const scoped =
+//           isCounsellor && myOffice
+//             ? rows.filter((l) =>
+//                 normalizeOfficeKey(l.expo_location).includes(
+//                   normalizeOfficeKey(myOffice),
+//                 ),
+//               )
+//             : rows;
+//         setLeads(scoped);
 //         setCurrentPage(1);
 //       } else {
 //         setError(data.message || "Failed to fetch registrations");
@@ -1533,18 +1698,53 @@ export default UniExpoLeads;
 //     } finally {
 //       setLoading(false);
 //     }
-//   }, [filterLocation]);
+//   }, [filterLocation, isCounsellor, myOffice]);
+//   // const fetchLeads = useCallback(async () => {
+//   //   setLoading(true);
+//   //   setError("");
+//   //   try {
+//   //     const params = filterLocation
+//   //       ? `?expo_location=${encodeURIComponent(filterLocation)}`
+//   //       : "";
+//   //     const res = await fetch(`${BASE_URL}${params}`);
+//   //     const data = await res.json();
+//   //     if (data.success) {
+//   //       const rows = data.data;
+//   //       const scoped =
+//   //         isCounsellor && myOffice
+//   //           ? rows.filter((l) =>
+//   //               (l.expo_location || "")
+//   //                 .toLowerCase()
+//   //                 .includes(myOffice.toLowerCase()),
+//   //             )
+//   //           : rows;
+//   //       setLeads(scoped);
+//   //       setCurrentPage(1);
+//   //     } else {
+//   //       setError(data.message || "Failed to fetch registrations");
+//   //     }
+//   //   } catch (err) {
+//   //     setError("Network error. Could not fetch registrations.");
+//   //   } finally {
+//   //     setLoading(false);
+//   //   }
+//   // }, [filterLocation, isCounsellor, myOffice]);
+//   useEffect(() => {
+//     if (isCounsellor && myOffice) {
+//       setFilterLocation(myOffice);
+//     }
+//   }, [isCounsellor, myOffice]);
 
 //   useEffect(() => {
 //     fetchLeads();
 //   }, [fetchLeads]);
 
 //   // ── Pagination helpers ───────────────────────────────────────────────────────
-//   const totalPages = Math.ceil(leads.length / rowsPerPage);
+//   // ── Pagination helpers ───────────────────────────────────────────────────────
+//   const totalPages = Math.ceil(displayedLeads.length / rowsPerPage);
 //   const indexOfLast = currentPage * rowsPerPage;
 //   const indexOfFirst = indexOfLast - rowsPerPage;
-//   const currentLeads = leads.slice(indexOfFirst, indexOfLast);
-
+//   const currentLeads = displayedLeads.slice(indexOfFirst, indexOfLast);
 //   const generatePageNumbers = () => {
 //     const pages = [];
 //     if (totalPages <= 5) {
@@ -1676,6 +1876,38 @@ export default UniExpoLeads;
 //       setDeleting(false);
 //     }
 //   };
+//   const toggleSelectOne = (id) => {
+//     setSelectedIds((prev) => {
+//       const next = new Set(prev);
+//       if (next.has(id)) {
+//         next.delete(id);
+//       } else {
+//         next.add(id);
+//       }
+//       return next;
+//     });
+//   };
+
+//   const isAllCurrentPageSelected =
+//     currentLeads.length > 0 &&
+//     currentLeads.every((lead) => selectedIds.has(lead.id));
+
+//   const toggleSelectAllCurrentPage = () => {
+//     setSelectedIds((prev) => {
+//       const next = new Set(prev);
+//       if (isAllCurrentPageSelected) {
+//         // Unselect only this page's rows
+//         currentLeads.forEach((lead) => next.delete(lead.id));
+//       } else {
+//         // Select this page's rows (keeps any selections from other pages)
+//         currentLeads.forEach((lead) => next.add(lead.id));
+//       }
+//       return next;
+//     });
+//   };
+//   useEffect(() => {
+//     setSelectedIds(new Set());
+//   }, [searchQuery, filterLocation]);
 
 //   // ── QR ticket scan → verify ──────────────────────────────────────────────────
 //   // Looks up a registration by its ticket_id and, if found, sets its status to
@@ -1789,14 +2021,20 @@ export default UniExpoLeads;
 //     }
 //   }, []);
 
+//   // FIX: previously this passed the raw multi-line QR text straight into
+//   // verifyByTicketId(), which then searched for the *entire block* as if it
+//   // were the ticket_id — guaranteed to never match anything in the DB. Now
+//   // we extract just the "Ticket ID: GUE26-..." value first.
 //   const handleScanSuccess = useCallback(
 //     (decodedText) => {
 //       if (isProcessingScan.current) return;
 //       isProcessingScan.current = true;
 
+//       const ticketId = extractTicketId(decodedText);
+
 //       // Fully stop the camera before we do anything else with this instance.
 //       teardownScanner(qrRef.current).finally(() => {
-//         verifyByTicketId(decodedText).finally(() => {
+//         verifyByTicketId(ticketId).finally(() => {
 //           isProcessingScan.current = false;
 //         });
 //       });
@@ -1841,7 +2079,24 @@ export default UniExpoLeads;
 //     const html5Qr = new Html5Qrcode(QR_ELEMENT_ID);
 //     qrRef.current = html5Qr;
 
-//     const scanConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+//     const scanConfig = {
+//       fps: 10,
+//       qrbox: { width: 280, height: 280 },
+//       // Use the browser's built-in barcode detector when the device
+//       // supports it (most modern Android Chrome, some iOS Safari) — it's
+//       // notably faster and more reliable on dense QR codes than the
+//       // pure-JS fallback decoder.
+//       experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+//       // Ask for a sharper feed to help decode dense QR codes — this is
+//       // the correct place for resolution hints; merging width/height into
+//       // the camera-selection object below breaks getUserMedia on some
+//       // browsers.
+//       videoConstraints: {
+//         facingMode: "environment",
+//         width: { ideal: 1920 },
+//         height: { ideal: 1080 },
+//       },
+//     };
 //     const onDecode = (decodedText) => handleScanSuccess(decodedText);
 //     const onFrameMiss = () => {
 //       // per-frame "no QR found" callback — ignore, expected while aiming
@@ -1898,7 +2153,12 @@ export default UniExpoLeads;
 //   // ── CSV export, exposed to parent via ref ───────────────────────────────────
 //   useImperativeHandle(ref, () => ({
 //     downloadCSV: () => {
-//       const dataToExport = leads.map((lead) => ({
+//       const rowsToExport =
+//         selectedIds.size > 0
+//           ? displayedLeads.filter((lead) => selectedIds.has(lead.id))
+//           : displayedLeads;
+
+//       const dataToExport = rowsToExport.map((lead) => ({
 //         ID: lead.id,
 //         "Full Name": lead.full_name,
 //         Email: lead.email,
@@ -1915,6 +2175,9 @@ export default UniExpoLeads;
 //         "Branch Email": lead.branch_email_status || "-",
 //         "Created At": lead.created_at
 //           ? new Date(lead.created_at).toLocaleString()
+//           : "-",
+//         "Verified At": lead.verified_at
+//           ? new Date(lead.verified_at).toLocaleString()
 //           : "-",
 //       }));
 //       exportToCSV(dataToExport, "global_uniexpo_leads.csv");
@@ -1958,7 +2221,6 @@ export default UniExpoLeads;
 //           </div>
 //         </div>
 //       )}
-
 //       {/* ── QR Scanner Modal ── */}
 //       {showScanner && (
 //         <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
@@ -2027,18 +2289,11 @@ export default UniExpoLeads;
 //           </div>
 //         </div>
 //       )}
-
 //       {/* ── Top Controls ── */}
-//       <div className="mt-8">
+//       {/* <div className="mt-8">
 //         <div className="flex gap-4 w-full justify-between items-center">
 //           <div className="flex gap-3 items-center">
-//             <input
-//               type="text"
-//               placeholder="Filter by expo location (e.g. rajkot)"
-//               value={filterLocation}
-//               onChange={(e) => setFilterLocation(e.target.value)}
-//               className="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 w-72"
-//             />
+
 //             <button
 //               onClick={startScanner}
 //               title="Scan a ticket QR code to verify a student"
@@ -2049,8 +2304,61 @@ export default UniExpoLeads;
 //             </button>
 //           </div>
 //         </div>
-//       </div>
+//       </div> */}
+//       {/* Boxes */}
+//       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 items-center gap-8 text-gray-700 font-semibold mt-5">
+//         <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
+//           <div>
+//             <p className="text-sm font-normal">Total Student Leads</p>
+//             <p className="mt-2 text-lg text-black">{totalLeadsCount}</p>
+//           </div>
 
+//           <div>
+//             <PiStudentFill className="bg-indigo-900 text-white text-3xl p-1.5 rounded-md" />
+//           </div>
+//         </div>
+
+//         <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
+//           <div>
+//             <p className="text-sm font-normal">Approved/Verified Leads</p>
+//             <p className="mt-2 text-lg text-black">{verifiedLeadsCount}</p>
+//           </div>
+
+//           <div>
+//             <GiCheckMark className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
+//           </div>
+//         </div>
+
+//         <div className="flex items-center justify-between gap-5 border border-[#E7E7F8] py-2 px-4 rounded-lg h-full">
+//           <div>
+//             <p className="text-sm font-normal">Pending Leads</p>
+//             <p className="mt-2 text-lg text-black">{pendingLeadsCount}</p>
+//           </div>
+
+//           <div>
+//             <MdOutlinePendingActions className="bg-indigo-900 text-3xl text-white p-1.5 rounded-md" />
+//           </div>
+//         </div>
+//       </div>
+//       <div className="mt-8">
+//         <div className="flex gap-4 w-full justify-between items-center">
+//           <div className="flex gap-3 items-center">
+//             <button
+//               onClick={startScanner}
+//               title="Scan a ticket QR code to verify a student"
+//               className="flex items-center gap-2 px-4 py-2 rounded-md bg-indigo-900 text-white text-sm font-medium hover:bg-indigo-800 hover:scale-95 transition-all duration-300"
+//             >
+//               <MdQrCodeScanner size={16} />
+//               Scan
+//             </button>
+//             {selectedIds.size > 0 && (
+//               <span className="text-sm text-gray-600">
+//                 {selectedIds.size} selected
+//               </span>
+//             )}
+//           </div>
+//         </div>
+//       </div>
 //       {/* ── Slide Panel ── */}
 //       <div className="relative z-50">
 //         {panelMode && (
@@ -2124,6 +2432,18 @@ export default UniExpoLeads;
 //                           "en-GB",
 //                         )
 //                       : "-"}
+//                   </p>
+//                 </div>
+//                 <div className="border rounded-lg px-3 py-2 bg-gray-50">
+//                   <p className="text-[10px] text-gray-400 font-semibold">
+//                     VERIFIED AT
+//                   </p>
+//                   <p className="text-xs font-medium text-gray-700">
+//                     {selectedLead.verified_at
+//                       ? new Date(selectedLead.verified_at).toLocaleString(
+//                           "en-GB",
+//                         )
+//                       : "—"}
 //                   </p>
 //                 </div>
 //               </div>
@@ -2364,7 +2684,6 @@ export default UniExpoLeads;
 //           </div>
 //         </div>
 //       </div>
-
 //       {/* ── Table ── */}
 //       <div className="shadow-md rounded-lg mt-5">
 //         {error && (
@@ -2377,6 +2696,14 @@ export default UniExpoLeads;
 //           <table className="w-full text-sm text-left rtl:text-right text-gray-500">
 //             <thead className="text-xs text-gray-700 uppercase bg-[#E7E7F8] border-b">
 //               <tr>
+//                 <th className="p-4">
+//                   <input
+//                     type="checkbox"
+//                     checked={isAllCurrentPageSelected}
+//                     onChange={toggleSelectAllCurrentPage}
+//                     className="cursor-pointer"
+//                   />{" "}
+//                 </th>
 //                 <th className="p-4">ID</th>
 //                 <th className="p-4">Full Name</th>
 //                 <th className="p-4">Email</th>
@@ -2391,13 +2718,13 @@ export default UniExpoLeads;
 //             <tbody>
 //               {loading ? (
 //                 <tr>
-//                   <td colSpan={9} className="text-center py-8 text-gray-400">
+//                   <td colSpan={10} className="text-center py-8 text-gray-400">
 //                     Loading…
 //                   </td>
 //                 </tr>
 //               ) : currentLeads.length === 0 ? (
 //                 <tr>
-//                   <td colSpan={9} className="text-center py-8 text-gray-400">
+//                   <td colSpan={10} className="text-center py-8 text-gray-400">
 //                     No registrations found.
 //                   </td>
 //                 </tr>
@@ -2407,6 +2734,14 @@ export default UniExpoLeads;
 //                     key={lead.id}
 //                     className="bg-white even:bg-gray-50 border-b border-gray-200 hover:bg-gray-100 text-gray-800"
 //                   >
+//                     <td className="px-4 py-4">
+//                       <input
+//                         type="checkbox"
+//                         checked={selectedIds.has(lead.id)}
+//                         onChange={() => toggleSelectOne(lead.id)}
+//                         className="cursor-pointer"
+//                       />
+//                     </td>
 //                     <td className="px-4 py-4 font-semibold">{lead.id}</td>
 //                     <td className="px-4 py-4">{lead.full_name}</td>
 //                     <td className="px-4 py-4">{lead.email}</td>
@@ -2447,13 +2782,15 @@ export default UniExpoLeads;
 //                         >
 //                           <FaEdit size={14} />
 //                         </button>
-//                         <button
-//                           onClick={() => setDeleteId(lead.id)}
-//                           className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
-//                           title="Delete"
-//                         >
-//                           <MdDelete size={15} />
-//                         </button>
+//                         {!isCounsellor && (
+//                           <button
+//                             onClick={() => setDeleteId(lead.id)}
+//                             className="px-2 py-1 text-gray-400 hover:text-red-500 hover:scale-125 transition-all"
+//                             title="Delete"
+//                           >
+//                             <MdDelete size={15} />
+//                           </button>
+//                         )}
 //                       </div>
 //                     </td>
 //                   </tr>
@@ -2471,13 +2808,14 @@ export default UniExpoLeads;
 //           <span className="text-xs font-normal text-gray-500 mb-4 md:mb-0 block w-full md:inline md:w-auto">
 //             Showing{" "}
 //             <span className="font-semibold text-gray-700">
-//               {leads.length === 0 ? 0 : indexOfFirst + 1}–
-//               {Math.min(indexOfLast, leads.length)}
+//               {displayedLeads.length === 0 ? 0 : indexOfFirst + 1}–
+//               {Math.min(indexOfLast, displayedLeads.length)}
 //             </span>{" "}
 //             of{" "}
-//             <span className="font-semibold text-gray-700">{leads.length}</span>
+//             <span className="font-semibold text-gray-700">
+//               {displayedLeads.length}
+//             </span>
 //           </span>
-
 //           <ul className="inline-flex -space-x-px rtl:space-x-reverse text-xs h-8">
 //             <li>
 //               <button
