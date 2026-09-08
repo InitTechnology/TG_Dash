@@ -1059,9 +1059,11 @@ const StudentConsultations = forwardRef((props, ref) => {
                     <option value="Morbi">Morbi</option>
                     <option value="Pune">Pune</option>
 
-                    <option value="Rajkot-HeadOffice">Rajkot-HeadOffice</option>
-                    <option value="Rajkot-CorporateOffice">
-                      Rajkot-CorporateOffice
+                    <option value="Rajkot Head Office">
+                      Rajkot Head Office
+                    </option>
+                    <option value="Rajkot Corporate Office">
+                      Rajkot Corporate Office
                     </option>
 
                     <option value="Surat-AR Mall">Surat-AR Mall</option>
