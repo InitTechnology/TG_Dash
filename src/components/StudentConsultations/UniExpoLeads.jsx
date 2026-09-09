@@ -731,6 +731,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
         Mobile: lead.mobile,
         Destination: lead.destination || "-",
         "Expo Location": lead.expo_location || "-",
+        "Study Destination": lead.destination || "-",
         "Expo Date": lead.expo_date || "-",
         "Expo Time": lead.expo_time || "-",
         "Expo Venue": lead.expo_venue || "-",
@@ -1312,6 +1313,10 @@ const UniExpoLeads = forwardRef((props, ref) => {
                 <th className="p-2 sm:p-4 hidden lg:table-cell">
                   Expo Location
                 </th>
+                <th className="p-2 sm:p-4 hidden lg:table-cell">
+                  Study Destination
+                </th>
+
                 <th className="p-2 sm:p-4 hidden xl:table-cell">Expo Date</th>
                 <th className="p-2 sm:p-4 hidden 2xl:table-cell">Ticket ID</th>
                 <th className="p-2 sm:p-4 text-center">Status</th>
@@ -1359,6 +1364,9 @@ const UniExpoLeads = forwardRef((props, ref) => {
                     </td>
                     <td className="px-2 sm:px-4 py-2 sm:py-4 hidden lg:table-cell text-xs sm:text-sm">
                       {lead.expo_location || "—"}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 hidden lg:table-cell text-xs sm:text-sm">
+                      {lead.destination || "—"}
                     </td>
                     <td className="px-2 sm:px-4 py-2 sm:py-4 hidden xl:table-cell text-xs sm:text-sm">
                       {lead.expo_date || "—"}
