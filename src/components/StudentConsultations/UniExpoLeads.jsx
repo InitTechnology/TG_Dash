@@ -216,7 +216,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
   const [deleting, setDeleting] = useState(false);
 
   // Row-level status toggle in flight (disables the button while patching)
-  const [togglingId, setTogglingId] = useState(null);
+  // const [togglingId, setTogglingId] = useState(null);
 
   // ── QR ticket scanner state ─────────────────────────────────────────────────
   const [showScanner, setShowScanner] = useState(false);
@@ -393,31 +393,31 @@ const UniExpoLeads = forwardRef((props, ref) => {
   };
 
   // ── Quick status toggle (from table row, no full edit needed) ──────────────
-  const handleToggleStatus = async (lead) => {
-    const nextStatus = lead.status === "verified" ? "pending" : "verified";
-    setTogglingId(lead.id);
-    try {
-      const res = await fetch(`${BASE_URL}/${lead.id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: nextStatus }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setLeads((prev) =>
-          prev.map((l) =>
-            l.id === lead.id ? { ...l, status: nextStatus } : l,
-          ),
-        );
-      } else {
-        alert(data.message || "Failed to update status.");
-      }
-    } catch {
-      alert("Network error. Could not update status.");
-    } finally {
-      setTogglingId(null);
-    }
-  };
+  // const handleToggleStatus = async (lead) => {
+  //   const nextStatus = lead.status === "verified" ? "pending" : "verified";
+  //   setTogglingId(lead.id);
+  //   try {
+  //     const res = await fetch(`${BASE_URL}/${lead.id}/status`, {
+  //       method: "PATCH",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ status: nextStatus }),
+  //     });
+  //     const data = await res.json();
+  //     if (data.success) {
+  //       setLeads((prev) =>
+  //         prev.map((l) =>
+  //           l.id === lead.id ? { ...l, status: nextStatus } : l,
+  //         ),
+  //       );
+  //     } else {
+  //       alert(data.message || "Failed to update status.");
+  //     }
+  //   } catch {
+  //     alert("Network error. Could not update status.");
+  //   } finally {
+  //     setTogglingId(null);
+  //   }
+  // };
 
   // ── Delete ───────────────────────────────────────────────────────────────────
   const handleDeleteConfirm = async () => {
@@ -1226,7 +1226,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
               </div>
 
               {/* Status — editable only in edit mode */}
-              <div className="flex flex-col w-full">
+              {/* <div className="flex flex-col w-full">
                 <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                   Status
                 </label>
@@ -1245,6 +1245,15 @@ const UniExpoLeads = forwardRef((props, ref) => {
                     <option value="verified">Verified</option>
                   </select>
                 )}
+              </div> */}
+              {/* Status — never editable manually; only set via QR scan verification */}
+              <div className="flex flex-col w-full">
+                <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
+                  Status
+                </label>
+                <div className="border-gray-400 p-3 border rounded-lg w-full bg-gray-50">
+                  <StatusBadge status={form.status} />
+                </div>
               </div>
 
               {/* Branch Address */}
@@ -1376,7 +1385,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
                     </td>
 
                     {/* Status column */}
-                    <td className="px-2 sm:px-4 py-2 sm:py-4 text-center">
+                    {/* <td className="px-2 sm:px-4 py-2 sm:py-4 text-center">
                       <button
                         onClick={() => handleToggleStatus(lead)}
                         disabled={togglingId === lead.id}
@@ -1389,8 +1398,11 @@ const UniExpoLeads = forwardRef((props, ref) => {
                       >
                         <StatusBadge status={lead.status} />
                       </button>
+                    </td> */}
+                    {/* Status column — read-only display, only changed by scan verification */}
+                    <td className="px-2 sm:px-4 py-2 sm:py-4 text-center">
+                      <StatusBadge status={lead.status} />
                     </td>
-
                     <td className="px-2 sm:px-4 py-2 sm:py-4">
                       <div className="flex justify-center gap-1 sm:gap-0">
                         <button
