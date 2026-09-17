@@ -997,7 +997,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
             )}
 
             {/* Read-only meta, shown for both view and edit - Mobile responsive */}
-            {selectedLead && (
+            {/*      {selectedLead && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
                 <div className="border rounded-lg px-3 py-2 bg-gray-50">
                   <p className="text-[10px] text-gray-400 font-semibold">
@@ -1048,6 +1048,130 @@ const UniExpoLeads = forwardRef((props, ref) => {
                   </p>
                 </div>
               </div>
+            )}
+              */}
+            {/* Read-only meta, shown for both view and edit - Mobile responsive */}
+            {selectedLead && (
+              <>
+                {/* Registration Status Meta */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      SHEET SYNC
+                    </p>
+                    <p className="text-xs font-medium text-gray-700 truncate">
+                      {selectedLead.sheet_sync_status || "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      STUDENT EMAIL
+                    </p>
+                    <p className="text-xs font-medium text-gray-700 truncate">
+                      {selectedLead.student_email_status || "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      BRANCH EMAIL
+                    </p>
+                    <p className="text-xs font-medium text-gray-700 truncate">
+                      {selectedLead.branch_email_status || "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      CREATED
+                    </p>
+                    <p className="text-xs font-medium text-gray-700">
+                      {selectedLead.created_at
+                        ? new Date(selectedLead.created_at).toLocaleDateString(
+                            "en-GB",
+                          )
+                        : "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50 sm:col-span-4">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      VERIFIED AT
+                    </p>
+                    <p className="text-xs font-medium text-gray-700">
+                      {selectedLead.verified_at
+                        ? new Date(selectedLead.verified_at).toLocaleString(
+                            "en-GB",
+                          )
+                        : "—"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* UTM Tracking - READ ONLY */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-5">
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      UTM SOURCE
+                    </p>
+                    <p
+                      className="text-xs font-medium text-gray-700 truncate"
+                      title={selectedLead.utm_source || "—"}
+                    >
+                      {selectedLead.utm_source || "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      UTM MEDIUM
+                    </p>
+                    <p
+                      className="text-xs font-medium text-gray-700 truncate"
+                      title={selectedLead.utm_medium || "—"}
+                    >
+                      {selectedLead.utm_medium || "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      UTM CAMPAIGN
+                    </p>
+                    <p
+                      className="text-xs font-medium text-gray-700 truncate"
+                      title={selectedLead.utm_campaign || "—"}
+                    >
+                      {selectedLead.utm_campaign || "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      UTM TERM
+                    </p>
+                    <p
+                      className="text-xs font-medium text-gray-700 truncate"
+                      title={selectedLead.utm_term || "—"}
+                    >
+                      {selectedLead.utm_term || "—"}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      UTM CONTENT
+                    </p>
+                    <p
+                      className="text-xs font-medium text-gray-700 truncate"
+                      title={selectedLead.utm_content || "—"}
+                    >
+                      {selectedLead.utm_content || "—"}
+                    </p>
+                  </div>
+                </div>
+              </>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 items-center">
