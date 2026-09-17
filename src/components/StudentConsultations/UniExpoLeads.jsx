@@ -1054,7 +1054,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
             {selectedLead && (
               <>
                 {/* Registration Status Meta */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-3">
                   <div className="border rounded-lg px-3 py-2 bg-gray-50">
                     <p className="text-[10px] text-gray-400 font-semibold">
                       SHEET SYNC
@@ -1082,7 +1082,7 @@ const UniExpoLeads = forwardRef((props, ref) => {
                     </p>
                   </div>
 
-                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                  {/* <div className="border rounded-lg px-3 py-2 bg-gray-50">
                     <p className="text-[10px] text-gray-400 font-semibold">
                       CREATED
                     </p>
@@ -1093,9 +1093,62 @@ const UniExpoLeads = forwardRef((props, ref) => {
                           )
                         : "—"}
                     </p>
+                  </div> */}
+                  {/* CREATED DATE */}
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      CREATED DATE
+                    </p>
+                    <p className="text-xs font-medium text-gray-700">
+                      {selectedLead.created_at
+                        ? (() => {
+                            const value = String(selectedLead.created_at);
+
+                            // MySQL format: 2026-09-17 10:47:51
+                            if (value.includes(" ")) {
+                              const [date] = value.split(" ");
+                              const [year, month, day] = date.split("-");
+                              return `${day}/${month}/${year}`;
+                            }
+
+                            // ISO format: 2026-09-17T11:33:21.000Z
+                            const date = new Date(value);
+
+                            return date.toLocaleDateString("en-GB");
+                          })()
+                        : "—"}
+                    </p>
                   </div>
 
-                  <div className="border rounded-lg px-3 py-2 bg-gray-50 sm:col-span-4">
+                  {/* TIMESTAMP */}
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50">
+                    <p className="text-[10px] text-gray-400 font-semibold">
+                      TIMESTAMP
+                    </p>
+                    <p className="text-xs font-medium text-gray-700">
+                      {selectedLead.created_at
+                        ? (() => {
+                            const value = String(selectedLead.created_at);
+
+                            // MySQL format: 2026-09-17 10:47:51
+                            if (value.includes(" ")) {
+                              return value.split(" ")[1] || "—";
+                            }
+
+                            // ISO format: 2026-09-17T11:33:21.000Z
+                            const date = new Date(value);
+
+                            return date.toLocaleTimeString("en-GB", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                              hour12: false,
+                            });
+                          })()
+                        : "—"}
+                    </p>
+                  </div>
+                  <div className="border rounded-lg px-3 py-2 bg-gray-50 sm:col-span-5">
                     <p className="text-[10px] text-gray-400 font-semibold">
                       VERIFIED AT
                     </p>
