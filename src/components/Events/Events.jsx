@@ -16,12 +16,39 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { API_URL } from "../../Config";
 
+const StatusToggle = ({ isLive, loading, onToggle }) => (
+  <button
+    type="button"
+    onClick={onToggle}
+    disabled={loading}
+    title={isLive ? "Click to disable" : "Click to make live"}
+    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-medium transition-all duration-200 cursor-pointer hover:scale-95 disabled:opacity-60 disabled:cursor-not-allowed ${
+      isLive
+        ? "bg-green-50 border-green-200 text-green-800 hover:bg-green-100"
+        : "bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200"
+    }`}
+  >
+    {loading ? (
+      <span className="w-2.5 h-2.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+    ) : (
+      <span
+        className={`w-2 h-2 rounded-full ${
+          isLive ? "bg-green-400" : "bg-gray-400"
+        }`}
+      />
+    )}
+    {isLive ? "Live" : "Disabled"}
+  </button>
+);
+
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [togglingId, setTogglingId] = useState(null);
+  const [bulkLoading, setBulkLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   // eslint-disable-next-line
   const [isFetching, setIsFetching] = useState(false); // optional
@@ -503,6 +530,75 @@ const Events = () => {
       setDeletingId(null); // ✅ reset
     }
   };
+  const handleToggleAvailability = async (event) => {
+    const newValue = Number(event.availability) === 1 ? 0 : 1;
+
+    try {
+      setTogglingId(event.id);
+      const res = await axios.patch(
+        `${API_URL}/event/${event.id}/availability`,
+        {
+          availability: newValue,
+        },
+      );
+
+      if (res.data.success) {
+        setEvents((prev) =>
+          prev.map((e) =>
+            e.id === event.id ? { ...e, availability: newValue } : e,
+          ),
+        );
+        toast.success(
+          newValue === 1 ? "Event is now Live ✅" : "Event disabled",
+        );
+      } else {
+        toast.error(res.data.message || "Failed to update status");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update status");
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const allLive =
+    events.length > 0 && events.every((e) => Number(e.availability) === 1);
+
+  const handleToggleAll = async () => {
+    const newValue = allLive ? 0 : 1;
+
+    const ok = window.confirm(
+      newValue === 0
+        ? "Disable ALL events? They will disappear from the website."
+        : "Make ALL events live? They will be visible on the website.",
+    );
+    if (!ok) return;
+
+    try {
+      setBulkLoading(true);
+      const res = await axios.patch(`${API_URL}/events/availability`, {
+        availability: newValue,
+      });
+
+      if (res.data.success) {
+        setEvents((prev) =>
+          prev.map((e) => ({ ...e, availability: newValue })),
+        );
+        toast.success(
+          newValue === 1 ? "All events are now Live ✅" : "All events disabled",
+        );
+      } else {
+        toast.error(res.data.message || "Failed to update events");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update events");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
   return (
     <div className="flex bg-[#F8F9FA]">
       <Menubar
@@ -558,19 +654,20 @@ const Events = () => {
         {/* Button */}
         <div className="mt-8">
           <div className="flex gap-4 w-full justify-end">
-            {/* <select class="px-3 py-2 font-medium text-sm text-indigo-900 rounded-md bg-transparent focus:outline-none focus:ring-0 border border-indigo-900 transition-all duration-300 cursor-pointer">
-              <option value="">Filter Country</option>
-              <option value="Canada">Canada</option>
-              <option value="USA">USA</option>
-              <option value="Australia">Australia</option>
-              <option value="New Zealand">New Zealand</option>
-              <option value="Germany">Germany</option>
-              <option value="UK">UK</option>
-              <option value="Singapore">Singapore</option>
-              <option value="Dubai">Dubai</option>
-              <option value="Europe">Europe</option>
-              <option value="Global">Global</option>
-            </select> */}
+            <button
+              onClick={handleToggleAll}
+              disabled={bulkLoading || events.length === 0}
+              className={`px-6 py-2 rounded-lg font-medium text-sm border transition-all duration-300 hover:scale-95 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2 ${
+                allLive
+                  ? "border-gray-400 text-gray-700 hover:bg-gray-100"
+                  : "border-green-500 text-green-700 hover:bg-green-50"
+              }`}
+            >
+              {bulkLoading && (
+                <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              )}
+              {allLive ? "Disable All" : "Make All Live"}
+            </button>
 
             <div>
               <button
@@ -1109,6 +1206,7 @@ const Events = () => {
                   {/* <th className="p-4 w-1/10">Date(s)</th> */}
                   <th className="p-4 w-1/10">Destination</th>
                   <th className="p-4 w-1/10">City</th>
+                  <th className="p-4 w-1/10">Status</th>
                   <th className="p-4 w-1/10 text-center">Actions</th>
                 </tr>
               </thead>
@@ -1136,7 +1234,13 @@ const Events = () => {
                     {/* <td className="px-4 py-3">{event.dates.join(", ")}</td> */}
                     <td className="px-4 py-3">{event.destination}</td>
                     <td className="px-4 py-3">{event.city}</td>
-
+                    <td className="px-4 py-3">
+                      <StatusToggle
+                        isLive={Number(event.availability) === 1}
+                        loading={togglingId === event.id}
+                        onToggle={() => handleToggleAvailability(event)}
+                      />
+                    </td>
                     {/* Actions */}
                     <td>
                       <div className="flex justify-center">
