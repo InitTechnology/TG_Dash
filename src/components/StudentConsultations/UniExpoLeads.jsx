@@ -717,6 +717,39 @@ const UniExpoLeads = forwardRef((props, ref) => {
   }, [showScanner, scanAttempt]);
 
   // ── CSV export, exposed to parent via ref ───────────────────────────────────
+  // useImperativeHandle(ref, () => ({
+  //   downloadCSV: () => {
+  //     const rowsToExport =
+  //       selectedIds.size > 0
+  //         ? displayedLeads.filter((lead) => selectedIds.has(lead.id))
+  //         : displayedLeads;
+
+  //     const dataToExport = rowsToExport.map((lead) => ({
+  //       ID: lead.id,
+  //       "Full Name": lead.full_name,
+  //       Email: lead.email,
+  //       Mobile: lead.mobile,
+  //       Destination: lead.destination || "-",
+  //       "Expo Location": lead.expo_location || "-",
+  //       "Study Destination": lead.destination || "-",
+  //       "Expo Date": lead.expo_date || "-",
+  //       "Expo Time": lead.expo_time || "-",
+  //       "Expo Venue": lead.expo_venue || "-",
+  //       "Ticket ID": lead.ticket_id || "-",
+  //       Status: lead.status || "pending",
+  //       "Sheet Sync": lead.sheet_sync_status || "-",
+  //       "Student Email": lead.student_email_status || "-",
+  //       "Branch Email": lead.branch_email_status || "-",
+  //       "Created At": lead.created_at
+  //         ? new Date(lead.created_at).toLocaleString()
+  //         : "-",
+  //       "Verified At": lead.verified_at
+  //         ? new Date(lead.verified_at).toLocaleString()
+  //         : "-",
+  //     }));
+  //     exportToCSV(dataToExport, "global_uniexpo_leads.csv");
+  //   },
+  // }));
   useImperativeHandle(ref, () => ({
     downloadCSV: () => {
       const rowsToExport =
@@ -735,11 +768,21 @@ const UniExpoLeads = forwardRef((props, ref) => {
         "Expo Date": lead.expo_date || "-",
         "Expo Time": lead.expo_time || "-",
         "Expo Venue": lead.expo_venue || "-",
+        "Branch Phone": lead.branch_phone || "-",
+        "Branch Address": lead.branch_address || "-",
         "Ticket ID": lead.ticket_id || "-",
         Status: lead.status || "pending",
         "Sheet Sync": lead.sheet_sync_status || "-",
         "Student Email": lead.student_email_status || "-",
         "Branch Email": lead.branch_email_status || "-",
+
+        // ── UTM tracking fields ──
+        "UTM Source": lead.utm_source || "-",
+        "UTM Medium": lead.utm_medium || "-",
+        "UTM Campaign": lead.utm_campaign || "-",
+        "UTM Term": lead.utm_term || "-",
+        "UTM Content": lead.utm_content || "-",
+
         "Created At": lead.created_at
           ? new Date(lead.created_at).toLocaleString()
           : "-",
@@ -750,7 +793,6 @@ const UniExpoLeads = forwardRef((props, ref) => {
       exportToCSV(dataToExport, "global_uniexpo_leads.csv");
     },
   }));
-
   const isReadOnly = panelMode === "view";
   const panelTitle =
     panelMode === "edit"
