@@ -214,7 +214,9 @@ const UniExpoLeads = forwardRef((props, ref) => {
   // Delete confirmation
   const [deleteId, setDeleteId] = useState(null);
   const [deleting, setDeleting] = useState(false);
-
+  // Status change confirmation
+  const [pendingStatusChange, setPendingStatusChange] = useState(null);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   // Row-level status toggle in flight (disables the button while patching)
   // const [togglingId, setTogglingId] = useState(null);
 
@@ -360,7 +362,20 @@ const UniExpoLeads = forwardRef((props, ref) => {
     if (!form.expoDate.trim()) return "Expo date is required.";
     return "";
   };
+  // Opens the confirm popup for the opposite status
+  const requestStatusChange = () => {
+    const nextStatus = form.status === "verified" ? "pending" : "verified";
+    setPendingStatusChange(nextStatus);
+  };
 
+  // Applies the status change locally to the form (saved when user clicks Save)
+  const confirmStatusChange = () => {
+    if (!pendingStatusChange) return;
+    setUpdatingStatus(true);
+    setForm((prev) => ({ ...prev, status: pendingStatusChange }));
+    setPendingStatusChange(null);
+    setUpdatingStatus(false);
+  };
   // ── Save (Edit only — no add flow for this tab yet) ─────────────────────────
   const handleSave = async () => {
     const validationError = validate();
@@ -801,6 +816,47 @@ const UniExpoLeads = forwardRef((props, ref) => {
 
   return (
     <div className="px-2 sm:px-0">
+      {/* ── Status Change Confirmation Modal ── */}
+      {pendingStatusChange && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-[70] flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-sm text-center">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              {pendingStatusChange === "verified"
+                ? "Mark as Verified?"
+                : "Mark as Pending?"}
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              {pendingStatusChange === "verified"
+                ? "Do you want to mark this registration as Verified?"
+                : "Do you want to mark this registration as Pending?"}
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setPendingStatusChange(null)}
+                disabled={updatingStatus}
+                className="px-5 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition-all disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmStatusChange}
+                disabled={updatingStatus}
+                className={`px-5 py-2 rounded-lg text-white text-sm font-medium transition-all disabled:opacity-60 ${
+                  pendingStatusChange === "verified"
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-yellow-500 hover:bg-yellow-600"
+                }`}
+              >
+                {updatingStatus
+                  ? "Updating…"
+                  : pendingStatusChange === "verified"
+                    ? "Yes, Verify"
+                    : "Yes, Mark Pending"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ── Delete Confirmation Modal ── */}
       {deleteId && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
@@ -1445,7 +1501,8 @@ const UniExpoLeads = forwardRef((props, ref) => {
               </div>
 
               {/* Status — editable only in edit mode */}
-              {/* <div className="flex flex-col w-full">
+              {/* Status — editable in edit mode via click + confirm, read-only in view */}
+              <div className="flex flex-col w-full">
                 <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                   Status
                 </label>
@@ -1454,26 +1511,29 @@ const UniExpoLeads = forwardRef((props, ref) => {
                     <StatusBadge status={form.status} />
                   </div>
                 ) : (
-                  <select
-                    name="status"
-                    value={form.status}
-                    onChange={handleChange}
-                    className="border-gray-400 h-11 p-3 text-sm border rounded-lg w-full focus:outline-none focus:ring-0 focus:border-black focus:shadow-md"
+                  <button
+                    type="button"
+                    onClick={requestStatusChange}
+                    title={
+                      form.status === "verified"
+                        ? "Click to mark as Pending"
+                        : "Click to mark as Verified"
+                    }
+                    className="border-gray-400 p-3 border rounded-lg w-full bg-white text-left hover:bg-gray-50 hover:border-gray-600 transition-all cursor-pointer"
                   >
-                    <option value="pending">Pending</option>
-                    <option value="verified">Verified</option>
-                  </select>
+                    <StatusBadge status={form.status} />
+                  </button>
                 )}
-              </div> */}
+              </div>
               {/* Status — never editable manually; only set via QR scan verification */}
-              <div className="flex flex-col w-full">
+              {/* <div className="flex flex-col w-full">
                 <label className="text-gray-400 text-xs font-semibold relative z-10 top-2 ml-2 px-1 bg-white w-fit">
                   Status
                 </label>
                 <div className="border-gray-400 p-3 border rounded-lg w-full bg-gray-50">
                   <StatusBadge status={form.status} />
                 </div>
-              </div>
+              </div>*/}
 
               {/* Branch Address */}
               <div className="flex flex-col w-full sm:col-span-2">
