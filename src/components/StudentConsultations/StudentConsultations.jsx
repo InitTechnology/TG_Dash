@@ -2078,7 +2078,8 @@ const StudentConsultations = forwardRef((props, ref) => {
                               />
                             </th>
                             <th className="p-4"> ID</th>
-                            <th className="p-4 w-1/10">Student Name</th>
+                            <th className="p-4 w-1/10"> Name</th>
+                            <th className="p-4 w-1/10"> Phone</th>
                             <th className="p-4 w-1/10">Nearest Office</th>
                             <th className="p-4 w-1/10">Study Destination</th>
                             <th className="p-4 w-1/10">Lead Date</th>
@@ -2125,6 +2126,15 @@ const StudentConsultations = forwardRef((props, ref) => {
                                     placement="left"
                                   >
                                     {b.firstName} {b.lastName}
+                                  </Tooltip>
+                                </td>
+                                {/* Customer Phone */}
+                                <td className="px-4 py-5">
+                                  <Tooltip
+                                    title={b.phone || "-"}
+                                    placement="left"
+                                  >
+                                    {b.phone || "-"}
                                   </Tooltip>
                                 </td>
 
